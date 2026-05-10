@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <script>
+    // Redirect any 404 back to root so Safari PWA installs correctly
+    sessionStorage.redirect = location.href;
+    location.replace('/');
+  </script>
+</head>
+</html>
