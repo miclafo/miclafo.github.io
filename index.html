@@ -8,7 +8,13 @@
   <meta name="apple-mobile-web-app-title" content="Français"/>
   <meta name="theme-color" content="#0f0f0f"/>
   <link rel="manifest" href="manifest.json"/>
-  <title>Français Flashcards</title>
+  <title>Français</title>
+  <script>
+    // Safari PWA fix: if launched from home screen with /index suffix, strip it
+    if (location.pathname.endsWith('/index') || location.pathname.endsWith('/index.html')) {
+      location.replace(location.href.replace(/\/index(\.html)?$/, '/'));
+    }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
