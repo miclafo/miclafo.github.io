@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Français"/>
+  <meta name="theme-color" content="#0f0f0f"/>
+  <link rel="manifest" href="manifest.json"/>
+  <title>Français Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2e2e2e;
+      --text:#f0ece4;--dim:#7a7570;--mid:#a8a39d;
+      --green:#4caf87;--green-dim:rgba(76,175,135,.13);
+      --red:#e05c5c;--red-dim:rgba(224,92,92,.13);
+      --accent:#c9a96e;--accent-dim:rgba(201,169,110,.12);
+      --blue:#6aa0e0;--blue-dim:rgba(106,160,224,.12);
+    }
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;touch-action:manipulation}
+    #app{height:100dvh;display:flex;flex-direction:column;position:relative}
+
+    /* ── TYPOGRAPHY ── */
+    .serif{font-family:'Fraunces',serif;font-weight:300}
+    .serif-i{font-family:'Fraunces',serif;font-weight:300;font-style:italic}
+
+    /* ── HOME SCREEN ── */
+    .home{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;gap:0}
+    .home-title{font-size:42px;color:var(--accent);margin-bottom:6px}
+    .home-sub{font-size:14px;color:var(--mid);margin-bottom:40px;letter-spacing:.04em}
+    .mode-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:14px;align-self:flex-start}
+    .mode-cards{display:flex;flex-direction:column;gap:10px;width:100%;max-width:360px}
+    .mode-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;cursor:pointer;transition:border-color .2s,background .2s;display:flex;align-items:center;justify-content:space-between}
+    .mode-card:active{background:var(--surface2)}
+    .mode-card.selected{border-color:var(--accent)}
+    .mode-card-left{display:flex;flex-direction:column;gap:3px}
+    .mode-card-title{font-size:16px;font-weight:500;color:var(--text)}
+    .mode-card-sub{font-size:12px;color:var(--mid)}
+    .mode-card-icon{font-size:22px;opacity:.7}
+    .timer-row{display:flex;gap:8px;width:100%;max-width:360px;margin-top:10px}
+    .timer-btn{flex:1;padding:12px 6px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--mid);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;text-align:center}
+    .timer-btn:active{background:var(--surface2)}
+    .timer-btn.selected{border-color:var(--accent);color:var(--accent)}
+    .start-btn{margin-top:28px;background:var(--accent);color:#0f0f0f;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;padding:15px 48px;border-radius:100px;border:none;cursor:pointer;letter-spacing:.04em;transition:opacity .2s}
+    .start-btn:active{opacity:.8}
+
+    /* ── TOPBAR ── */
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px;position:relative;z-index:10;gap:10px}
+    .topbar-left{display:flex;align-items:center;gap:8px}
+    .icon-btn{background:none;border:1px solid var(--border);color:var(--mid);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;padding:6px 13px;border-radius:100px;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .icon-btn:active{background:var(--surface2);color:var(--text)}
+    .top-stats{display:flex;gap:14px;font-size:13px}
+    .s-correct{color:var(--green)}
+    .s-wrong{color:var(--red)}
+
+    /* ── TIMER DISPLAY ── */
+    .timer-display{display:flex;align-items:center;justify-content:center;gap:6px;padding:2px 0 6px}
+    .timer-ring-wrap{position:relative;width:38px;height:38px}
+    .timer-ring{transform:rotate(-90deg)}
+    .timer-ring-bg{fill:none;stroke:var(--border);stroke-width:3}
+    .timer-ring-fill{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .9s linear,stroke .3s}
+    .timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text)}
+    .timer-urgent .timer-ring-fill{stroke:var(--red)}
+    .timer-urgent .timer-text{color:var(--red)}
+
+    /* ── PROGRESS ── */
+    .progress-wrap{padding:0 18px}
+    .progress-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .5s ease}
+
+    /* ── CARD AREA ── */
+    .card-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px 18px 8px;position:relative;user-select:none}
+    .hint-zone{position:absolute;top:0;bottom:0;width:52px;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5;opacity:0;transition:opacity .35s}
+    .hint-zone.left{left:0}
+    .hint-zone.right{right:0}
+    .hint-zone svg{width:20px;height:20px}
+    .hint-zone.left svg{color:var(--red)}
+    .hint-zone.right svg{color:var(--green)}
+    .card-area.flipped .hint-zone{opacity:1}
+    .swipe-overlay{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .18s;z-index:2}
+    .swipe-overlay.show-right{background:var(--green-dim);opacity:1}
+    .swipe-overlay.show-left{background:var(--red-dim);opacity:1}
+
+    /* ── THE CARD ── */
+    .card-scene{width:100%;max-width:420px;perspective:1400px;position:relative;z-index:3}
+    .card{width:100%;aspect-ratio:3/2;position:relative;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.4,0,.2,1);border-radius:20px}
+    .card.flipped{transform:rotateY(180deg)}
+    .card-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;background:var(--surface);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 24px}
+    .card-back-face{transform:rotateY(180deg);background:var(--surface2)}
+    .card-type-tag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);position:absolute;top:14px;right:16px;font-weight:500}
+    .card-lang{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:500}
+    .card-word{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(18px,5.5vw,34px);color:var(--text);text-align:center;line-height:1.3}
+    .card-hint-tap{font-size:11px;color:var(--dim);letter-spacing:.06em;margin-top:4px}
+    .gender-pill{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;border-radius:100px}
+    .gender-m{background:rgba(100,160,240,.12);color:#7ab0f0;border:1px solid rgba(100,160,240,.2)}
+    .gender-f{background:rgba(220,120,160,.12);color:#e08aad;border:1px solid rgba(220,120,160,.2)}
+    .gender-p{background:rgba(140,200,130,.10);color:#8cc87a;border:1px solid rgba(140,200,130,.2)}
+
+    /* ── PROB BAR ── */
+    .prob-wrap{padding:8px 18px 2px;display:flex;align-items:center;gap:10px}
+    .prob-label{font-size:10px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+    .prob-track{flex:1;height:3px;background:var(--border);border-radius:3px;overflow:hidden}
+    .prob-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .5s ease}
+    .prob-val{font-size:10px;color:var(--dim);width:32px;text-align:right}
+
+    /* ── BOTTOM HINT ── */
+    .bottom-hint{display:flex;justify-content:space-between;align-items:center;padding:8px 26px calc(env(safe-area-inset-bottom,0px) + 16px)}
+    .hint-label{display:flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;opacity:0;transition:opacity .3s}
+    .hint-label.wrong-label{color:var(--red)}
+    .hint-label.right-label{color:var(--green)}
+    .card-area.flipped~.bottom-hint .hint-label{opacity:1}
+    .hint-label svg{width:13px;height:13px}
+
+    /* ── SCORE SCREEN ── */
+    .score-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;gap:0;text-align:center}
+    .score-title{font-size:38px;color:var(--accent);margin-bottom:4px}
+    .score-sub{font-size:13px;color:var(--mid);margin-bottom:28px}
+    .score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:320px;margin-bottom:28px}
+    .score-cell{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 12px;display:flex;flex-direction:column;gap:4px}
+    .score-cell-val{font-size:30px;font-weight:300;color:var(--text)}
+    .score-cell-val.good{color:var(--green)}
+    .score-cell-val.bad{color:var(--red)}
+    .score-cell-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+    .hs-section{width:100%;max-width:320px;margin-bottom:24px}
+    .hs-title{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;text-align:left}
+    .hs-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:6px}
+    .hs-row.new-hs{border-color:var(--accent)}
+    .hs-mode{font-size:13px;color:var(--mid)}
+    .hs-vals{font-size:13px;color:var(--text);display:flex;gap:10px}
+    .hs-badge{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);padding:2px 8px;border-radius:100px}
+    .score-btns{display:flex;flex-direction:column;gap:8px;width:100%;max-width:320px}
+    .score-btn{padding:14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);transition:opacity .2s}
+    .score-btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
+    .score-btn:active{opacity:.7}
+
+    /* ── TOAST & MODAL ── */
+    .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--surface2);border:1px solid var(--border);color:var(--mid);font-size:13px;padding:9px 18px;border-radius:100px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:100}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px;backdrop-filter:blur(6px)}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:340px;text-align:center}
+    .modal h2{font-family:'Fraunces',serif;font-weight:300;font-size:22px;margin-bottom:10px}
+    .modal p{font-size:14px;color:var(--mid);line-height:1.6;margin-bottom:24px}
+    .modal-btns{display:flex;gap:10px}
+    .modal-btn{flex:1;padding:13px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);transition:opacity .2s}
+    .modal-btn.danger{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+    .modal-btn:active{opacity:.6}
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+
+// Static cards
+const STATIC = [
+  // ── Original vocab ──
+  {fr:"sous",                          en:"under / beneath",      g:null, cat:"vocab"},
+  {fr:"sur",                           en:"on / on top of",       g:null, cat:"vocab"},
+  {fr:"devant",                        en:"in front of",          g:null, cat:"vocab"},
+  {fr:"derrière",                      en:"behind",               g:null, cat:"vocab"},
+  {fr:"dans",                          en:"in / inside",          g:null, cat:"vocab"},
+  {fr:"un calendrier (m)",             en:"a calendar",           g:"m",  cat:"vocab"},
+  {fr:"une poubelle (f)",              en:"a garbage can",        g:"f",  cat:"vocab"},
+  {fr:"un bac à recyclage (m)",        en:"a recycling bin",      g:"m",  cat:"vocab"},
+  {fr:"un tableau (m)",                en:"a board / chalkboard", g:"m",  cat:"vocab"},
+  {fr:"un bureau (m)",                 en:"a desk",               g:"m",  cat:"vocab"},
+  {fr:"une chaise (f)",                en:"a chair",              g:"f",  cat:"vocab"},
+  {fr:"une lampe (f)",                 en:"a lamp",               g:"f",  cat:"vocab"},
+  {fr:"une affiche (f)",               en:"a poster",             g:"f",  cat:"vocab"},
+  {fr:"une plante (f)",                en:"a plant",              g:"f",  cat:"vocab"},
+  {fr:"une porte (f)",                 en:"a door",               g:"f",  cat:"vocab"},
+  {fr:"une fenêtre (f)",               en:"a window",             g:"f",  cat:"vocab"},
+  {fr:"un ordinateur (m)",             en:"a computer",           g:"m",  cat:"vocab"},
+  {fr:"une imprimante (f)",            en:"a printer",            g:"f",  cat:"vocab"},
+  {fr:"une souris (f)",                en:"a mouse",              g:"f",  cat:"vocab"},
+  {fr:"un parapluie (m)",              en:"an umbrella",          g:"m",  cat:"vocab"},
+  {fr:"des clés (f pl)",               en:"keys",                 g:"p",  cat:"vocab"},
+  {fr:"des livres (m pl)",             en:"books",                g:"p",  cat:"vocab"},
+  {fr:"un manteau (m)",                en:"a coat",               g:"m",  cat:"vocab"},
+  {fr:"une veste (f)",                 en:"a jacket",             g:"f",  cat:"vocab"},
+  {fr:"des souliers (m pl)",           en:"shoes",                g:"p",  cat:"vocab"},
+  {fr:"un sac à dos (m)",              en:"a backpack",           g:"m",  cat:"vocab"},
+  {fr:"un sac à main (m)",             en:"a purse / handbag",    g:"m",  cat:"vocab"},
+  {fr:"des lunettes (f pl)",           en:"glasses",              g:"p",  cat:"vocab"},
+  {fr:"un cellulaire (m)",             en:"a cell phone",         g:"m",  cat:"vocab"},
+  {fr:"une tablette électronique (f)", en:"an electronic tablet", g:"f",  cat:"vocab"},
+  {fr:"une étagère (f)",               en:"a shelf",              g:"f",  cat:"vocab"},
+  {fr:"une table (f)",                 en:"a table",              g:"f",  cat:"vocab"},
+  {fr:"un étui à crayons (m)",         en:"a pencil case",        g:"m",  cat:"vocab"},
+  {fr:"un stylo (m)",                  en:"a pen",                g:"m",  cat:"vocab"},
+  {fr:"des crayons (m pl)",            en:"pencils",              g:"p",  cat:"vocab"},
+  {fr:"une efface (f)",                en:"an eraser",            g:"f",  cat:"vocab"},
+  {fr:"un cahier (m)",                 en:"a notebook",           g:"m",  cat:"vocab"},
+  {fr:"des dictionnaires (m pl)",      en:"dictionaries",         g:"p",  cat:"vocab"},
+  {fr:"des feuilles (f pl)",           en:"sheets of paper",      g:"p",  cat:"vocab"},
+  {fr:"une montre (f)",                en:"a watch",              g:"f",  cat:"vocab"},
+
+  // ── Navigation words ──
+  {fr:"gauche",                        en:"left",                 g:null, cat:"nav"},
+  {fr:"droite",                        en:"right",                g:null, cat:"nav"},
+  {fr:"l'ascenseur (m)",               en:"the elevator",         g:"m",  cat:"nav"},
+  {fr:"les escaliers (m pl)",          en:"the stairs",           g:"p",  cat:"nav"},
+  {fr:"l'accueil (m)",                 en:"the reception / front desk", g:"m", cat:"nav"},
+  {fr:"le guichet (m)",                en:"the counter / wicket", g:"m",  cat:"nav"},
+  {fr:"l'abreuvoir (m)",               en:"the water fountain",   g:"m",  cat:"nav"},
+  {fr:"en face",                       en:"across / facing",      g:null, cat:"nav"},
+  {fr:"à côté",                        en:"beside / next to",     g:null, cat:"nav"},
+  {fr:"au bout",                       en:"at the end",           g:null, cat:"nav"},
+  {fr:"loin",                          en:"far",                  g:null, cat:"nav"},
+  {fr:"près",                          en:"near / close",         g:null, cat:"nav"},
+  {fr:"au-dessus",                     en:"above / over",         g:null, cat:"nav"},
+
+  // ── Greetings ──
+  {fr:"Allô !",                        en:"Hi! / Hey!",           g:null, cat:"greet"},
+  {fr:"Bonjour",                       en:"Good morning",         g:null, cat:"greet"},
+  {fr:"Bonsoir",                       en:"Good evening",         g:null, cat:"greet"},
+  {fr:"Bonne nuit",                    en:"Good night",           g:null, cat:"greet"},
+  {fr:"Comment allez-vous ?",          en:"How are you? (formal)",g:null, cat:"greet"},
+  {fr:"Comment ça va ?",               en:"How are you? (informal)",g:null,cat:"greet"},
+  {fr:"Ça va bien",                    en:"I'm doing well",       g:null, cat:"greet"},
+  {fr:"Pas pire",                      en:"Not bad / Pretty good",g:null, cat:"greet"},
+  {fr:"Et toi ? / Et vous ?",          en:"And you? (informal / formal)", g:null, cat:"greet"},
+  {fr:"Je m'appelle…",                 en:"My name is…",          g:null, cat:"greet"},
+  {fr:"Enchanté(e)",                   en:"Nice to meet you",     g:null, cat:"greet"},
+  {fr:"À plus tard",                   en:"See you later",        g:null, cat:"greet"},
+  {fr:"À demain",                      en:"See you tomorrow",     g:null, cat:"greet"},
+  {fr:"Bonne journée",                 en:"Have a good day",      g:null, cat:"greet"},
+  {fr:"Bonne soirée",                  en:"Have a good evening",  g:null, cat:"greet"},
+  {fr:"S'il vous plaît / S'il te plaît", en:"Please (formal / informal)", g:null, cat:"greet"},
+  {fr:"Merci",                         en:"Thank you",            g:null, cat:"greet"},
+  {fr:"De rien / Bienvenue",           en:"You're welcome",       g:null, cat:"greet"},
+  {fr:"Je ne comprends pas",           en:"I don't understand",   g:null, cat:"greet"},
+
+  // ── Weather phrases ──
+  {fr:"Quel temps fait-il ?",          en:"What's the weather like?", g:null, cat:"weather"},
+  {fr:"Il fait beau",                  en:"It's nice out",        g:null, cat:"weather"},
+  {fr:"Il fait froid",                 en:"It's cold",            g:null, cat:"weather"},
+  {fr:"Il fait chaud",                 en:"It's hot",             g:null, cat:"weather"},
+  {fr:"Il pleut",                      en:"It's raining",         g:null, cat:"weather"},
+  {fr:"Il neige",                      en:"It's snowing",         g:null, cat:"weather"},
+  {fr:"Il fait du vent / Il vente",    en:"It's windy",           g:null, cat:"weather"},
+  {fr:"Il est nuageux",                en:"It's cloudy",          g:null, cat:"weather"},
+  {fr:"Il fait soleil",                en:"It's sunny",           g:null, cat:"weather"},
+  {fr:"Il fait frette / Il gèle",      en:"It's freezing",        g:null, cat:"weather"},
+  {fr:"Il y a une tempête",            en:"There's a storm",      g:null, cat:"weather"},
+  {fr:"Il fait beau aujourd'hui",      en:"The weather is nice today", g:null, cat:"weather"},
+
+  // ── Weather words ──
+  {fr:"le soleil (m)",                 en:"the sun",              g:"m",  cat:"weather"},
+  {fr:"la pluie (f)",                  en:"the rain",             g:"f",  cat:"weather"},
+  {fr:"la neige (f)",                  en:"the snow",             g:"f",  cat:"weather"},
+  {fr:"le vent (m)",                   en:"the wind",             g:"m",  cat:"weather"},
+  {fr:"le nuage (m)",                  en:"the cloud",            g:"m",  cat:"weather"},
+  {fr:"la tempête (f)",                en:"the storm",            g:"f",  cat:"weather"},
+  {fr:"le brouillard (m)",             en:"the fog",              g:"m",  cat:"weather"},
+  {fr:"la glace (f)",                  en:"the ice",              g:"f",  cat:"weather"},
+  {fr:"le givre (m)",                  en:"the frost",            g:"m",  cat:"weather"},
+  {fr:"le tonnerre (m)",               en:"the thunder",          g:"m",  cat:"weather"},
+  {fr:"l'éclair (m)",                  en:"the lightning",        g:"m",  cat:"weather"},
+  {fr:"la température (f)",            en:"the temperature",      g:"f",  cat:"weather"},
+  {fr:"la météo (f)",                  en:"the forecast",         g:"f",  cat:"weather"},
+  {fr:"la saison (f)",                 en:"the season",           g:"f",  cat:"weather"},
+  {fr:"l'hiver (m)",                   en:"the winter",           g:"m",  cat:"weather"},
+  {fr:"le printemps (m)",              en:"the spring",           g:"m",  cat:"weather"},
+  {fr:"l'été (m)",                     en:"the summer",           g:"m",  cat:"weather"},
+  {fr:"l'automne (m)",                 en:"the fall / autumn",    g:"m",  cat:"weather"},
+  {fr:"un degré (m)",                  en:"a degree",             g:"m",  cat:"weather"},
+
+  // ── Direction phrases (static) ──
+  {fr:"L'ascenseur est à gauche",      en:"The elevator is to the left",      g:null, cat:"nav"},
+  {fr:"Les escaliers sont à droite",   en:"The stairs are to the right",      g:null, cat:"nav"},
+  {fr:"L'accueil est tout droit",      en:"The reception is straight ahead",  g:null, cat:"nav"},
+  {fr:"La sortie est au bout",         en:"The exit is at the end",           g:null, cat:"nav"},
+  {fr:"La salle de bain est près d'ici", en:"The bathroom is nearby",         g:null, cat:"nav"},
+  {fr:"C'est en face de l'ascenseur",  en:"It's across from the elevator",    g:null, cat:"nav"},
+  {fr:"C'est à côté des escaliers",    en:"It's next to the stairs",          g:null, cat:"nav"},
+  {fr:"C'est au-dessus du guichet",    en:"It's above the counter",           g:null, cat:"nav"},
+  {fr:"C'est loin d'ici",              en:"It's far from here",               g:null, cat:"nav"},
+];
+
+// ── ADAPTIVE CARD TEMPLATES ──
+
+// Temperature: "Il fait X degrés aujourd'hui" / "It's X degrees today"
+const TEMP_KEY = 'adaptive|temp';
+
+function genTemp() {
+  const deg = Math.round(Math.random() * 70) - 30; // -30 to 40
+  return {
+    key: TEMP_KEY,
+    fr: `Il fait ${deg} degré${Math.abs(deg)!==1?'s':''} aujourd'hui`,
+    en: `It's ${deg}°C today`,
+    g: null, cat: 'adaptive', subtype: 'temp'
+  };
+}
+
+// Direction adaptive: place + direction randomize independently
+const DIR_PLACES = [
+  {fr:"L'ascenseur",    en:"The elevator",   art:"L'"},
+  {fr:"L'accueil",      en:"The reception",  art:"L'"},
+  {fr:"Le guichet",     en:"The counter",    art:"Le"},
+  {fr:"Les escaliers",  en:"The stairs",     art:"Les", verb:"sont"},
+  {fr:"La sortie",      en:"The exit",       art:"La"},
+  {fr:"La salle de bain", en:"The bathroom", art:"La"},
+  {fr:"L'abreuvoir",    en:"The water fountain", art:"L'"},
+  {fr:"La porte",       en:"The door",       art:"La"},
+];
+const DIR_DIRS = [
+  {fr:"à gauche",       en:"to the left"},
+  {fr:"à droite",       en:"to the right"},
+  {fr:"tout droit",     en:"straight ahead"},
+  {fr:"au bout",        en:"at the end"},
+  {fr:"en face",        en:"across / facing"},
+  {fr:"à côté",         en:"next to / beside"},
+  {fr:"au-dessus",      en:"above"},
+  {fr:"près d'ici",     en:"nearby"},
+];
+const DIR_KEY = 'adaptive|dir';
+
+function genDir() {
+  const place = DIR_PLACES[Math.floor(Math.random()*DIR_PLACES.length)];
+  const dir   = DIR_DIRS[Math.floor(Math.random()*DIR_DIRS.length)];
+  const verb  = place.verb || 'est';
+  return {
+    key: DIR_KEY,
+    fr: `${place.fr} ${verb} ${dir.fr}`,
+    en: `${place.en} is ${dir.en}`,
+    g: null, cat: 'adaptive', subtype: 'dir'
+  };
+}
+
+// Object-location adaptive: "The [obj1] is [prep] the [obj2]"
+const OBJ_ITEMS = [
+  {fr:"le cahier",       en:"the notebook",    art_fr:"le"},
+  {fr:"le stylo",        en:"the pen",         art_fr:"le"},
+  {fr:"l'efface",        en:"the eraser",      art_fr:"l'"},
+  {fr:"l'étui à crayons",en:"the pencil case", art_fr:"l'"},
+  {fr:"le livre",        en:"the book",        art_fr:"le"},
+  {fr:"la lampe",        en:"the lamp",        art_fr:"la"},
+  {fr:"la chaise",       en:"the chair",       art_fr:"la"},
+  {fr:"le bureau",       en:"the desk",        art_fr:"le"},
+  {fr:"la table",        en:"the table",       art_fr:"la"},
+  {fr:"l'ordinateur",    en:"the computer",    art_fr:"l'"},
+  {fr:"la souris",       en:"the mouse",       art_fr:"la"},
+  {fr:"le sac à dos",    en:"the backpack",    art_fr:"le"},
+  {fr:"la poubelle",     en:"the garbage can", art_fr:"la"},
+  {fr:"le tableau",      en:"the board",       art_fr:"le"},
+];
+const OBJ_PREPS = [
+  {fr:"sur",       en:"on"},
+  {fr:"sous",      en:"under"},
+  {fr:"devant",    en:"in front of"},
+  {fr:"derrière",  en:"behind"},
+  {fr:"dans",      en:"in"},
+];
+const OBJ_KEY = 'adaptive|obj';
+
+function genObj() {
+  let i1 = Math.floor(Math.random()*OBJ_ITEMS.length);
+  let i2 = Math.floor(Math.random()*OBJ_ITEMS.length);
+  while (i2 === i1) i2 = Math.floor(Math.random()*OBJ_ITEMS.length);
+  const obj1 = OBJ_ITEMS[i1], obj2 = OBJ_ITEMS[i2];
+  const prep = OBJ_PREPS[Math.floor(Math.random()*OBJ_PREPS.length)];
+  // Capitalise first letter
+  const frFirst = obj1.fr.charAt(0).toUpperCase() + obj1.fr.slice(1);
+  const enFirst = obj1.en.charAt(0).toUpperCase() + obj1.en.slice(1);
+  return {
+    key: OBJ_KEY,
+    fr: `${frFirst} est ${prep.fr} ${obj2.fr}`,
+    en: `${enFirst} is ${prep.en} ${obj2.en}`,
+    g: null, cat: 'adaptive', subtype: 'obj'
+  };
+}
+
+// One instance of each adaptive type in the pool
+const ADAPTIVE_GENERATORS = { temp: genTemp, dir: genDir, obj: genObj };
+const ADAPTIVE_KEYS = [TEMP_KEY, DIR_KEY, OBJ_KEY];
+
+// ═══════════════════════════════════════════════════════════════
+// SPACED REPETITION
+// ═══════════════════════════════════════════════════════════════
+const PROB_MIN=.05, PROB_MAX=.95, PROB_DEFAULT=.5;
+const CF=.65, WF=1.45;
+
+let probs = {};
+// Live generated adaptive card instances (re-generated on correct)
+let adaptiveCards = {};
+
+function initProbs() {
+  probs = {};
+  STATIC.forEach(c => {
+    probs[c.fr+'|fr'] = PROB_DEFAULT;
+    probs[c.fr+'|en'] = PROB_DEFAULT;
+  });
+  ADAPTIVE_KEYS.forEach(k => {
+    probs[k+'|fr'] = PROB_DEFAULT;
+    probs[k+'|en'] = PROB_DEFAULT;
+  });
+  // Regenerate adaptive cards
+  adaptiveCards = {
+    [TEMP_KEY]: genTemp(),
+    [DIR_KEY]:  genDir(),
+    [OBJ_KEY]:  genObj(),
+  };
+}
+
+function adjustProb(key, wasCorrect) {
+  const p = probs[key] ?? PROB_DEFAULT;
+  probs[key] = Math.max(PROB_MIN, Math.min(PROB_MAX, p * (wasCorrect ? CF : WF)));
+}
+
+function avgProb() {
+  const v = Object.values(probs);
+  return v.reduce((a,b)=>a+b,0)/v.length;
+}
+
+function weightedPick() {
+  // Build full pool: static (both directions) + adaptive (both directions)
+  const pool = [];
+
+  STATIC.forEach(c => {
+    ['fr','en'].forEach(lang => {
+      const key = c.fr+'|'+lang;
+      pool.push({type:'static', card:c, lang, key, prob: probs[key]??PROB_DEFAULT});
+    });
+  });
+
+  ADAPTIVE_KEYS.forEach(ak => {
+    ['fr','en'].forEach(lang => {
+      const key = ak+'|'+lang;
+      pool.push({type:'adaptive', adKey:ak, lang, key, prob: probs[key]??PROB_DEFAULT});
+    });
+  });
+
+  const total = pool.reduce((s,p)=>s+p.prob,0);
+  let r = Math.random()*total;
+  for (const p of pool) { r -= p.prob; if (r<=0) return p; }
+  return pool[pool.length-1];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HIGH SCORES  (localStorage)
+// ═══════════════════════════════════════════════════════════════
+function loadHS() {
+  try { return JSON.parse(localStorage.getItem('hs_v1')||'{}'); } catch{ return {}; }
+}
+function saveHS(hs) {
+  try { localStorage.setItem('hs_v1', JSON.stringify(hs)); } catch{}
+}
+function hsKey(mode) { return mode===0?'free':`t${mode}`; }
+function checkHS(mode, correct, accuracy) {
+  const hs = loadHS(); const k = hsKey(mode);
+  const prev = hs[k];
+  const isNew = !prev || correct > prev.correct || (correct===prev.correct && accuracy>prev.accuracy);
+  if (isNew) { hs[k]={correct,accuracy}; saveHS(hs); }
+  return isNew;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SESSION STATE
+// ═══════════════════════════════════════════════════════════════
+let screen = 'home'; // home | game | score
+let timerMode = 0;   // 0=free, 120,300,600
+let timerSecs = 0;
+let timerInterval = null;
+let session = {correct:0, wrong:0};
+let currentPick = null;
+let flipped = false;
+let touchStartX=0, touchStartY=0, lastMark=0;
+let isNewHS = false;
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER ROUTER
+// ═══════════════════════════════════════════════════════════════
+function render() {
+  if (screen==='home')  renderHome();
+  else if (screen==='game')  renderGame();
+  else if (screen==='score') renderScore();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════════════
+let _selectedTimer = 0;
+let _selectedMode = 'free';
+
+function renderHome() {
+  const app = document.getElementById('app');
+  const hs = loadHS();
+  app.innerHTML = `
+    <div class="home">
+      <div class="serif-i home-title">Français</div>
+      <div class="home-sub">Quebec French Flashcards</div>
+
+      <div class="mode-label">Mode</div>
+      <div class="mode-cards">
+        <div class="mode-card ${_selectedMode==='free'?'selected':''}" onclick="selectMode('free')">
+          <div class="mode-card-left">
+            <div class="mode-card-title">Practice</div>
+            <div class="mode-card-sub">Spaced repetition, no timer</div>
+          </div>
+          <div class="mode-card-icon">∞</div>
+        </div>
+        <div class="mode-card ${_selectedMode==='timer'?'selected':''}" onclick="selectMode('timer')">
+          <div class="mode-card-left">
+            <div class="mode-card-title">Time Challenge</div>
+            <div class="mode-card-sub">Get as many right as you can</div>
+          </div>
+          <div class="mode-card-icon">⏱</div>
+        </div>
+      </div>
+
+      <div id="timerPicker" style="display:${_selectedMode==='timer'?'flex':'none'};flex-direction:column;align-items:center;gap:0;width:100%;max-width:360px">
+        <div class="mode-label" style="align-self:flex-start;margin-top:14px">Duration</div>
+        <div class="timer-row">
+          <button class="timer-btn ${_selectedTimer===120?'selected':''}" onclick="selectTimer(120)">2 min</button>
+          <button class="timer-btn ${_selectedTimer===300?'selected':''}" onclick="selectTimer(300)">5 min</button>
+          <button class="timer-btn ${_selectedTimer===600?'selected':''}" onclick="selectTimer(600)">10 min</button>
+        </div>
+        ${hs[hsKey(_selectedTimer)] ? `<div style="font-size:11px;color:var(--dim);margin-top:8px;letter-spacing:.06em">Best: ${hs[hsKey(_selectedTimer)].correct} correct · ${hs[hsKey(_selectedTimer)].accuracy}% accuracy</div>` : ''}
+      </div>
+
+      <button class="start-btn" onclick="startSession()">Start</button>
+    </div>
+  `;
+}
+
+function selectMode(m) { _selectedMode=m; if(m==='free')_selectedTimer=0; renderHome(); }
+function selectTimer(t) { _selectedTimer=t; renderHome(); }
+
+function startSession() {
+  if (_selectedMode==='timer' && _selectedTimer===0) { showToast('Pick a duration first'); return; }
+  timerMode = _selectedMode==='free' ? 0 : _selectedTimer;
+  session = {correct:0, wrong:0};
+  flipped = false;
+  screen = 'game';
+  pickNext();
+  if (timerMode>0) {
+    timerSecs = timerMode;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timerSecs--;
+      updateTimerUI();
+      if (timerSecs<=0) { clearInterval(timerInterval); endSession(); }
+    }, 1000);
+  }
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME
+// ═══════════════════════════════════════════════════════════════
+function pickNext() {
+  flipped = false;
+  currentPick = weightedPick();
+}
+
+function cardData() {
+  const p = currentPick;
+  let card;
+  if (p.type==='static') {
+    card = p.card;
+  } else {
+    card = adaptiveCards[p.adKey];
+  }
+  const isFr = p.lang==='fr';
+  return {
+    promptLang: isFr?'French':'English',
+    answerLang: isFr?'English':'French',
+    promptWord: isFr?card.fr:card.en,
+    answerWord: isFr?card.en:card.fr,
+    gender: card.g,
+    showGenderFront: isFr,
+    showGenderBack: !isFr,
+    cat: card.cat,
+    prob: probs[p.key]??PROB_DEFAULT,
+  };
+}
+
+function catLabel(cat) {
+  const m={vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive'};
+  return m[cat]||cat;
+}
+
+function genderBadge(g) {
+  if(!g)return'';
+  const m={m:['gender-m','masc.'],f:['gender-f','fém.'],p:['gender-p','pl.']};
+  const[cls,label]=m[g];
+  return`<span class="gender-pill ${cls}">${label}</span>`;
+}
+
+function renderGame() {
+  const d = cardData();
+  const prob = Math.round(d.prob*100);
+  const progPct = Math.round((1-avgProb())*100);
+  const timerHTML = timerMode>0 ? renderTimerRing() : '';
+
+  document.getElementById('app').innerHTML = `
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn" onclick="confirmHome()">↩ Menu</button>
+        <button class="icon-btn" onclick="confirmReset()">↺</button>
+      </div>
+      ${timerHTML}
+      <div class="top-stats">
+        <span class="s-correct">✓ ${session.correct}</span>
+        <span class="s-wrong">✗ ${session.wrong}</span>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:${progPct}%"></div></div>
+    </div>
+
+    <div class="card-area" id="cardArea">
+      <div class="hint-zone left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="hint-zone right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg></div>
+      <div class="swipe-overlay" id="swipeOverlay"></div>
+      <div class="card-scene">
+        <div class="card" id="theCard">
+          <div class="card-face">
+            <span class="card-type-tag">${catLabel(d.cat)}</span>
+            <span class="card-lang">${d.promptLang}</span>
+            ${d.showGenderFront?genderBadge(d.gender):''}
+            <span class="card-word">${d.promptWord}</span>
+            <span class="card-hint-tap">tap to flip</span>
+          </div>
+          <div class="card-face card-back-face">
+            <span class="card-type-tag">${catLabel(d.cat)}</span>
+            <span class="card-lang">${d.answerLang}</span>
+            ${d.showGenderBack?genderBadge(d.gender):''}
+            <span class="card-word">${d.answerWord}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prob-wrap">
+      <span class="prob-label">Recall chance</span>
+      <div class="prob-track"><div class="prob-fill" style="width:${prob}%"></div></div>
+      <span class="prob-val">${prob}%</span>
+    </div>
+
+    <div class="bottom-hint">
+      <span class="hint-label wrong-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Wrong
+      </span>
+      <span class="hint-label right-label">
+        Correct
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+      </span>
+    </div>
+  `;
+
+  const area = document.getElementById('cardArea');
+  area.addEventListener('touchstart', e=>{touchStartX=e.changedTouches[0].clientX;touchStartY=e.changedTouches[0].clientY},{passive:true});
+  area.addEventListener('touchend', onTouchEnd, {passive:true});
+  area.addEventListener('click', onAreaClick);
+}
+
+function renderTimerRing() {
+  const total = timerMode, left = timerSecs;
+  const r=15, circ=2*Math.PI*r;
+  const offset = circ*(1-left/total);
+  const urgent = left<=30;
+  return `
+    <div class="timer-ring-wrap ${urgent?'timer-urgent':''}" id="timerWrap">
+      <svg class="timer-ring" width="38" height="38" viewBox="0 0 38 38">
+        <circle class="timer-ring-bg" cx="19" cy="19" r="${r}"/>
+        <circle class="timer-ring-fill" cx="19" cy="19" r="${r}"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}" id="timerArc"/>
+      </svg>
+      <div class="timer-text" id="timerTxt">${fmtTime(left)}</div>
+    </div>`;
+}
+
+function fmtTime(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}` }
+
+function updateTimerUI() {
+  const txt=document.getElementById('timerTxt');
+  const arc=document.getElementById('timerArc');
+  const wrap=document.getElementById('timerWrap');
+  if(!txt||!arc)return;
+  const r=15,circ=2*Math.PI*r;
+  txt.textContent=fmtTime(timerSecs);
+  arc.style.strokeDashoffset=circ*(1-timerSecs/timerMode);
+  if(timerSecs<=30){wrap.classList.add('timer-urgent');}
+}
+
+// ─ Interaction ─
+function onAreaClick(e) {
+  if(!flipped){doFlip();return;}
+  const x=e.clientX,w=window.innerWidth;
+  if(x<w*.38)markCard(false);
+  else if(x>w*.62)markCard(true);
+}
+function onTouchEnd(e) {
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  const dy=e.changedTouches[0].clientY-touchStartY;
+  if(!flipped){doFlip();return;}
+  if(Math.abs(dx)>=30&&Math.abs(dx)>Math.abs(dy)){markCard(dx>0);return;}
+  const x=e.changedTouches[0].clientX,w=window.innerWidth;
+  if(x<w*.38)markCard(false);
+  else if(x>w*.62)markCard(true);
+}
+function doFlip() {
+  flipped=true;
+  document.getElementById('theCard')?.classList.add('flipped');
+  document.getElementById('cardArea')?.classList.add('flipped');
+}
+function markCard(wasCorrect) {
+  const now=Date.now(); if(now-lastMark<380)return; lastMark=now;
+  if(!currentPick)return;
+  const overlay=document.getElementById('swipeOverlay');
+  if(overlay)overlay.classList.add(wasCorrect?'show-right':'show-left');
+  adjustProb(currentPick.key, wasCorrect);
+  if(wasCorrect){
+    session.correct++;
+    // Regenerate adaptive card on correct
+    if(currentPick.type==='adaptive'){
+      const gen=ADAPTIVE_GENERATORS[adaptiveCards[currentPick.adKey].subtype];
+      if(gen) adaptiveCards[currentPick.adKey]=gen();
+    }
+  } else {
+    session.wrong++;
+  }
+  setTimeout(()=>{ pickNext(); renderGame(); }, 340);
+}
+
+// ─ End session ─
+function endSession() {
+  clearInterval(timerInterval);
+  const total=session.correct+session.wrong;
+  const acc=total?Math.round(session.correct/total*100):0;
+  isNewHS = timerMode>0 ? checkHS(timerMode,session.correct,acc) : false;
+  screen='score';
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCORE SCREEN
+// ═══════════════════════════════════════════════════════════════
+function renderScore() {
+  const total=session.correct+session.wrong;
+  const acc=total?Math.round(session.correct/total*100):0;
+  const hs=loadHS();
+  const modeName=timerMode===0?'Practice':fmtTime(timerMode);
+
+  // Build HS rows for all timer modes
+  const hsRows=[120,300,600].map(t=>{
+    const k=hsKey(t), h=hs[k];
+    const isThis=timerMode===t&&isNewHS;
+    return h?`<div class="hs-row ${isThis?'new-hs':''}">
+      <span class="hs-mode">${fmtTime(t)}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="hs-vals"><span>${h.correct} correct</span><span style="color:var(--dim)">·</span><span>${h.accuracy}%</span></span>
+        ${isThis?'<span class="hs-badge">New!</span>':''}
+      </div>
+    </div>`:''
+  }).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="score-screen">
+      <div class="serif-i score-title">${timerMode>0?'Time\'s up!':'Session'}</div>
+      <div class="score-sub">${modeName} · ${total} card${total!==1?'s':''} seen</div>
+
+      <div class="score-grid">
+        <div class="score-cell">
+          <span class="score-cell-val good">${session.correct}</span>
+          <span class="score-cell-label">Correct</span>
+        </div>
+        <div class="score-cell">
+          <span class="score-cell-val bad">${session.wrong}</span>
+          <span class="score-cell-label">Wrong</span>
+        </div>
+        <div class="score-cell">
+          <span class="score-cell-val">${acc}%</span>
+          <span class="score-cell-label">Accuracy</span>
+        </div>
+        <div class="score-cell">
+          <span class="score-cell-val">${total}</span>
+          <span class="score-cell-label">Total seen</span>
+        </div>
+      </div>
+
+      ${hsRows?`<div class="hs-section"><div class="hs-title">High Scores</div>${hsRows}</div>`:''}
+
+      <div class="score-btns">
+        ${timerMode>0?`<button class="score-btn primary" onclick="retryTimer()">Try again (${fmtTime(timerMode)})</button>`:''}
+        <button class="score-btn ${timerMode===0?'primary':''}" onclick="goHome()">Back to menu</button>
+      </div>
+    </div>
+  `;
+}
+
+function retryTimer() {
+  session={correct:0,wrong:0};
+  flipped=false;
+  screen='game';
+  pickNext();
+  timerSecs=timerMode;
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    timerSecs--;
+    updateTimerUI();
+    if(timerSecs<=0){clearInterval(timerInterval);endSession();}
+  },1000);
+  render();
+}
+
+function goHome() { clearInterval(timerInterval); screen='home'; render(); }
+
+// ═══════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════
+function confirmReset() {
+  showModal('Reset deck?','All recall percentages return to 50%.',
+    [{label:'Cancel',action:'closeModal()'},{label:'Reset',cls:'danger',action:'doReset()'}]);
+}
+function doReset() {
+  closeModal(); initProbs(); showToast('Deck reset ✓'); pickNext(); renderGame();
+}
+function confirmHome() {
+  clearInterval(timerInterval);
+  showModal('Back to menu?','Your session progress will be lost.',
+    [{label:'Cancel',action:'closeModal()'},{label:'Go to menu',cls:'danger',action:'goHome()'}]);
+}
+function showModal(title,body,btns) {
+  closeModal();
+  const el=document.createElement('div');
+  el.className='modal-overlay';el.id='modalOverlay';
+  el.innerHTML=`<div class="modal">
+    <h2>${title}</h2><p>${body}</p>
+    <div class="modal-btns">${btns.map(b=>`<button class="modal-btn ${b.cls||''}" onclick="${b.action}">${b.label}</button>`).join('')}</div>
+  </div>`;
+  document.body.appendChild(el);
+}
+function closeModal(){document.getElementById('modalOverlay')?.remove();}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+initProbs();
+render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
