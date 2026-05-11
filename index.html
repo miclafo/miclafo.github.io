@@ -567,7 +567,7 @@ const NEW_CARD_EVERY = 10;
 // Cooldown: block last N seen probKeys from being picked again
 const COOLDOWN = 5;
 // Adaptive cards: 1 in 8 draws is forced adaptive
-const ADAPTIVE_EVERY = 8;
+const ADAPTIVE_EVERY = 5;
 // FR→EN only if recall > 50%: cards below 50% always show FR prompt
 const FR_ONLY_ABOVE = 0.5;
 // Mastered resurface
@@ -732,13 +732,21 @@ function weightedPick(enabledCats) {
       if (c==='regular')   return enabledCats.regular;
       return enabledCats.adaptive;
     });
-    const ak = pick(eligibleKeys.length ? eligibleKeys : ADAPTIVE_KEYS);
+    const verbCats = new Set(['irregular','regular']);
+    const weightedKeys = [];
+    (eligibleKeys.length ? eligibleKeys : ADAPTIVE_KEYS).forEach(ak => {
+      const times = verbCats.has(adaptiveLive[ak]?.cat) ? 3 : 1;
+      for (let i=0;i<times;i++) weightedKeys.push(ak);
+    });
+    const ak = pick(weightedKeys);
     const lang = Math.random() < 0.5 ? 'fr' : 'en';
     return {type:'adaptive', adKey:ak, lang, key:ak+'|'+lang, probKey:ak};
   }
 
   // Build weighted pool from enabled cats, excluding cooldown
   const pool = [];
+
+  const CAT_BOOST = {irregular:2.0, regular:2.0};
 
   function addStaticCards(cards) {
     cards.forEach(c => {
@@ -748,9 +756,8 @@ function weightedPick(enabledCats) {
       const lang = langForCard(c.probKey);
       const key = c.probKey+'|'+lang;
       const prob = probs[key] ?? PROB_DEFAULT;
-      // Boost unseen cards slightly
       let boosted = seenKeys.has(c.probKey) ? prob : prob * 1.4;
-      // Apply recency multiplier if in recent mode
+      boosted *= (CAT_BOOST[c.cat] || 1.0);
       if (recentMode) {
         const addedDate = addedDateByKey[c.probKey];
         boosted *= recencyMult(addedDate, recentBatches);
@@ -779,7 +786,9 @@ function weightedPick(enabledCats) {
       if (cat==='adaptive'  && !enabledCats.adaptive)  return;
       ['fr','en'].forEach(lang => {
         const key = ak+'|'+lang;
-        pool.push({type:'adaptive', adKey:ak, lang, key, prob:(probs[key]??PROB_DEFAULT) * 0.5, probKey:ak});
+        const acat = adaptiveLive[ak]?.cat;
+        const catMult = (acat==='irregular'||acat==='regular') ? 1.5 : 0.5;
+        pool.push({type:'adaptive', adKey:ak, lang, key, prob:(probs[key]??PROB_DEFAULT) * catMult, probKey:ak});
       });
     });
   }
@@ -978,6 +987,10 @@ function doPickNext(){
   cardsSeen++;
 }
 
+function stripGender(text) {
+  return text.replace(/\s*\((m|f|m pl|f pl|pl)\)/g, '').trim();
+}
+
 function gBadge(g){
   if(!g)return'';
   const m={m:['gm','masc.'],f:['gf','fém.'],p:['gp','pl.'],pm:['gp','pl.'],pf:['gp','pl.']};
@@ -1015,8 +1028,8 @@ function renderGame(){
   const isFr = currentPick.lang==='fr';
   const promptLang = isFr?'French':'English';
   const answerLang = isFr?'English':'French';
-  const promptWord = isFr?currentCard.fr:currentCard.en;
-  const answerWord = isFr?currentCard.en:currentCard.fr;
+  const promptWord = isFr ? stripGender(currentCard.fr) : currentCard.en;
+  const answerWord = isFr ? currentCard.en : currentCard.fr;
   const g = currentCard.g;
   const bgFront = ''; // gender never shown on front face
   const bgBack  = bgCls(g); // gender always shown on back face after flip
