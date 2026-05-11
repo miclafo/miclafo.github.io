@@ -318,7 +318,236 @@ function genTime(){
   return{key:TIME_KEY,fr:frTime,en:enTime,g:null,cat:'adaptive',subtype:'time'};
 }
 
-const ADAPTIVE_GENS={[CONJ_KEY]:genConj,[DIR_KEY]:genDir,[OBJ_KEY]:genObj,[TEMP_KEY]:genTemp,[NUM_KEY]:genNum,[TIME_KEY]:genTime};
+
+// ── VERB CONJUGATION DATA ────────────────────────────────────
+// Pronoun weights: je/tu/il/elle ~18% each, on ~8%, nous/vous ~7% each, ils/elles ~9% each
+const VERB_PRONOUNS = ['je','je','tu','tu','il','il','elle','elle','on','nous','vous','ils','elles'];
+
+// Conjugation tables
+const CONJ_ALLER  = {je:"vais",tu:"vas",il:"va",elle:"va",on:"va",nous:"allons",vous:"allez",ils:"vont",elles:"vont"};
+const CONJ_DEVOIR = {je:"dois",tu:"dois",il:"doit",elle:"doit",on:"doit",nous:"devons",vous:"devez",ils:"doivent",elles:"doivent"};
+const CONJ_POUVOIR= {je:"peux",tu:"peux",il:"peut",elle:"peut",on:"peut",nous:"pouvons",vous:"pouvez",ils:"peuvent",elles:"peuvent"};
+
+// Regular -er endings
+function conjER(pr,stem){const t={je:stem+"e",tu:stem+"es",il:stem+"e",elle:stem+"e",on:stem+"e",nous:stem+"ons",vous:stem+"ez",ils:stem+"ent",elles:stem+"ent"};return t[pr];}
+// Regular -ir endings (dormir type: drop last 3 of infinitive for sing, last 2 for plural)
+function conjIR_dormir(pr){const s={je:"dors",tu:"dors",il:"dort",elle:"dort",on:"dort",nous:"dormons",vous:"dormez",ils:"dorment",elles:"dorment"};return s[pr];}
+// Irregular regulars
+const CONJ_BOIRE  = {je:"bois",tu:"bois",il:"boit",elle:"boit",on:"boit",nous:"buvons",vous:"buvez",ils:"boivent",elles:"boivent"};
+const CONJ_ECRIRE = {je:"écris",tu:"écris",il:"écrit",elle:"écrit",on:"écrit",nous:"écrivons",vous:"écrivez",ils:"écrivent",elles:"écrivent"};
+const CONJ_LIRE   = {je:"lis",tu:"lis",il:"lit",elle:"lit",on:"lit",nous:"lisons",vous:"lisez",ils:"lisent",elles:"lisent"};
+
+// Dedicated context vocab per verb
+const ALLER_DEST = [
+  {fr:"à l'école",en:"to school"},{fr:"au bureau",en:"to the office"},
+  {fr:"au métro",en:"to the metro"},{fr:"chez le médecin",en:"to the doctor's"},
+  {fr:"au café",en:"to the café"},{fr:"à la maison",en:"home"},
+  {fr:"au supermarché",en:"to the supermarket"},{fr:"à la bibliothèque",en:"to the library"},
+  {fr:"au parc",en:"to the park"},{fr:"au restaurant",en:"to the restaurant"},
+  {fr:"à l'hôpital",en:"to the hospital"},{fr:"au gym",en:"to the gym"},
+];
+const DEVOIR_INF = [
+  {fr:"travailler",en:"work"},{fr:"partir",en:"leave"},{fr:"étudier",en:"study"},
+  {fr:"manger",en:"eat"},{fr:"dormir",en:"sleep"},{fr:"appeler",en:"call"},
+  {fr:"rentrer",en:"go home"},{fr:"payer",en:"pay"},{fr:"écrire",en:"write"},
+  {fr:"lire",en:"read"},{fr:"arriver",en:"arrive"},
+];
+const POUVOIR_INF = [
+  {fr:"manger ici",en:"eat here"},{fr:"partir",en:"leave"},{fr:"entrer",en:"enter"},
+  {fr:"fumer dehors",en:"smoke outside"},{fr:"utiliser le téléphone",en:"use the phone"},
+  {fr:"ouvrir la fenêtre",en:"open the window"},{fr:"sortir",en:"go out"},
+  {fr:"prendre une photo",en:"take a photo"},{fr:"utiliser le wifi",en:"use the wifi"},
+];
+const ARRIVER_DEST = [
+  {fr:"à l'école",en:"at school"},{fr:"au bureau",en:"at the office"},
+  {fr:"à la gare",en:"at the station"},{fr:"en retard",en:"late"},
+  {fr:"à l'heure",en:"on time"},{fr:"tôt",en:"early"},
+  {fr:"chez moi",en:"at my place"},{fr:"au café",en:"at the café"},
+];
+const BOIRE_OBJ = [
+  {fr:"de l'eau",en:"water"},{fr:"du café",en:"coffee"},{fr:"du thé",en:"tea"},
+  {fr:"de la bière",en:"beer"},{fr:"du jus",en:"juice"},{fr:"du lait",en:"milk"},
+  {fr:"du vin",en:"wine"},{fr:"un smoothie",en:"a smoothie"},
+];
+const MANGER_OBJ = [
+  {fr:"une pizza",en:"a pizza"},{fr:"du pain",en:"bread"},{fr:"une pomme",en:"an apple"},
+  {fr:"du riz",en:"rice"},{fr:"une salade",en:"a salad"},{fr:"un sandwich",en:"a sandwich"},
+  {fr:"des pâtes",en:"pasta"},{fr:"un burger",en:"a burger"},{fr:"de la soupe",en:"soup"},
+  {fr:"un bagel",en:"a bagel"},{fr:"du fromage",en:"cheese"},
+];
+const DORMIR_LOC = [
+  {fr:"dans le lit",en:"in bed"},{fr:"sur le canapé",en:"on the couch"},
+  {fr:"tard",en:"late"},{fr:"tôt",en:"early"},{fr:"bien",en:"well"},
+  {fr:"peu",en:"little"},{fr:"beaucoup",en:"a lot"},
+];
+const ECRIRE_OBJ = [
+  {fr:"une lettre",en:"a letter"},{fr:"un courriel",en:"an email"},
+  {fr:"un message",en:"a message"},{fr:"un rapport",en:"a report"},
+  {fr:"une note",en:"a note"},{fr:"un texto",en:"a text"},
+];
+const ECOUTER_OBJ = [
+  {fr:"de la musique",en:"music"},{fr:"le professeur",en:"the teacher"},
+  {fr:"la radio",en:"the radio"},{fr:"un balado",en:"a podcast"},
+  {fr:"une chanson",en:"a song"},{fr:"les nouvelles",en:"the news"},
+];
+const FUMER_LOC = [
+  {fr:"dehors",en:"outside"},{fr:"ici",en:"here"},
+  {fr:"dans le parc",en:"in the park"},{fr:"sur le balcon",en:"on the balcony"},
+];
+const LIRE_OBJ = [
+  {fr:"un livre",en:"a book"},{fr:"le journal",en:"the newspaper"},
+  {fr:"un magazine",en:"a magazine"},{fr:"un message",en:"a message"},
+  {fr:"un courriel",en:"an email"},{fr:"un roman",en:"a novel"},
+];
+const TEXTER_OBJ = [
+  {fr:"un ami",en:"a friend"},{fr:"ma mère",en:"my mother"},
+  {fr:"mon patron",en:"my boss"},{fr:"ma sœur",en:"my sister"},
+  {fr:"mon frère",en:"my brother"},{fr:"mes amis",en:"my friends"},
+];
+
+// Permission phrase structures
+const PERM_STRUCTS = [
+  {fr:v=>`Je peux ${v} ?`,          en:v=>`Can I ${v}?`,              formal:false},
+  {fr:v=>`Puis-je ${v} ?`,          en:v=>`May I ${v}?`,              formal:true},
+  {fr:v=>`Est-ce que je peux ${v} ?`,en:v=>`Can I ${v}?`,             formal:false},
+  {fr:v=>`C'est possible de ${v} ?`,en:v=>`Is it possible to ${v}?`, formal:false},
+  {fr:v=>`C'est permis de ${v} ?`, en:v=>`Is it allowed to ${v}?`,   formal:false},
+];
+
+// Helper: conjugation sentence builder
+function verbSentence(pr, conjForm, obj, key, cat) {
+  const frPr = cap(pr);
+  const enPr = PR_EN[pr];
+  const enVerb = AVOIR_EN[pr]; // am/is/are — reused for aux
+  return {key, fr:`${frPr} ${conjForm} ${obj.fr}`, en:`${enPr} ${conjForm==='va'&&pr==='on'?'goes':''||enPr==='I'?'':enPr==='You'?'':''} ${obj.en}`.trim(), g:null, cat, subtype:key};
+}
+
+// ── IRREGULAR VERB GENERATORS ─────────────────────────────────
+const ALLER_KEY  = 'adaptive|aller';
+const DEVOIR_KEY = 'adaptive|devoir';
+const POUVOIR_KEY= 'adaptive|pouvoir';
+
+const ALLER_EN={je:"go",tu:"go",il:"goes",elle:"goes",on:"goes",nous:"go",vous:"go",ils:"go",elles:"go"};
+function genAller(){
+  const pr=pick(VERB_PRONOUNS), dest=pick(ALLER_DEST);
+  return{key:ALLER_KEY,fr:`${cap(pr)} ${CONJ_ALLER[pr]} ${dest.fr}`,
+    en:`${PR_EN[pr]} ${ALLER_EN[pr]} ${dest.en}`,g:null,cat:'irregular',subtype:'aller'};
+}
+
+const DEVOIR_EN={je:"have to",tu:"have to",il:"has to",elle:"has to",on:"has to",nous:"have to",vous:"have to",ils:"have to",elles:"have to"};
+function genDevoir(){
+  const pr=pick(VERB_PRONOUNS), inf=pick(DEVOIR_INF);
+  return{key:DEVOIR_KEY,fr:`${cap(pr)} ${CONJ_DEVOIR[pr]} ${inf.fr}`,
+    en:`${PR_EN[pr]} ${DEVOIR_EN[pr]} ${inf.en}`,g:null,cat:'irregular',subtype:'devoir'};
+}
+
+const POUVOIR_EN={je:"can",tu:"can",il:"can",elle:"can",on:"can",nous:"can",vous:"can",ils:"can",elles:"can"};
+function genPouvoir(){
+  const pr=pick(VERB_PRONOUNS);
+  // Mix: 40% chance of permission phrase structure (je only)
+  if(Math.random()<0.4){
+    const perm=pick(PERM_STRUCTS), inf=pick(POUVOIR_INF);
+    return{key:POUVOIR_KEY,fr:perm.fr(inf.fr),en:perm.en(inf.en),g:null,cat:'irregular',subtype:'pouvoir'};
+  }
+  const inf=pick(POUVOIR_INF);
+  return{key:POUVOIR_KEY,fr:`${cap(pr)} ${CONJ_POUVOIR[pr]} ${inf.fr}`,
+    en:`${PR_EN[pr]} ${POUVOIR_EN[pr]} ${inf.en}`,g:null,cat:'irregular',subtype:'pouvoir'};
+}
+
+// ── REGULAR VERB GENERATORS ───────────────────────────────────
+const ARRIVER_KEY = 'adaptive|arriver';
+const BOIRE_KEY   = 'adaptive|boire';
+const MANGER_KEY  = 'adaptive|manger';
+const DORMIR_KEY  = 'adaptive|dormir';
+const ECRIRE_KEY  = 'adaptive|ecrire';
+const ECOUTER_KEY = 'adaptive|ecouter';
+const FUMER_KEY   = 'adaptive|fumer';
+const LIRE_KEY    = 'adaptive|lire';
+const TEXTER_KEY  = 'adaptive|texter';
+
+const ARRIVER_EN={je:"arrive",tu:"arrive",il:"arrives",elle:"arrives",on:"arrives",nous:"arrive",vous:"arrive",ils:"arrive",elles:"arrive"};
+function genArriver(){
+  const pr=pick(VERB_PRONOUNS), dest=pick(ARRIVER_DEST);
+  return{key:ARRIVER_KEY,fr:`${cap(pr)} arrive${['il','elle','on'].includes(pr)?'':'s'===''?'':''}${conjER(pr,'arriv').slice('arriv'.length)}`.replace('arriv',`${cap(pr)} arriv`).replace(`${cap(pr)} arriv`,`${cap(pr)} ${conjER(pr,'arriv')}`).replace(`${cap(pr)} ${conjER(pr,'arriv')}`,`${cap(pr)} ${conjER(pr,'arriv')}`)+` ${dest.fr}`,
+    en:`${PR_EN[pr]} ${ARRIVER_EN[pr]} ${dest.en}`,g:null,cat:'regular',subtype:'arriver'};
+}
+// Simpler direct approach for all regular verbs:
+function genArriver2(){
+  const pr=pick(VERB_PRONOUNS), dest=pick(ARRIVER_DEST);
+  return{key:ARRIVER_KEY,fr:`${cap(pr)} ${conjER(pr,'arriv')} ${dest.fr}`,
+    en:`${PR_EN[pr]} ${ARRIVER_EN[pr]} ${dest.en}`,g:null,cat:'regular',subtype:'arriver'};
+}
+
+const BOIRE_EN={je:"drink",tu:"drink",il:"drinks",elle:"drinks",on:"drinks",nous:"drink",vous:"drink",ils:"drink",elles:"drink"};
+function genBoire(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(BOIRE_OBJ);
+  return{key:BOIRE_KEY,fr:`${cap(pr)} ${CONJ_BOIRE[pr]} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${BOIRE_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'boire'};
+}
+
+const MANGER_EN={je:"eat",tu:"eat",il:"eats",elle:"eats",on:"eats",nous:"eat",vous:"eat",ils:"eat",elles:"eat"};
+function genManger(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(MANGER_OBJ);
+  // manger: nous mangeons (spelling change)
+  const conj=pr==='nous'?'mangeons':conjER(pr,'mang');
+  // 20% chance permission phrase
+  if(Math.random()<0.2){
+    const perm=pick(PERM_STRUCTS);
+    const inf=pick(MANGER_OBJ);
+    return{key:MANGER_KEY,fr:perm.fr(`manger ${inf.fr}`),en:perm.en(`eat ${inf.en}`),g:null,cat:'regular',subtype:'manger'};
+  }
+  return{key:MANGER_KEY,fr:`${cap(pr)} ${conj} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${MANGER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'manger'};
+}
+
+const DORMIR_EN={je:"sleep",tu:"sleep",il:"sleeps",elle:"sleeps",on:"sleeps",nous:"sleep",vous:"sleep",ils:"sleep",elles:"sleep"};
+function genDormir(){
+  const pr=pick(VERB_PRONOUNS), loc=pick(DORMIR_LOC);
+  return{key:DORMIR_KEY,fr:`${cap(pr)} ${conjIR_dormir(pr)} ${loc.fr}`,
+    en:`${PR_EN[pr]} ${DORMIR_EN[pr]} ${loc.en}`,g:null,cat:'regular',subtype:'dormir'};
+}
+
+const ECRIRE_EN={je:"write",tu:"write",il:"writes",elle:"writes",on:"writes",nous:"write",vous:"write",ils:"write",elles:"write"};
+function genEcrire(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(ECRIRE_OBJ);
+  return{key:ECRIRE_KEY,fr:`${cap(pr)} ${CONJ_ECRIRE[pr]} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${ECRIRE_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'ecrire'};
+}
+
+const ECOUTER_EN={je:"listen to",tu:"listen to",il:"listens to",elle:"listens to",on:"listens to",nous:"listen to",vous:"listen to",ils:"listen to",elles:"listen to"};
+function genEcouter(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(ECOUTER_OBJ);
+  return{key:ECOUTER_KEY,fr:`${cap(pr)} ${conjER(pr,'écout')} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${ECOUTER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'ecouter'};
+}
+
+const FUMER_EN={je:"smoke",tu:"smoke",il:"smokes",elle:"smokes",on:"smokes",nous:"smoke",vous:"smoke",ils:"smoke",elles:"smoke"};
+function genFumer(){
+  const pr=pick(VERB_PRONOUNS), loc=pick(FUMER_LOC);
+  // 30% permission phrase
+  if(Math.random()<0.3){
+    const perm=pick(PERM_STRUCTS), floc=pick(FUMER_LOC);
+    return{key:FUMER_KEY,fr:perm.fr(`fumer ${floc.fr}`),en:perm.en(`smoke ${floc.en}`),g:null,cat:'regular',subtype:'fumer'};
+  }
+  return{key:FUMER_KEY,fr:`${cap(pr)} ${conjER(pr,'fum')} ${loc.fr}`,
+    en:`${PR_EN[pr]} ${FUMER_EN[pr]} ${loc.en}`,g:null,cat:'regular',subtype:'fumer'};
+}
+
+const LIRE_EN={je:"read",tu:"read",il:"reads",elle:"reads",on:"reads",nous:"read",vous:"read",ils:"read",elles:"read"};
+function genLire(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(LIRE_OBJ);
+  return{key:LIRE_KEY,fr:`${cap(pr)} ${CONJ_LIRE[pr]} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${LIRE_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'lire'};
+}
+
+const TEXTER_EN={je:"text",tu:"text",il:"texts",elle:"texts",on:"texts",nous:"text",vous:"text",ils:"text",elles:"text"};
+function genTexter(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(TEXTER_OBJ);
+  return{key:TEXTER_KEY,fr:`${cap(pr)} ${conjER(pr,'text')} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${TEXTER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'texter'};
+}
+
+const ADAPTIVE_GENS={[CONJ_KEY]:genConj,[DIR_KEY]:genDir,[OBJ_KEY]:genObj,[TEMP_KEY]:genTemp,[NUM_KEY]:genNum,[TIME_KEY]:genTime,[ALLER_KEY]:genAller,[DEVOIR_KEY]:genDevoir,[POUVOIR_KEY]:genPouvoir,[ARRIVER_KEY]:genArriver2,[BOIRE_KEY]:genBoire,[MANGER_KEY]:genManger,[DORMIR_KEY]:genDormir,[ECRIRE_KEY]:genEcrire,[ECOUTER_KEY]:genEcouter,[FUMER_KEY]:genFumer,[LIRE_KEY]:genLire,[TEXTER_KEY]:genTexter};
 const ADAPTIVE_KEYS=Object.keys(ADAPTIVE_GENS);
 
 // ═══════════════════════════════════════════════════
@@ -357,6 +586,8 @@ let cardsSinceMastered = 0;
 let VOCAB_POOL = [];   // {fr,en,g,probKey,cat}
 let PHRASE_POOL = [];
 let JOB_POOL = [];
+let VERB_POOL = [];
+let PERM_POOL = [];
 
 function buildPool() {
   VOCAB_POOL = [];
@@ -378,11 +609,21 @@ function buildPool() {
     .filter(j => !j.disabled)
     .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:'jobs'}));
 
+  VERB_POOL = (DB.verbs||[])
+    .filter(v => !v.disabled)
+    .map(v => ({fr:v.fr, en:v.en, g:null, probKey:'id:'+v.id, cat:v.cat}));
+
+  PERM_POOL = (DB.permission||[])
+    .filter(p => !p.disabled)
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat}));
+
   // All static prob keys ordered (for new-card injection)
   allStaticProbKeys = [
     ...new Set(VOCAB_POOL.map(c=>c.probKey)),
     ...new Set(PHRASE_POOL.map(c=>c.probKey)),
     ...new Set(JOB_POOL.map(c=>c.probKey)),
+    ...new Set(VERB_POOL.map(c=>c.probKey)),
+    ...new Set(PERM_POOL.map(c=>c.probKey)),
   ];
 }
 
@@ -478,9 +719,17 @@ function weightedPick(enabledCats) {
   }
 
   // Every ADAPTIVE_EVERY cards, force an adaptive card
-  const forceAdaptive = (cardsSeen % ADAPTIVE_EVERY === ADAPTIVE_EVERY - 1) && enabledCats.adaptive;
+  const anyAdaptive = enabledCats.adaptive || enabledCats.irregular || enabledCats.regular;
+  const forceAdaptive = (cardsSeen % ADAPTIVE_EVERY === ADAPTIVE_EVERY - 1) && anyAdaptive;
   if (forceAdaptive) {
-    const ak = pick(ADAPTIVE_KEYS);
+    // Pick from enabled adaptive categories only
+    const eligibleKeys = ADAPTIVE_KEYS.filter(ak => {
+      const c = adaptiveLive[ak]?.cat;
+      if (c==='irregular') return enabledCats.irregular;
+      if (c==='regular')   return enabledCats.regular;
+      return enabledCats.adaptive;
+    });
+    const ak = pick(eligibleKeys.length ? eligibleKeys : ADAPTIVE_KEYS);
     const lang = Math.random() < 0.5 ? 'fr' : 'en';
     return {type:'adaptive', adKey:ak, lang, key:ak+'|'+lang, probKey:ak};
   }
@@ -505,10 +754,21 @@ function weightedPick(enabledCats) {
   if (enabledCats.vocab || enabledCats.nav || enabledCats.weather) addStaticCards(VOCAB_POOL);
   if (enabledCats.greet || enabledCats.weather || enabledCats.nav) addStaticCards(PHRASE_POOL);
   if (enabledCats.jobs) addStaticCards(JOB_POOL);
+  if (enabledCats.irregular || enabledCats.regular) {
+    addStaticCards(VERB_POOL.filter(c => enabledCats[c.cat]));
+    addStaticCards(PERM_POOL.filter(c => enabledCats[c.cat]));
+  }
 
-  if (enabledCats.adaptive) {
+  if (enabledCats.adaptive || enabledCats.irregular || enabledCats.regular) {
     ADAPTIVE_KEYS.forEach(ak => {
       if (recentCooldown.includes(ak)) return;
+      // Filter by category
+      const card = adaptiveLive[ak];
+      if (!card) return;
+      const cat = card.cat;
+      if (cat==='irregular' && !enabledCats.irregular) return;
+      if (cat==='regular'   && !enabledCats.regular)   return;
+      if (cat==='adaptive'  && !enabledCats.adaptive)  return;
       ['fr','en'].forEach(lang => {
         const key = ak+'|'+lang;
         pool.push({type:'adaptive', adKey:ak, lang, key, prob:(probs[key]??PROB_DEFAULT) * 0.5, probKey:ak});
@@ -538,7 +798,7 @@ function resolveCard(pick_) {
     return adaptiveLive[pick_.adKey];
   }
   // Static: find all forms for this probKey, pick one randomly
-  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL];
+  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL];
   const forms = allPools.filter(c => c.probKey === pick_.probKey);
   return forms.length ? pick(forms) : forms[0];
 }
@@ -566,7 +826,7 @@ let currentPick=null, currentCard=null, flipped=false;
 let touchStartX=0, touchStartY=0, lastMark=0;
 let hsResult=null;
 let _selMode='free', _selTimer=0;
-let enabledCats={vocab:true,nav:true,greet:true,weather:true,jobs:true,adaptive:true};
+let enabledCats={vocab:true,nav:true,greet:true,weather:true,jobs:true,irregular:true,regular:true,adaptive:true};
 
 function render(){
   if(screen==='home') renderHome();
@@ -579,7 +839,7 @@ function render(){
 // ═══════════════════════════════════════════════════
 function renderHome(){
   const hs=loadHS();
-  const CAT_LABELS={vocab:'Vocabulary',nav:'Navigation',greet:'Greetings',weather:'Weather',jobs:'Jobs',adaptive:'Adaptive'};
+  const CAT_LABELS={vocab:'Vocabulary',nav:'Navigation',greet:'Greetings',weather:'Weather',jobs:'Jobs',irregular:'Irregular Verbs',regular:'Regular Verbs',adaptive:'Adaptive'};
   const cats=Object.entries(CAT_LABELS).map(([k,l])=>`
     <div class="cat-toggle ${enabledCats[k]?'on':''}" onclick="toggleCat('${k}')">
       <span class="cat-name">${l}</span><span class="cat-dot"></span>
@@ -661,7 +921,7 @@ function bgCls(g){
   if(g==='f')return'bg-f';
   return'';
 }
-function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs'}[c]||c;}
+function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs',irregular:'irrég.',regular:'régulier'}[c]||c;}
 function fmtT(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
 
 function timerRingHTML(){

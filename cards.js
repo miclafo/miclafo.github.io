@@ -2,7 +2,7 @@
 // CARDS DATABASE
 // ═══════════════════════════════════════════════════════════════
 //
-// NEXT AVAILABLE ID: 185
+// NEXT AVAILABLE ID: 202
 //
 // ID RULES — read before editing:
 //   • Never change or reuse an existing id — ever
@@ -189,6 +189,36 @@ const DB = {
     {id:172, fr:"une développeuse (f)", en:"a developer (female)",        g:'f'},
     {id:173, fr:"un policier (m)",      en:"a police officer (male)",     g:'m'},
     {id:174, fr:"une policière (f)",    en:"a police officer (female)",   g:'f'},
+  ],
+
+
+  // ── VERB INFINITIVES ──────────────────────────────────────────
+  // These appear as standalone vocab cards (to go = aller etc.)
+  verbs: [
+    // Irregular verbs
+    {id:185, fr:'aller',    en:'to go',              cat:'irregular'},
+    {id:186, fr:'devoir',   en:'to have to / must',  cat:'irregular'},
+    {id:187, fr:'pouvoir',  en:'to be able to / can',cat:'irregular'},
+
+    // Regular verbs
+    {id:188, fr:'arriver',  en:'to arrive',           cat:'regular'},
+    {id:189, fr:'boire',    en:'to drink',             cat:'regular'},
+    {id:190, fr:'manger',   en:'to eat',               cat:'regular'},
+    {id:191, fr:'dormir',   en:'to sleep',             cat:'regular'},
+    {id:192, fr:'écrire',   en:'to write',             cat:'regular'},
+    {id:193, fr:'écouter',  en:'to listen (to)',       cat:'regular'},
+    {id:194, fr:'fumer',    en:'to smoke',             cat:'regular'},
+    {id:195, fr:'lire',     en:'to read',              cat:'regular'},
+    {id:196, fr:'texter',   en:'to text',              cat:'regular'},
+  ],
+
+  // ── PERMISSION PHRASES (static cards) ────────────────────────
+  permission: [
+    {id:197, fr:'Je peux…',                en:'I can… / I am able to…',          cat:'irregular'},
+    {id:198, fr:'Puis-je… ?',              en:'May I…? (formal)',                 cat:'irregular'},
+    {id:199, fr:'Est-ce que je peux… ?',   en:'Can I…? (informal)',               cat:'irregular'},
+    {id:200, fr:"C'est possible de… ?",    en:'Is it possible to…?',             cat:'irregular'},
+    {id:201, fr:"C'est permis de… ?",      en:'Is it allowed / permitted to…?',  cat:'irregular'},
   ],
 
   // ── ADAPTIVE SENTENCE DATA ─────────────────────────────────────
