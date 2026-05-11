@@ -113,6 +113,17 @@
     .card-area.flipped .mastered-btn{opacity:1}
     .mastered-btn:active{color:var(--accent);border-color:var(--accent)}
 
+    /* ── AUDIO ── */
+    .speak-btn{position:absolute;bottom:10px;left:12px;width:32px;height:32px;border-radius:50%;background:none;border:1px solid var(--border);color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .3s,color .2s,border-color .2s;z-index:10}
+    .speak-btn svg{width:14px;height:14px;pointer-events:none}
+    .card-area.flipped .speak-btn{opacity:1}
+    .speak-btn:active{color:var(--accent);border-color:var(--accent)}
+    .speak-btn.speaking{color:var(--accent);border-color:var(--accent)}
+    .speak-btn.speaking svg{animation:pulse .6s ease-in-out infinite alternate}
+    @keyframes pulse{from{opacity:1}to{opacity:.35}}
+    /* mute toggle in topbar */
+    .icon-btn.muted{color:var(--red);border-color:var(--red)}
+
     /* ── PROB BAR ── */
     .prob-wrap{padding:6px 16px 2px;display:flex;align-items:center;gap:10px;flex-shrink:0}
     .prob-label{font-size:10px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
@@ -349,20 +360,25 @@ let JOB_POOL = [];
 
 function buildPool() {
   VOCAB_POOL = [];
-  // de-dup by base (in case of accidental duplicates in DB)
   const seen = new Set();
   DB.vocab.forEach(v => {
-    const key = 'vocab|' + v.base;
+    if (v.disabled) return;
+    const key = 'id:' + v.id;
     if (seen.has(key)) return;
     seen.add(key);
     const forms = getArticleForms(v);
     forms.forEach(f => VOCAB_POOL.push({...f, probKey: key, cat: v.cat || 'vocab'}));
   });
 
-  PHRASE_POOL = DB.phrases.map(p => ({fr:p.fr, en:p.en, g:null, probKey:'phrase|'+p.fr, cat:p.cat}));
-  JOB_POOL   = DB.jobs.map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'job|'+j.fr, cat:'jobs'}));
+  PHRASE_POOL = DB.phrases
+    .filter(p => !p.disabled)
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat}));
 
-  // All static prob keys (for new-card injection), ordered
+  JOB_POOL = DB.jobs
+    .filter(j => !j.disabled)
+    .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:'jobs'}));
+
+  // All static prob keys ordered (for new-card injection)
   allStaticProbKeys = [
     ...new Set(VOCAB_POOL.map(c=>c.probKey)),
     ...new Set(PHRASE_POOL.map(c=>c.probKey)),
@@ -370,12 +386,58 @@ function buildPool() {
   ];
 }
 
-function initProbs() {
-  probs = {}; mastered = {}; seenKeys = new Set();
-  recentCooldown = []; cardsSeen = 0; cardsSinceMastered = 0;
+// ── PERSISTENCE ──
+const STORAGE_KEY = 'francais_probs_v1';
+const MASTERED_KEY = 'francais_mastered_v1';
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(probs));
+    localStorage.setItem(MASTERED_KEY, JSON.stringify(mastered));
+  } catch(e) {}
+}
+
+function loadProgress() {
+  try {
+    const p = localStorage.getItem(STORAGE_KEY);
+    const m = localStorage.getItem(MASTERED_KEY);
+    return {
+      probs:   p ? JSON.parse(p) : {},
+      mastered: m ? JSON.parse(m) : {},
+    };
+  } catch(e) { return {probs:{}, mastered:{}}; }
+}
+
+function initProbs(hardReset) {
+  // On hard reset (reset button) wipe everything
+  if (hardReset) {
+    probs = {}; mastered = {};
+    try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(MASTERED_KEY); } catch(e){}
+  } else {
+    // Migrate: load saved progress, keep existing, init new cards only
+    const saved = loadProgress();
+    probs   = saved.probs;
+    mastered = saved.mastered;
+  }
+
+  seenKeys = new Set(); recentCooldown = []; cardsSeen = 0; cardsSinceMastered = 0;
   buildPool();
-  allStaticProbKeys.forEach(k => { probs[k+'|fr'] = PROB_DEFAULT; probs[k+'|en'] = PROB_DEFAULT; });
-  ADAPTIVE_KEYS.forEach(k => { probs[k+'|fr'] = PROB_DEFAULT; probs[k+'|en'] = PROB_DEFAULT; });
+
+  // Init any card not yet in saved probs (new cards added to cards.js)
+  allStaticProbKeys.forEach(k => {
+    if (probs[k+'|fr'] === undefined) probs[k+'|fr'] = PROB_DEFAULT;
+    if (probs[k+'|en'] === undefined) probs[k+'|en'] = PROB_DEFAULT;
+  });
+  ADAPTIVE_KEYS.forEach(k => {
+    if (probs[k+'|fr'] === undefined) probs[k+'|fr'] = PROB_DEFAULT;
+    if (probs[k+'|en'] === undefined) probs[k+'|en'] = PROB_DEFAULT;
+  });
+
+  // Restore mastered probs in case they got overwritten
+  Object.keys(mastered).forEach(k => {
+    if (mastered[k]) { probs[k+'|fr'] = MASTERED_P; probs[k+'|en'] = MASTERED_P; }
+  });
+
   ADAPTIVE_KEYS.forEach(k => { adaptiveLive[k] = ADAPTIVE_GENS[k](); });
 }
 
@@ -628,8 +690,8 @@ function renderGame(){
   const promptWord = isFr?currentCard.fr:currentCard.en;
   const answerWord = isFr?currentCard.en:currentCard.fr;
   const g = currentCard.g;
-  const bgFront = isFr?bgCls(g):'';
-  const bgBack  = !isFr?bgCls(g):'';
+  const bgFront = ''; // gender never shown on front face
+  const bgBack  = bgCls(g); // gender always shown on back face after flip
   const prob=Math.round((probs[currentPick.key]??PROB_DEFAULT)*100);
   const progPct=Math.round((1-avgProb())*100);
   const probKey=currentPick.probKey;
@@ -640,6 +702,7 @@ function renderGame(){
       <div class="topbar-left">
         <button class="icon-btn" onclick="confirmHome()">↩ Menu</button>
         <button class="icon-btn" onclick="confirmReset()">↺</button>
+        <button class="icon-btn ${audioMuted?'muted':''}" id="muteBtn" onclick="toggleMute()">${audioMuted?'🔇':'🔊'}</button>
       </div>
       ${timerMode>0?timerRingHTML():''}
       <div class="top-stats">
@@ -659,14 +722,13 @@ function renderGame(){
           <div class="card-face ${bgFront}">
             <span class="card-tag">${catLbl(currentCard.cat)}</span>
             <span class="card-lang">${promptLang}</span>
-            ${isFr?gBadge(g):''}
             <span class="card-word">${promptWord}</span>
             <span class="card-tap">tap to flip</span>
           </div>
           <div class="card-face card-back-face ${bgBack}">
             <span class="card-tag">${catLbl(currentCard.cat)}</span>
             <span class="card-lang">${answerLang}</span>
-            ${!isFr?gBadge(g):''}
+            ${gBadge(g)}
             <span class="card-word">${answerWord}</span>
           </div>
         </div>
@@ -705,6 +767,20 @@ function doFlip(){
       area.appendChild(btn);
     }
   }
+  // Inject speak button and auto-play French answer
+  const isFr = currentPick.lang==='fr';
+  const frText = isFr ? currentCard.en : currentCard.fr; // answer side
+  const answerIsFrench = !isFr; // EN→FR card: answer is French
+  const area2=document.getElementById('cardArea');
+  if(area2&&!area2.querySelector('.speak-btn')){
+    const sb=document.createElement('button');
+    sb.className='speak-btn';sb.id='speakBtn';
+    sb.innerHTML=speakerIcon();
+    sb.addEventListener('click',e=>{e.stopPropagation();speakFrench(currentCard.fr);});
+    area2.appendChild(sb);
+  }
+  // Auto-play only when French is on the answer/back side
+  if(answerIsFrench) speakFrench(currentCard.fr);
 }
 
 function onAreaClick(e){
@@ -739,6 +815,7 @@ function doMark(wasCorrect){
     const frWord=currentCard.fr;
     if(frWord&&!session.wrongWords.includes(frWord)) session.wrongWords.push(frWord);
   }
+  saveProgress();
   setTimeout(()=>{doPickNext();renderGame();},340);
 }
 
@@ -746,6 +823,7 @@ function handleMastered(){
   const pk=currentPick.probKey;
   if(pk){markMastered(pk);showToast('Marked as mastered — will rarely reappear');}
   cardsSinceMastered=0;
+  saveProgress();
   setTimeout(()=>{doPickNext();renderGame();},300);
 }
 
@@ -826,7 +904,7 @@ function showModal(title,body,btns){
 }
 function closeModal(){document.getElementById('modalOverlay')?.remove();}
 function confirmReset(){showModal('Reset deck?','All recall percentages return to 50% and your progress clears.',[{label:'Cancel',action:'closeModal()'},{label:'Reset',cls:'danger',action:'doReset()'}]);}
-function doReset(){closeModal();initProbs();showToast('Deck reset ✓');doPickNext();renderGame();}
+function doReset(){closeModal();initProbs(true);showToast('Deck reset ✓');doPickNext();renderGame();}
 function confirmHome(){
   clearInterval(timerInterval);
   showModal('Back to menu?','Your session progress will be lost.',[{label:'Cancel',action:'closeModal()'},{label:'Go to menu',cls:'danger',action:'goHome()'}]);
@@ -834,6 +912,71 @@ function confirmHome(){
 function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+// ═══════════════════════════════════════════════════
+// AUDIO ENGINE
+// ═══════════════════════════════════════════════════
+let audioMuted = localStorage.getItem('muted') === 'true';
+let audioUnlocked = false; // iOS requires gesture before speech
+let currentUtterance = null;
+
+function speakerIcon(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+  </svg>`;
+}
+
+function speakerMutedIcon(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <line x1="23" y1="9" x2="17" y2="15"/>
+    <line x1="17" y1="9" x2="23" y2="15"/>
+  </svg>`;
+}
+
+function speakFrench(text) {
+  if(audioMuted) return;
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'fr-CA'; // Quebec French — falls back to fr-FR if unavailable
+  utt.rate = 0.9;
+  utt.pitch = 1;
+  // Pick best available French voice
+  const voices = window.speechSynthesis.getVoices();
+  const frVoice = voices.find(v=>v.lang==='fr-CA') ||
+                  voices.find(v=>v.lang==='fr-FR') ||
+                  voices.find(v=>v.lang.startsWith('fr'));
+  if(frVoice) utt.voice = frVoice;
+  currentUtterance = utt;
+  const btn = document.getElementById('speakBtn');
+  utt.onstart = ()=>{ btn?.classList.add('speaking'); };
+  utt.onend = ()=>{ btn?.classList.remove('speaking'); currentUtterance=null; };
+  utt.onerror = ()=>{ btn?.classList.remove('speaking'); currentUtterance=null; };
+  window.speechSynthesis.speak(utt);
+  audioUnlocked = true;
+}
+
+function toggleMute(){
+  audioMuted = !audioMuted;
+  localStorage.setItem('muted', audioMuted);
+  if(audioMuted) window.speechSynthesis.cancel();
+  // Update button in topbar
+  const btn = document.getElementById('muteBtn');
+  if(btn){
+    btn.textContent = audioMuted ? '🔇' : '🔊';
+    btn.classList.toggle('muted', audioMuted);
+  }
+  showToast(audioMuted ? 'Audio muted' : 'Audio on');
+}
+
+// Ensure voices are loaded (Chrome loads them async)
+if('speechSynthesis' in window){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = ()=>{ window.speechSynthesis.getVoices(); };
 }
 
 // ═══════════════════════════════════════════════════
