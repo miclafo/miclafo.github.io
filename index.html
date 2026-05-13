@@ -114,6 +114,11 @@
     .card-area.flipped .mastered-btn{opacity:1}
     .mastered-btn:active{color:var(--accent);border-color:var(--accent)}
 
+
+    /* ── FLAG BUTTON ── */
+    .flag-btn{position:absolute;top:10px;left:12px;width:28px;height:28px;border-radius:50%;background:none;border:1px solid var(--border);color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;z-index:10;flex-shrink:0;font-size:13px;line-height:1}
+    .flag-btn:active{transform:scale(.9)}
+    .flag-btn.flagged{color:#e8934a;border-color:#e8934a;background:rgba(232,147,74,.12)}
     /* ── AUDIO ── */
     .speak-btn{position:absolute;bottom:10px;left:12px;width:32px;height:32px;border-radius:50%;background:none;border:1px solid var(--border);color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .3s,color .2s,border-color .2s;z-index:10}
     .speak-btn svg{width:14px;height:14px;pointer-events:none}
@@ -169,6 +174,21 @@
     .score-btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
     .score-btn:active{opacity:.7}
 
+
+    /* ── BROWSE SCREEN ── */
+    .browse-screen{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .browse-header{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px)+12px) 16px 10px;flex-shrink:0;border-bottom:1px solid var(--border)}
+    .browse-header h2{font-family:'Fraunces',serif;font-weight:300;font-size:20px;color:var(--accent)}
+    .browse-search{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);margin:0 12px;outline:none}
+    .browse-search::placeholder{color:var(--dim)}
+    .browse-list{flex:1;overflow-y:auto;padding:8px 16px calc(env(safe-area-inset-bottom,0px)+16px)}
+    .browse-cat-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:14px 0 6px;padding-left:4px}
+    .browse-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px;border-bottom:1px solid var(--border);gap:12px}
+    .browse-row:last-child{border-bottom:none}
+    .browse-fr{font-family:'Fraunces',serif;font-weight:300;font-size:15px;color:var(--text);flex:1}
+    .browse-en{font-size:13px;color:var(--mid);flex:1;text-align:right}
+    .browse-recall{font-size:10px;color:var(--dim);width:32px;text-align:right;flex-shrink:0}
+    .browse-new-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
     /* ── TOAST / MODAL ── */
     .toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--surface2);border:1px solid var(--border);color:var(--mid);font-size:13px;padding:9px 18px;border-radius:100px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:100}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -387,7 +407,7 @@ const ECRIRE_OBJ = [
   {fr:"une note",en:"a note"},{fr:"un texto",en:"a text"},
 ];
 const ECOUTER_OBJ = [
-  {fr:"de la musique",en:"music"},{fr:"le professeur",en:"the teacher"},
+  {fr:"de la musique",en:"music"},{fr:"l'enseignant(e)",en:"the teacher"},
   {fr:"la radio",en:"the radio"},{fr:"un balado",en:"a podcast"},
   {fr:"une chanson",en:"a song"},{fr:"les nouvelles",en:"the news"},
 ];
@@ -548,7 +568,291 @@ function genTexter(){
     en:`${PR_EN[pr]} ${TEXTER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'texter'};
 }
 
-const ADAPTIVE_GENS={[CONJ_KEY]:genConj,[DIR_KEY]:genDir,[OBJ_KEY]:genObj,[TEMP_KEY]:genTemp,[NUM_KEY]:genNum,[TIME_KEY]:genTime,[ALLER_KEY]:genAller,[DEVOIR_KEY]:genDevoir,[POUVOIR_KEY]:genPouvoir,[ARRIVER_KEY]:genArriver2,[BOIRE_KEY]:genBoire,[MANGER_KEY]:genManger,[DORMIR_KEY]:genDormir,[ECRIRE_KEY]:genEcrire,[ECOUTER_KEY]:genEcouter,[FUMER_KEY]:genFumer,[LIRE_KEY]:genLire,[TEXTER_KEY]:genTexter};
+
+// ── NEW VERB CONJUGATION TABLES ──────────────────────────────
+const CONJ_FAIRE   = {je:"fais",tu:"fais",il:"fait",elle:"fait",on:"fait",nous:"faisons",vous:"faites",ils:"font",elles:"font"};
+const CONJ_DIRE    = {je:"dis",tu:"dis",il:"dit",elle:"dit",on:"dit",nous:"disons",vous:"dites",ils:"disent",elles:"disent"};
+const CONJ_VOIR    = {je:"vois",tu:"vois",il:"voit",elle:"voit",on:"voit",nous:"voyons",vous:"voyez",ils:"voient",elles:"voient"};
+const CONJ_SAVOIR  = {je:"sais",tu:"sais",il:"sait",elle:"sait",on:"sait",nous:"savons",vous:"savez",ils:"savent",elles:"savent"};
+const CONJ_VENIR   = {je:"viens",tu:"viens",il:"vient",elle:"vient",on:"vient",nous:"venons",vous:"venez",ils:"viennent",elles:"viennent"};
+const CONJ_PRENDRE = {je:"prends",tu:"prends",il:"prend",elle:"prend",on:"prend",nous:"prenons",vous:"prenez",ils:"prennent",elles:"prennent"};
+const CONJ_PARTIR  = {je:"pars",tu:"pars",il:"part",elle:"part",on:"part",nous:"partons",vous:"partez",ils:"partent",elles:"partent"};
+const CONJ_METTRE  = {je:"mets",tu:"mets",il:"met",elle:"met",on:"met",nous:"mettons",vous:"mettez",ils:"mettent",elles:"mettent"};
+const CONJ_CONNAITRE = {je:"connais",tu:"connais",il:"connaît",elle:"connaît",on:"connaît",nous:"connaissons",vous:"connaissez",ils:"connaissent",elles:"connaissent"};
+
+// Context vocab for new verbs
+const FAIRE_OBJ = [
+  {fr:"du sport",en:"sport"},{fr:"la cuisine",en:"cooking"},{fr:"une promenade",en:"a walk"},
+  {fr:"du vélo",en:"cycling"},{fr:"des achats",en:"shopping"},{fr:"la vaisselle",en:"the dishes"},
+  {fr:"du bénévolat",en:"volunteering"},{fr:"attention",en:"attention / be careful"},
+  {fr:"une réservation",en:"a reservation"},{fr:"du café",en:"coffee"},
+];
+const QU_EST_CE_QUE = ["Qu'est-ce que","Qu'est-ce qu'"];
+const FAIRE_EN = {je:"do / make",tu:"do / make",il:"does / makes",elle:"does / makes",on:"does / makes",nous:"do / make",vous:"do / make",ils:"do / make",elles:"do / make"};
+
+const PARLER_LANG = [
+  {fr:"français",en:"French"},{fr:"anglais",en:"English"},{fr:"espagnol",en:"Spanish"},
+  {fr:"italien",en:"Italian"},{fr:"japonais",en:"Japanese"},{fr:"arabe",en:"Arabic"},
+  {fr:"portugais",en:"Portuguese"},{fr:"mandarin",en:"Mandarin"},
+];
+const PARLER_EN = {je:"speak",tu:"speak",il:"speaks",elle:"speaks",on:"speaks",nous:"speak",vous:"speak",ils:"speak",elles:"speak"};
+
+const HABITER_DEST = [
+  {fr:"à Montréal",en:"in Montreal"},{fr:"au Québec",en:"in Quebec"},
+  {fr:"en appartement",en:"in an apartment"},{fr:"au centre-ville",en:"downtown"},
+  {fr:"près du métro",en:"near the metro"},{fr:"en banlieue",en:"in the suburbs"},
+  {fr:"dans le Mile-End",en:"in the Mile-End"},{fr:"au Canada",en:"in Canada"},
+];
+const HABITER_EN = {je:"live",tu:"live",il:"lives",elle:"lives",on:"lives",nous:"live",vous:"live",ils:"live",elles:"live"};
+
+const TRAVAILLER_DEST = [
+  {fr:"au bureau",en:"at the office"},{fr:"à la maison",en:"from home"},
+  {fr:"dans un hôpital",en:"at a hospital"},{fr:"dans une école",en:"at a school"},
+  {fr:"en centre-ville",en:"downtown"},{fr:"à temps plein",en:"full-time"},
+  {fr:"à temps partiel",en:"part-time"},{fr:"le soir",en:"evenings"},
+];
+const TRAVAILLER_EN = {je:"work",tu:"work",il:"works",elle:"works",on:"works",nous:"work",vous:"work",ils:"work",elles:"work"};
+
+const AIMER_OBJ = [
+  {fr:"le café",en:"coffee"},{fr:"la musique",en:"music"},{fr:"voyager",en:"travelling"},
+  {fr:"lire",en:"reading"},{fr:"cuisiner",en:"cooking"},{fr:"le sport",en:"sports"},
+  {fr:"les chats",en:"cats"},{fr:"les chiens",en:"dogs"},{fr:"la nature",en:"nature"},
+  {fr:"danser",en:"dancing"},{fr:"Montréal",en:"Montreal"},
+];
+const AIMER_EN = {je:"like / love",tu:"like / love",il:"likes / loves",elle:"likes / loves",on:"likes / loves",nous:"like / love",vous:"like / love",ils:"like / love",elles:"like / love"};
+
+const PRENDRE_OBJ = [
+  {fr:"le métro",en:"the metro"},{fr:"l'autobus",en:"the bus"},
+  {fr:"un taxi",en:"a taxi"},{fr:"l'ascenseur",en:"the elevator"},
+  {fr:"un café",en:"a coffee"},{fr:"une décision",en:"a decision"},
+  {fr:"des notes",en:"notes"},{fr:"une photo",en:"a photo"},
+  {fr:"le temps",en:"the time"},{fr:"rendez-vous",en:"an appointment"},
+];
+const PRENDRE_EN = {je:"take",tu:"take",il:"takes",elle:"takes",on:"takes",nous:"take",vous:"take",ils:"take",elles:"take"};
+
+const VENIR_DEST = [
+  {fr:"de Montréal",en:"from Montreal"},{fr:"du Canada",en:"from Canada"},
+  {fr:"de France",en:"from France"},{fr:"des États-Unis",en:"from the US"},
+  {fr:"avec moi",en:"with me"},{fr:"au bureau",en:"to the office"},
+  {fr:"chez moi",en:"to my place"},{fr:"demain",en:"tomorrow"},
+];
+const VENIR_EN = {je:"come",tu:"come",il:"comes",elle:"comes",on:"comes",nous:"come",vous:"come",ils:"come",elles:"come"};
+
+const CHERCHER_OBJ = [
+  {fr:"mes clés",en:"my keys"},{fr:"un appartement",en:"an apartment"},
+  {fr:"du travail",en:"work"},{fr:"un médecin",en:"a doctor"},
+  {fr:"la sortie",en:"the exit"},{fr:"mon téléphone",en:"my phone"},
+  {fr:"une pharmacie",en:"a pharmacy"},{fr:"le guichet",en:"the counter"},
+];
+const CHERCHER_EN = {je:"look for",tu:"look for",il:"looks for",elle:"looks for",on:"looks for",nous:"look for",vous:"look for",ils:"look for",elles:"look for"};
+
+const ACHETER_OBJ = [
+  {fr:"du pain",en:"bread"},{fr:"un billet",en:"a ticket"},
+  {fr:"des médicaments",en:"medication"},{fr:"de l'eau",en:"water"},
+  {fr:"un cadeau",en:"a gift"},{fr:"des vêtements",en:"clothes"},
+  {fr:"de la nourriture",en:"food"},{fr:"un livre",en:"a book"},
+];
+const ACHETER_EN = {je:"buy",tu:"buy",il:"buys",elle:"buys",on:"buys",nous:"buy",vous:"buy",ils:"buy",elles:"buy"};
+
+// Possessive adaptive data (sentences only, never standalone)
+const POSS_SUBJECTS = [
+  {pr:'je', poss_m:"mon", poss_f:"ma", poss_pl:"mes", en_poss:"my"},
+  {pr:'tu', poss_m:"ton", poss_f:"ta", poss_pl:"tes", en_poss:"your"},
+  {pr:'il', poss_m:"son", poss_f:"sa", poss_pl:"ses", en_poss:"his"},
+  {pr:'elle', poss_m:"son", poss_f:"sa", poss_pl:"ses", en_poss:"her"},
+];
+const POSS_NOUNS = [
+  {fr_m:"sac",      fr_f:null, fr_pl:null, en:"bag",      g:'m', use:'m'},
+  {fr_m:"cahier",   fr_f:null, fr_pl:null, en:"notebook",  g:'m', use:'m'},
+  {fr_m:"cellulaire",fr_f:null,fr_pl:null, en:"phone",    g:'m', use:'m'},
+  {fr_m:"bureau",   fr_f:null, fr_pl:null, en:"desk",      g:'m', use:'m'},
+  {fr_f:"clé",      fr_m:null, fr_pl:null, en:"key",       g:'f', use:'f'},
+  {fr_f:"veste",    fr_m:null, fr_pl:null, en:"jacket",    g:'f', use:'f'},
+  {fr_f:"chaise",   fr_m:null, fr_pl:null, en:"chair",     g:'f', use:'f'},
+  {fr_f:"montre",   fr_m:null, fr_pl:null, en:"watch",     g:'f', use:'f'},
+  {fr_pl:"clés",    fr_m:null, fr_f:null,  en:"keys",      g:'p', use:'pl'},
+  {fr_pl:"livres",  fr_m:null, fr_f:null,  en:"books",     g:'p', use:'pl'},
+  {fr_pl:"lunettes",fr_m:null, fr_f:null,  en:"glasses",   g:'p', use:'pl'},
+  {fr_pl:"affaires",fr_m:null, fr_f:null,  en:"things / belongings", g:'p', use:'pl'},
+];
+
+// ── ADAPTIVE KEYS for new verbs ────────────────────────────────
+const FAIRE_KEY     = 'adaptive|faire';
+const PARLER_KEY    = 'adaptive|parler';
+const HABITER_KEY   = 'adaptive|habiter';
+const TRAVAILLER_KEY= 'adaptive|travailler';
+const AIMER_KEY     = 'adaptive|aimer';
+const PRENDRE_KEY   = 'adaptive|prendre';
+const VENIR_KEY     = 'adaptive|venir';
+const CHERCHER_KEY  = 'adaptive|chercher';
+const ACHETER_KEY   = 'adaptive|acheter';
+const POSS_KEY      = 'adaptive|possessives';
+const SHOPPING_KEY  = 'adaptive|shopping';
+const DESCRIBE_KEY  = 'adaptive|describe';
+
+function genFaire(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(FAIRE_OBJ);
+  // 20% question form
+  if(Math.random()<0.2){
+    return{key:FAIRE_KEY,fr:`Qu'est-ce que ${pr} ${CONJ_FAIRE[pr]} ?`,
+      en:`What ${pr==='je'?'am I':'is '+PR_EN[pr].toLowerCase()} doing?`,g:null,cat:'irregular',subtype:'faire'};
+  }
+  return{key:FAIRE_KEY,fr:`${cap(pr)} ${CONJ_FAIRE[pr]} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${FAIRE_EN[pr]} ${obj.en}`,g:null,cat:'irregular',subtype:'faire'};
+}
+
+function genParler(){
+  const pr=pick(VERB_PRONOUNS), lang=pick(PARLER_LANG);
+  return{key:PARLER_KEY,fr:`${cap(pr)} ${conjER(pr,'parl')} ${lang.fr}`,
+    en:`${PR_EN[pr]} ${PARLER_EN[pr]} ${lang.en}`,g:null,cat:'regular',subtype:'parler'};
+}
+
+function genHabiter(){
+  const pr=pick(VERB_PRONOUNS), dest=pick(HABITER_DEST);
+  return{key:HABITER_KEY,fr:`${cap(pr)} ${conjER(pr,'habit')} ${dest.fr}`,
+    en:`${PR_EN[pr]} ${HABITER_EN[pr]} ${dest.en}`,g:null,cat:'regular',subtype:'habiter'};
+}
+
+function genTravailler(){
+  const pr=pick(VERB_PRONOUNS), dest=pick(TRAVAILLER_DEST);
+  return{key:TRAVAILLER_KEY,fr:`${cap(pr)} ${conjER(pr,'travaill')} ${dest.fr}`,
+    en:`${PR_EN[pr]} ${TRAVAILLER_EN[pr]} ${dest.en}`,g:null,cat:'regular',subtype:'travailler'};
+}
+
+function genAimer(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(AIMER_OBJ);
+  return{key:AIMER_KEY,fr:`${cap(pr)} ${conjER(pr,'aim')} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${AIMER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'aimer'};
+}
+
+function genPrendre(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(PRENDRE_OBJ);
+  return{key:PRENDRE_KEY,fr:`${cap(pr)} ${CONJ_PRENDRE[pr]} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${PRENDRE_EN[pr]} ${obj.en}`,g:null,cat:'irregular',subtype:'prendre'};
+}
+
+function genVenir(){
+  const pr=pick(VERB_PRONOUNS), dest=pick(VENIR_DEST);
+  return{key:VENIR_KEY,fr:`${cap(pr)} ${CONJ_VENIR[pr]} ${dest.fr}`,
+    en:`${PR_EN[pr]} ${VENIR_EN[pr]} ${dest.en}`,g:null,cat:'irregular',subtype:'venir'};
+}
+
+function genChercher(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(CHERCHER_OBJ);
+  return{key:CHERCHER_KEY,fr:`${cap(pr)} ${conjER(pr,'cherch')} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${CHERCHER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'chercher'};
+}
+
+function genAcheter(){
+  const pr=pick(VERB_PRONOUNS), obj=pick(ACHETER_OBJ);
+  // acheter has spelling change: j'achète
+  const conj={je:"achète",tu:"achètes",il:"achète",elle:"achète",on:"achète",nous:"achetons",vous:"achetez",ils:"achètent",elles:"achètent"};
+  return{key:ACHETER_KEY,fr:`${cap(pr)} ${conj[pr]} ${obj.fr}`,
+    en:`${PR_EN[pr]} ${ACHETER_EN[pr]} ${obj.en}`,g:null,cat:'regular',subtype:'acheter'};
+}
+
+function genPossessives(){
+  const subj=pick(POSS_SUBJECTS), noun=pick(POSS_NOUNS);
+  let poss, frNoun, enNoun=noun.en;
+  if(noun.use==='m'){poss=subj.poss_m;frNoun=noun.fr_m;}
+  else if(noun.use==='f'){poss=subj.poss_f;frNoun=noun.fr_f;}
+  else{poss=subj.poss_pl;frNoun=noun.fr_pl;}
+  const verb=Math.random()<0.5?"C'est":"Voilà";
+  const enVerb=verb==="C'est"?"It's / That's":"Here is / Here are";
+  return{key:POSS_KEY,fr:`${verb} ${poss} ${frNoun}`,
+    en:`${enVerb} ${subj.en_poss} ${enNoun}`,g:null,cat:'irregular',subtype:'possessives'};
+}
+
+const SHOPPING_ITEMS = [
+  {fr:"un café",en:"a coffee"},{fr:"un sandwich",en:"a sandwich"},
+  {fr:"de l'eau",en:"some water"},{fr:"une pizza",en:"a pizza"},
+  {fr:"un billet",en:"a ticket"},{fr:"un livre",en:"a book"},
+  {fr:"du pain",en:"some bread"},{fr:"un médicament",en:"a medication"},
+];
+const SHOPPING_STRUCTS = [
+  {fr:i=>`Je voudrais ${i.fr}, s'il vous plaît`,en:i=>`I would like ${i.en}, please`},
+  {fr:i=>`Avez-vous ${i.fr} ?`,               en:i=>`Do you have ${i.en}?`},
+  {fr:i=>`C'est combien, ${i.fr} ?`,          en:i=>`How much is ${i.en}?`},
+  {fr:i=>`Je prends ${i.fr}`,                 en:i=>`I'll take ${i.en}`},
+  {fr:i=>`Vous avez ${i.fr} ?`,               en:i=>`Do you have ${i.en}?`},
+];
+function genShopping(){
+  const item=pick(SHOPPING_ITEMS), struct=pick(SHOPPING_STRUCTS);
+  return{key:SHOPPING_KEY,fr:struct.fr(item),en:struct.en(item),g:null,cat:'travel',subtype:'shopping'};
+}
+
+const DESC_NOUNS = [
+  {fr:"Le restaurant",en:"The restaurant",g:'m'},{fr:"L'hôtel",en:"The hotel",g:'m'},
+  {fr:"La chambre",en:"The room",g:'f'},{fr:"Le café",en:"The coffee",g:'m'},
+  {fr:"La pizza",en:"The pizza",g:'f'},{fr:"Le quartier",en:"The neighbourhood",g:'m'},
+  {fr:"L'appartement",en:"The apartment",g:'m'},{fr:"La rue",en:"The street",g:'f'},
+];
+const DESC_ADJS = [
+  {fr_m:"grand",fr_f:"grande",en:"big"},{fr_m:"petit",fr_f:"petite",en:"small"},
+  {fr_m:"bon",fr_f:"bonne",en:"good"},{fr_m:"mauvais",fr_f:"mauvaise",en:"bad"},
+  {fr_m:"cher",fr_f:"chère",en:"expensive"},{fr_m:"gratuit",fr_f:"gratuite",en:"free"},
+  {fr_m:"ouvert",fr_f:"ouverte",en:"open"},{fr_m:"fermé",fr_f:"fermée",en:"closed"},
+  {fr_m:"propre",fr_f:"propre",en:"clean"},{fr_m:"nouveau",fr_f:"nouvelle",en:"new"},
+  {fr_m:"rouge",fr_f:"rouge",en:"red"},{fr_m:"bleu",fr_f:"bleue",en:"blue"},
+  {fr_m:"grand",fr_f:"grande",en:"tall"},{fr_m:"rapide",fr_f:"rapide",en:"fast"},
+];
+function genDescribe(){
+  const noun=pick(DESC_NOUNS), adj=pick(DESC_ADJS);
+  const frAdj=noun.g==='f'?adj.fr_f:adj.fr_m;
+  return{key:DESCRIBE_KEY,fr:`${noun.fr} est ${frAdj}`,
+    en:`${noun.en} is ${adj.en}`,g:null,cat:'descriptors',subtype:'describe'};
+}
+
+// ── COMPLEX DIRECTIONAL GENERATOR ────────────────────────────
+const COMPLEX_DIR_KEY = 'adaptive|complexdir';
+const FLOORS = [
+  {fr:"au rez-de-chaussée",en:"on the ground floor"},
+  {fr:"au premier étage",en:"on the first floor"},
+  {fr:"au deuxième étage",en:"on the second floor"},
+  {fr:"au troisième étage",en:"on the third floor"},
+  {fr:"au sous-sol",en:"in the basement"},
+];
+const LANDMARKS = [
+  {fr:"la pharmacie",en:"the pharmacy"},{fr:"la sortie",en:"the exit"},
+  {fr:"l'ascenseur",en:"the elevator"},{fr:"la réception",en:"the reception"},
+  {fr:"le guichet",en:"the counter"},{fr:"la salle de bain",en:"the bathroom"},
+  {fr:"l'escalier",en:"the stairs"},{fr:"le café",en:"the café"},
+];
+const STEP_DIRS = [
+  {fr:"à gauche",en:"left"},{fr:"à droite",en:"right"},
+  {fr:"tout droit",en:"straight"},{fr:"au bout du couloir",en:"at the end of the hall"},
+];
+
+function genComplexDir(){
+  const type = pick(['multistep','landmark_floor','relative']);
+  if(type==='multistep'){
+    const s1=pick(STEP_DIRS), s2=pick(STEP_DIRS);
+    const via=pick(LANDMARKS);
+    return{key:COMPLEX_DIR_KEY,
+      fr:`Allez ${s1.fr}, puis ${s2.fr} après ${via.fr}`,
+      en:`Go ${s1.en}, then ${s2.en} after ${via.en}`,
+      g:null,cat:'travel',subtype:'complexdir'};
+  }
+  if(type==='landmark_floor'){
+    const lm=pick(LANDMARKS), fl=pick(FLOORS);
+    return{key:COMPLEX_DIR_KEY,
+      fr:`${cap(lm.fr)} est ${fl.fr}`,
+      en:`${lm.en.charAt(0).toUpperCase()+lm.en.slice(1)} is ${fl.en}`,
+      g:null,cat:'travel',subtype:'complexdir'};
+  }
+  // relative
+  const place=pick(LANDMARKS), ref=pick(LANDMARKS);
+  const rel=pick([
+    {fr:`en face de`,en:`across from`},{fr:`à côté de`,en:`next to`},
+    {fr:`près de`,en:`near`},{fr:`au-dessus de`,en:`above`},
+  ]);
+  return{key:COMPLEX_DIR_KEY,
+    fr:`${cap(place.fr)} est ${rel.fr} ${ref.fr}`,
+    en:`${place.en.charAt(0).toUpperCase()+place.en.slice(1)} is ${rel.en} ${ref.en}`,
+    g:null,cat:'travel',subtype:'complexdir'};
+}
+
+const ADAPTIVE_GENS={[CONJ_KEY]:genConj,[DIR_KEY]:genDir,[OBJ_KEY]:genObj,[TEMP_KEY]:genTemp,[NUM_KEY]:genNum,[TIME_KEY]:genTime,[ALLER_KEY]:genAller,[DEVOIR_KEY]:genDevoir,[POUVOIR_KEY]:genPouvoir,[ARRIVER_KEY]:genArriver2,[BOIRE_KEY]:genBoire,[MANGER_KEY]:genManger,[DORMIR_KEY]:genDormir,[ECRIRE_KEY]:genEcrire,[ECOUTER_KEY]:genEcouter,[FUMER_KEY]:genFumer,[LIRE_KEY]:genLire,[TEXTER_KEY]:genTexter,[FAIRE_KEY]:genFaire,[PARLER_KEY]:genParler,[HABITER_KEY]:genHabiter,[TRAVAILLER_KEY]:genTravailler,[AIMER_KEY]:genAimer,[PRENDRE_KEY]:genPrendre,[VENIR_KEY]:genVenir,[CHERCHER_KEY]:genChercher,[ACHETER_KEY]:genAcheter,[POSS_KEY]:genPossessives,[SHOPPING_KEY]:genShopping,[DESCRIBE_KEY]:genDescribe,[COMPLEX_DIR_KEY]:genComplexDir};
 const ADAPTIVE_KEYS=Object.keys(ADAPTIVE_GENS);
 
 // ═══════════════════════════════════════════════════
@@ -569,7 +873,7 @@ const COOLDOWN = 5;
 // Adaptive cards: 1 in 8 draws is forced adaptive
 const ADAPTIVE_EVERY = 5;
 // FR→EN only if recall > 50%: cards below 50% always show FR prompt
-const FR_ONLY_ABOVE = 0.5;
+const FR_ONLY_ABOVE = 0.2;
 // Mastered resurface
 const MASTERED_RESURFACE = 100;
 
@@ -589,6 +893,10 @@ let PHRASE_POOL = [];
 let JOB_POOL = [];
 let VERB_POOL = [];
 let PERM_POOL = [];
+let TRAVEL_POOL = [];
+let DESCRIPTOR_POOL = [];
+let QUESTION_POOL = [];
+let CONNECTOR_POOL = [];
 
 function buildPool() {
   VOCAB_POOL = [];
@@ -610,23 +918,43 @@ function buildPool() {
     .filter(j => !j.disabled)
     .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:'jobs'}));
 
-  VERB_POOL = (DB.verbs||[])
+  VERB_POOL = [...(DB.verbs||[]), ...(DB.verbs2||[])]
     .filter(v => !v.disabled)
     .map(v => ({fr:v.fr, en:v.en, g:null, probKey:'id:'+v.id, cat:v.cat}));
 
   PERM_POOL = (DB.permission||[])
     .filter(p => !p.disabled)
-    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat}));
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:'irregular'}));
+
+  TRAVEL_POOL = [...(DB.travel||[]), ...(DB.travel_phrases||[])]
+    .filter(c => !c.disabled)
+    .map(c => ({fr:c.fr||('un '+c.base), en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:'travel'}));
+
+  DESCRIPTOR_POOL = (DB.descriptors||[])
+    .filter(c => !c.disabled)
+    .map(c => ({fr:c.fr||c.base, en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:'descriptors'}));
+
+  QUESTION_POOL = (DB.questions||[])
+    .filter(c => !c.disabled)
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'questions'}));
+
+  CONNECTOR_POOL = (DB.connectors||[])
+    .filter(c => !c.disabled)
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'connectors'}));
 
   buildAddedDateLookup();
   recentBatches = getAddedBatches();
   // All static prob keys ordered (for new-card injection)
   allStaticProbKeys = [
-    ...new Set(VOCAB_POOL.map(c=>c.probKey)),
-    ...new Set(PHRASE_POOL.map(c=>c.probKey)),
-    ...new Set(JOB_POOL.map(c=>c.probKey)),
+    ...new Set(TRAVEL_POOL.map(c=>c.probKey)),
+    ...new Set(DESCRIPTOR_POOL.map(c=>c.probKey)),
+    ...new Set(QUESTION_POOL.map(c=>c.probKey)),
+    ...new Set(CONNECTOR_POOL.map(c=>c.probKey)),
     ...new Set(VERB_POOL.map(c=>c.probKey)),
     ...new Set(PERM_POOL.map(c=>c.probKey)),
+    ...new Set(JOB_POOL.map(c=>c.probKey)),
+    ...new Set(VOCAB_POOL.map(c=>c.probKey)),
+    ...new Set(PHRASE_POOL.map(c=>c.probKey)),
   ];
 }
 
@@ -746,7 +1074,7 @@ function weightedPick(enabledCats) {
   // Build weighted pool from enabled cats, excluding cooldown
   const pool = [];
 
-  const CAT_BOOST = {irregular:2.0, regular:2.0};
+  const CAT_BOOST = {irregular:2.0, regular:2.0, travel:1.3, questions:1.3, connectors:1.2};
 
   function addStaticCards(cards) {
     cards.forEach(c => {
@@ -766,13 +1094,17 @@ function weightedPick(enabledCats) {
     });
   }
 
-  if (enabledCats.vocab || enabledCats.nav || enabledCats.weather) addStaticCards(VOCAB_POOL);
-  if (enabledCats.greet || enabledCats.weather || enabledCats.nav) addStaticCards(PHRASE_POOL);
-  if (enabledCats.jobs) addStaticCards(JOB_POOL);
+  if (enabledCats.travel)       addStaticCards(TRAVEL_POOL);
+  if (enabledCats.descriptors)  addStaticCards(DESCRIPTOR_POOL);
+  if (enabledCats.questions)    addStaticCards(QUESTION_POOL);
+  if (enabledCats.connectors)   addStaticCards(CONNECTOR_POOL);
   if (enabledCats.irregular || enabledCats.regular) {
     addStaticCards(VERB_POOL.filter(c => enabledCats[c.cat]));
-    addStaticCards(PERM_POOL.filter(c => enabledCats[c.cat]));
+    addStaticCards(PERM_POOL);
   }
+  if (enabledCats.jobs)         addStaticCards(JOB_POOL);
+  if (enabledCats.vocab || enabledCats.nav || enabledCats.weather) addStaticCards(VOCAB_POOL);
+  if (enabledCats.greet || enabledCats.weather || enabledCats.nav) addStaticCards(PHRASE_POOL);
 
   if (!recentMode && (enabledCats.adaptive || enabledCats.irregular || enabledCats.regular)) {
     ADAPTIVE_KEYS.forEach(ak => {
@@ -815,7 +1147,7 @@ function resolveCard(pick_) {
     return adaptiveLive[pick_.adKey];
   }
   // Static: find all forms for this probKey, pick one randomly
-  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL];
+  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL, ...QUESTION_POOL, ...CONNECTOR_POOL];
   const forms = allPools.filter(c => c.probKey === pick_.probKey);
   return forms.length ? pick(forms) : forms[0];
 }
@@ -897,7 +1229,7 @@ let currentPick=null, currentCard=null, flipped=false;
 let touchStartX=0, touchStartY=0, lastMark=0;
 let hsResult=null;
 let _selMode='free', _selTimer=0, _selRecent=false;
-let enabledCats={vocab:true,nav:true,greet:true,weather:true,jobs:true,irregular:true,regular:true,adaptive:true};
+let enabledCats={travel:true,descriptors:true,questions:true,connectors:true,irregular:true,regular:true,jobs:true,adaptive:true,weather:true,greet:true,nav:true,vocab:true};
 
 function render(){
   if(screen==='home') renderHome();
@@ -910,7 +1242,7 @@ function render(){
 // ═══════════════════════════════════════════════════
 function renderHome(){
   const hs=loadHS();
-  const CAT_LABELS={vocab:'Vocabulary',nav:'Navigation',greet:'Greetings',weather:'Weather',jobs:'Jobs',irregular:'Irregular Verbs',regular:'Regular Verbs',adaptive:'Adaptive'};
+  const CAT_LABELS={travel:'Travel',descriptors:'Descriptors',questions:'Questions',connectors:'Connectors',irregular:'Irregular Verbs',regular:'Regular Verbs',jobs:'Jobs',adaptive:'Adaptive',weather:'Weather',greet:'Greetings',nav:'Navigation',vocab:'Vocabulary'};
   const cats=Object.entries(CAT_LABELS).map(([k,l])=>`
     <div class="cat-toggle ${enabledCats[k]?'on':''}" onclick="toggleCat('${k}')">
       <span class="cat-name">${l}</span><span class="cat-dot"></span>
@@ -947,6 +1279,8 @@ function renderHome(){
       <div class="sec-label" style="margin-top:18px">Categories</div>
       <div class="cat-grid">${cats}</div>
       <button class="start-btn" onclick="startSession()">Start</button>
+      <button onclick="renderBrowse()" style="margin-top:14px;background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">Browse all cards →</button>
+      ${loadFlags().length>0?`<button onclick="renderFlagged()" style="margin-top:6px;background:none;border:none;color:#e8934a;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">⚑ ${loadFlags().length} flagged for review →</button>`:''}
     </div>`;
 }
 
@@ -988,6 +1322,7 @@ function doPickNext(){
 }
 
 function stripGender(text) {
+  // Strip gender markers and article hints from display
   return text.replace(/\s*\((m|f|m pl|f pl|pl)\)/g, '').trim();
 }
 
@@ -1002,7 +1337,7 @@ function bgCls(g){
   if(g==='f')return'bg-f';
   return'';
 }
-function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs',irregular:'irrég.',regular:'régulier'}[c]||c;}
+function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs',irregular:'irrég.',regular:'régulier',travel:'voyage',descriptors:'descr.',questions:'question',connectors:'connecteur',verbs2:'verbe'}[c]||c;}
 function fmtT(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
 
 function timerRingHTML(){
@@ -1038,6 +1373,7 @@ function renderGame(){
   const probKey=currentPick.probKey;
   const isMastered=!!mastered[probKey];
   const isNewBadge=!recentMode&&isNewCard(currentPick.addedDate||null);
+  const cardFlagged=isFlagged(currentCard.fr, currentCard.en);
 
   document.getElementById('app').innerHTML=`
     <div class="topbar">
@@ -1063,12 +1399,14 @@ function renderGame(){
         <div class="card" id="theCard">
           <div class="card-face ${bgFront}">
             <span class="card-tag">${catLbl(currentCard.cat)}${isNewBadge?" · new":""}</span>
+            <button class="flag-btn ${cardFlagged?'flagged':''}" id="flagBtn" onclick="handleFlag(event)">⚑</button>
             <span class="card-lang">${promptLang}</span>
             <span class="card-word">${promptWord}</span>
             <span class="card-tap">tap to flip</span>
           </div>
           <div class="card-face card-back-face ${bgBack}">
             <span class="card-tag">${catLbl(currentCard.cat)}</span>
+            <button class="flag-btn ${cardFlagged?'flagged':''}" id="flagBtnBack" onclick="handleFlag(event)">⚑</button>
             <span class="card-lang">${answerLang}</span>
             ${gBadge(g)}
             <span class="card-word">${answerWord}</span>
@@ -1091,6 +1429,9 @@ function renderGame(){
   area.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX;touchStartY=e.changedTouches[0].clientY},{passive:true});
   area.addEventListener('touchend',onTouchEnd,{passive:true});
   area.addEventListener('click',onAreaClick);
+  // Flag button listeners
+  document.getElementById('flagBtn')?.addEventListener('click', handleFlag);
+  document.getElementById('flagBtnBack')?.addEventListener('click', handleFlag);
   document.getElementById('masteredBtn')?.addEventListener('click',e=>{e.stopPropagation();handleMastered();});
 }
 
@@ -1127,6 +1468,7 @@ function doFlip(){
 
 function onAreaClick(e){
   if(e.target.id==='masteredBtn')return;
+  if(e.target.id==='flagBtn'||e.target.id==='flagBtnBack')return;
   if(!flipped){doFlip();return;}
   const x=e.clientX,w=window.innerWidth;
   if(x<w*.38)doMark(false);
@@ -1134,6 +1476,7 @@ function onAreaClick(e){
 }
 function onTouchEnd(e){
   if(e.target.id==='masteredBtn')return;
+  if(e.target.id==='flagBtn'||e.target.id==='flagBtnBack')return;
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(!flipped){doFlip();return;}
@@ -1235,6 +1578,109 @@ function retryTimer(){
 }
 function goHome(){clearInterval(timerInterval);screen='home';render();}
 
+
+// ═══════════════════════════════════════════════════
+// BROWSE SCREEN
+// ═══════════════════════════════════════════════════
+
+function renderFlagged() {
+  const flags = loadFlags();
+  const rows = flags.length
+    ? flags.map((f,i) => `
+        <div class="browse-row" style="align-items:flex-start">
+          <div style="flex:1">
+            <div class="browse-fr">${f.fr}</div>
+            <div class="browse-en">${f.en}</div>
+            <div style="font-size:10px;color:var(--dim);margin-top:2px">${f.cat} · flagged ${f.flagged}</div>
+          </div>
+          <button onclick="unflagAt(${i})" style="background:none;border:1px solid var(--border);border-radius:100px;color:var(--dim);font-size:11px;padding:4px 10px;cursor:pointer;flex-shrink:0;font-family:'DM Sans',sans-serif">Remove</button>
+        </div>`).join('')
+    : '<div style="padding:32px;color:var(--dim);text-align:center">No flagged cards</div>';
+
+  document.getElementById('app').innerHTML = `
+    <div class="browse-screen">
+      <div class="browse-header">
+        <h2 style="color:#e8934a">⚑ Flagged</h2>
+        <span style="font-size:12px;color:var(--dim)">${flags.length} card${flags.length!==1?'s':''}</span>
+        <button class="icon-btn" onclick="goHome()">✕</button>
+      </div>
+      <div class="browse-list">${rows}</div>
+    </div>`;
+}
+
+function unflagAt(idx) {
+  const flags = loadFlags();
+  flags.splice(idx, 1);
+  saveFlags(flags);
+  renderFlagged();
+}
+
+function renderBrowse(query='') {
+  const q = query.toLowerCase().trim();
+  const allPools = [
+    {label:'Travel', cards:TRAVEL_POOL},
+    {label:'Descriptors', cards:DESCRIPTOR_POOL},
+    {label:'Questions', cards:QUESTION_POOL},
+    {label:'Connectors', cards:CONNECTOR_POOL},
+    {label:'Irregular Verbs', cards:VERB_POOL.filter(c=>c.cat==='irregular')},
+    {label:'Regular Verbs', cards:VERB_POOL.filter(c=>c.cat==='regular')},
+    {label:'Permission', cards:PERM_POOL},
+    {label:'Jobs', cards:JOB_POOL},
+    {label:'Weather', cards:PHRASE_POOL.filter(c=>c.cat==='weather')},
+    {label:'Greetings', cards:PHRASE_POOL.filter(c=>c.cat==='greet')},
+    {label:'Navigation', cards:[...VOCAB_POOL.filter(c=>c.cat==='nav'), ...PHRASE_POOL.filter(c=>c.cat==='nav')]},
+    {label:'Vocabulary', cards:VOCAB_POOL.filter(c=>!['nav'].includes(c.cat))},
+  ];
+
+  const rows = allPools.map(({label, cards}) => {
+    const filtered = cards.filter(c =>
+      !q || c.fr.toLowerCase().includes(q) || c.en.toLowerCase().includes(q)
+    );
+    // De-dup by probKey
+    const seen = new Set();
+    const unique = filtered.filter(c => { if(seen.has(c.probKey)) return false; seen.add(c.probKey); return true; });
+    if (!unique.length) return '';
+    const rowsHtml = unique.map(c => {
+      const prob = probs[c.probKey+'|fr'] ?? PROB_DEFAULT;
+      const pct = Math.round(prob*100);
+      const isNew = isNewCard(addedDateByKey[c.probKey]||null);
+      return `<div class="browse-row">
+        ${isNew?'<span class="browse-new-dot"></span>':''}
+        <span class="browse-fr">${stripGender(c.fr)}</span>
+        <span class="browse-en">${c.en}</span>
+        <span class="browse-recall">${pct}%</span>
+      </div>`;
+    }).join('');
+    return `<div class="browse-cat-label">${label} (${unique.length})</div>${rowsHtml}`;
+  }).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="browse-screen">
+      <div class="browse-header">
+        <h2>All Cards</h2>
+        <input class="browse-search" type="search" placeholder="Search…" value="${query}"
+          oninput="renderBrowse(this.value)" id="browseSearch"/>
+        <button class="icon-btn" onclick="goHome()">✕</button>
+      </div>
+      <div class="browse-list">${rows||'<div style="padding:20px;color:var(--dim);text-align:center">No cards found</div>'}</div>
+    </div>`;
+  // Focus search
+  setTimeout(()=>document.getElementById('browseSearch')?.focus(),100);
+}
+
+
+function handleFlag(e) {
+  e.stopPropagation();
+  if (!currentCard) return;
+  const nowFlagged = toggleFlag(currentCard.fr, currentCard.en, currentCard.cat||'unknown');
+  // Update both flag buttons without re-rendering the whole card
+  ['flagBtn','flagBtnBack'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.toggle('flagged', nowFlagged);
+  });
+  showToast(nowFlagged ? '⚑ Flagged for review' : 'Flag removed');
+}
+
 // ═══════════════════════════════════════════════════
 // MODALS / UTILS
 // ═══════════════════════════════════════════════════
@@ -1254,6 +1700,32 @@ function confirmHome(){
 function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+
+// ── FLAGGED CARDS ──
+const FLAGS_KEY = 'francais_flags_v1';
+
+function loadFlags() {
+  try { return JSON.parse(localStorage.getItem(FLAGS_KEY)||'[]'); } catch{ return []; }
+}
+function saveFlags(flags) {
+  try { localStorage.setItem(FLAGS_KEY, JSON.stringify(flags)); } catch{}
+}
+function isFlagged(fr, en) {
+  const flags = loadFlags();
+  return flags.some(f => f.fr === fr && f.en === en);
+}
+function toggleFlag(fr, en, cat) {
+  const flags = loadFlags();
+  const idx = flags.findIndex(f => f.fr === fr && f.en === en);
+  if (idx > -1) {
+    flags.splice(idx, 1); // unflag
+  } else {
+    flags.push({ fr, en, cat, flagged: new Date().toISOString().slice(0,10) });
+  }
+  saveFlags(flags);
+  return idx === -1; // true = just flagged
 }
 
 // ═══════════════════════════════════════════════════

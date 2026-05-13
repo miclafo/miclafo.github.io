@@ -2,7 +2,7 @@
 // CARDS DATABASE
 // ═══════════════════════════════════════════════════════════════
 //
-// NEXT AVAILABLE ID: 202
+// NEXT AVAILABLE ID: 366
 //
 // ID RULES — read before editing:
 //   • Never change or reuse an existing id — ever
@@ -165,30 +165,30 @@ const DB = {
   // ── JOB / PROFESSION VOCAB ────────────────────────────────────
   // Gendered pairs = separate cards with separate probabilities
   jobs: [
-    {id:151, added:'2025-05-10', fr:"un infirmier (m)",     en:"a nurse (male)",              g:'m'},
-    {id:152, added:'2025-05-10', fr:"une infirmière (f)",   en:"a nurse (female)",            g:'f'},
-    {id:153, added:'2025-05-10', fr:"un médecin (m)",       en:"a doctor (male)",             g:'m'},
-    {id:154, added:'2025-05-10', fr:"une médecin (f)",      en:"a doctor (female)",           g:'f'},
-    {id:155, added:'2025-05-10', fr:"un professeur (m)",    en:"a teacher (male)",            g:'m'},
-    {id:156, added:'2025-05-10', fr:"une professeure (f)",  en:"a teacher (female)",          g:'f'},
-    {id:157, added:'2025-05-10', fr:"un étudiant (m)",      en:"a student (male)",            g:'m'},
-    {id:158, added:'2025-05-10', fr:"une étudiante (f)",    en:"a student (female)",          g:'f'},
-    {id:159, added:'2025-05-10', fr:"un ingénieur (m)",     en:"an engineer (male)",          g:'m'},
-    {id:160, added:'2025-05-10', fr:"une ingénieure (f)",   en:"an engineer (female)",        g:'f'},
-    {id:161, added:'2025-05-10', fr:"un avocat (m)",        en:"a lawyer (male)",             g:'m'},
-    {id:162, added:'2025-05-10', fr:"une avocate (f)",      en:"a lawyer (female)",           g:'f'},
-    {id:163, added:'2025-05-10', fr:"un comptable (m)",     en:"an accountant (male)",        g:'m'},
-    {id:164, added:'2025-05-10', fr:"une comptable (f)",    en:"an accountant (female)",      g:'f'},
-    {id:165, added:'2025-05-10', fr:"un cuisinier (m)",     en:"a cook (male)",               g:'m'},
-    {id:166, added:'2025-05-10', fr:"une cuisinière (f)",   en:"a cook (female)",             g:'f'},
-    {id:167, added:'2025-05-10', fr:"un serveur (m)",       en:"a server (male)",             g:'m'},
-    {id:168, added:'2025-05-10', fr:"une serveuse (f)",     en:"a server (female)",           g:'f'},
-    {id:169, added:'2025-05-10', fr:"un directeur (m)",     en:"a manager (male)",            g:'m'},
-    {id:170, added:'2025-05-10', fr:"une directrice (f)",   en:"a manager (female)",          g:'f'},
-    {id:171, added:'2025-05-10', fr:"un développeur (m)",   en:"a developer (male)",          g:'m'},
-    {id:172, added:'2025-05-10', fr:"une développeuse (f)", en:"a developer (female)",        g:'f'},
-    {id:173, added:'2025-05-10', fr:"un policier (m)",      en:"a police officer (male)",     g:'m'},
-    {id:174, added:'2025-05-10', fr:"une policière (f)",    en:"a police officer (female)",   g:'f'},
+    {id:151, added:'2025-05-10', fr:"un infirmier",     en:"a nurse (male)",              g:'m'},
+    {id:152, added:'2025-05-10', fr:"une infirmière",   en:"a nurse (female)",            g:'f'},
+    {id:153, added:'2025-05-10', fr:"un médecin",       en:"a doctor (male)",             g:'m'},
+    {id:154, added:'2025-05-10', fr:"une médecin",      en:"a doctor (female)",           g:'f'},
+    {id:155, added:'2025-05-10', fr:"un enseignant",        en:"a teacher (male)",            g:'m'},
+    {id:156, added:'2025-05-10', fr:"une enseignante",      en:"a teacher (female)",          g:'f'},
+    {id:157, added:'2025-05-10', fr:"un étudiant",      en:"a student (male)",            g:'m'},
+    {id:158, added:'2025-05-10', fr:"une étudiante",    en:"a student (female)",          g:'f'},
+    {id:159, added:'2025-05-10', fr:"un ingénieur",     en:"an engineer (male)",          g:'m'},
+    {id:160, added:'2025-05-10', fr:"une ingénieure",   en:"an engineer (female)",        g:'f'},
+    {id:161, added:'2025-05-10', fr:"un avocat",        en:"a lawyer (male)",             g:'m'},
+    {id:162, added:'2025-05-10', fr:"une avocate",      en:"a lawyer (female)",           g:'f'},
+    {id:163, added:'2025-05-10', fr:"un comptable",     en:"an accountant (male)",        g:'m'},
+    {id:164, added:'2025-05-10', fr:"une comptable",    en:"an accountant (female)",      g:'f'},
+    {id:165, added:'2025-05-10', fr:"un cuisinier",     en:"a cook (male)",               g:'m'},
+    {id:166, added:'2025-05-10', fr:"une cuisinière",   en:"a cook (female)",             g:'f'},
+    {id:167, added:'2025-05-10', fr:"un serveur",       en:"a server (male)",             g:'m'},
+    {id:168, added:'2025-05-10', fr:"une serveuse",     en:"a server (female)",           g:'f'},
+    {id:169, added:'2025-05-10', fr:"un directeur",     en:"a manager (male)",            g:'m'},
+    {id:170, added:'2025-05-10', fr:"une directrice",   en:"a manager (female)",          g:'f'},
+    {id:171, added:'2025-05-10', fr:"un développeur",   en:"a developer (male)",          g:'m'},
+    {id:172, added:'2025-05-10', fr:"une développeuse", en:"a developer (female)",        g:'f'},
+    {id:173, added:'2025-05-10', fr:"un policier",      en:"a police officer (male)",     g:'m'},
+    {id:174, added:'2025-05-10', fr:"une policière",    en:"a police officer (female)",   g:'f'},
   ],
 
 
@@ -244,7 +244,7 @@ const DB = {
   jobs_adaptive: [
     {fr_m:'infirmier',    fr_f:'infirmière',    en_m:'a nurse',          en_f:'a nurse'},
     {fr_m:'médecin',      fr_f:'médecin',       en_m:'a doctor',         en_f:'a doctor'},
-    {fr_m:'professeur',   fr_f:'professeure',   en_m:'a teacher',        en_f:'a teacher'},
+    {fr_m:'enseignant',   fr_f:'enseignante',   en_m:'a teacher',        en_f:'a teacher'},
     {fr_m:'étudiant',     fr_f:'étudiante',     en_m:'a student',        en_f:'a student'},
     {fr_m:'ingénieur',    fr_f:'ingénieure',    en_m:'an engineer',      en_f:'an engineer'},
     {fr_m:'avocat',       fr_f:'avocate',       en_m:'a lawyer',         en_f:'a lawyer'},
@@ -326,37 +326,227 @@ const DB = {
     {fr:'adultes',     en:'adults'},
     {fr:'tables',      en:'tables'},
   ],
-};
+  // ── TRAVEL VOCAB ──────────────────────────────────────────────
+  travel: [
+    // Transport
+    {id:202, added:'2025-05-13', fr:'le métro',          en:'the metro / subway',      g:'m', cat:'travel'},
+    {id:203, added:'2025-05-13', fr:'un métro',          en:'a metro / subway',        g:'m', cat:'travel'},
+    {id:204, added:'2025-05-13', fr:'un autobus',        en:'a bus',                   g:'m', cat:'travel'},
+    {id:205, added:'2025-05-13', fr:"un arrêt",         en:'a stop',                  g:'m', cat:'travel'},
+    {id:206, added:'2025-05-13', fr:'une station',       en:'a station',               g:'f', cat:'travel'},
+    {id:207, added:'2025-05-13', fr:'un billet',         en:'a ticket',                g:'m', cat:'travel'},
+    {id:208, added:'2025-05-13', fr:'une correspondance',en:'a transfer / connection', g:'f', cat:'travel'},
+    {id:209, added:'2025-05-13', fr:'un aller-retour',   en:'a return ticket',         g:'m', cat:'travel'},
+    {id:210, added:'2025-05-13', fr:'une voiture',       en:'a car',                   g:'f', cat:'travel'},
+    {id:211, added:'2025-05-13', fr:'un vélo',           en:'a bicycle',               g:'m', cat:'travel'},
+    {id:212, added:'2025-05-13', fr:'un avion',          en:'a plane',                 g:'m', cat:'travel'},
+    {id:213, added:'2025-05-13', fr:"un aéroport",      en:'an airport',              g:'m', cat:'travel'},
+    {id:214, added:'2025-05-13', fr:'un taxi',           en:'a taxi',                  g:'m', cat:'travel'},
+    // Hotel
+    {id:215, added:'2025-05-13', fr:'une chambre',       en:'a room',                  g:'f', cat:'travel'},
+    {id:216, added:'2025-05-13', fr:'une réservation',   en:'a reservation',           g:'f', cat:'travel'},
+    {id:217, added:'2025-05-13', fr:"un étage",         en:'a floor / storey',        g:'m', cat:'travel'},
+    {id:218, added:'2025-05-13', fr:'une clé',           en:'a key',                   g:'f', cat:'travel'},
+    {id:219, added:'2025-05-13', fr:'un lit',            en:'a bed',                   g:'m', cat:'travel'},
+    {id:220, added:'2025-05-13', fr:'une salle de bain', en:'a bathroom',              g:'f', cat:'travel'},
+    {id:221, added:'2025-05-13', fr:'le déjeuner',       en:'breakfast / lunch',       g:'m', cat:'travel'},
+    {id:222, added:'2025-05-13', fr:'le wifi',           en:'wifi',                    g:'m', cat:'travel'},
+    {id:223, added:'2025-05-13', fr:"un hôtel",         en:'a hotel',                 g:'m', cat:'travel'},
+    // Buildings & places
+    {id:224, added:'2025-05-13', fr:"une école",        en:'a school',                g:'f', cat:'travel'},
+    {id:225, added:'2025-05-13', fr:"un hôpital",       en:'a hospital',              g:'m', cat:'travel'},
+    {id:226, added:'2025-05-13', fr:'une pharmacie',     en:'a pharmacy',              g:'f', cat:'travel'},
+    {id:227, added:'2025-05-13', fr:"une épicerie",     en:'a grocery store',         g:'f', cat:'travel'},
+    {id:228, added:'2025-05-13', fr:'un restaurant',     en:'a restaurant',            g:'m', cat:'travel'},
+    {id:229, added:'2025-05-13', fr:'un café',           en:'a café',                  g:'m', cat:'travel'},
+    {id:230, added:'2025-05-13', fr:'une banque',        en:'a bank',                  g:'f', cat:'travel'},
+    {id:231, added:'2025-05-13', fr:'un bureau de poste',en:'a post office',           g:'m', cat:'travel'},
+    {id:232, added:'2025-05-13', fr:'un parc',           en:'a park',                  g:'m', cat:'travel'},
+    {id:233, added:'2025-05-13', fr:'une rue',           en:'a street',                g:'f', cat:'travel'},
+    {id:234, added:'2025-05-13', fr:'un quartier',       en:'a neighbourhood',         g:'m', cat:'travel'},
+    {id:235, added:'2025-05-13', fr:'une ville',         en:'a city',                  g:'f', cat:'travel'},
+    {id:236, added:'2025-05-13', fr:'un aéroport',       en:'an airport',              g:'m', cat:'travel'},
+    {id:237, added:'2025-05-13', fr:'une bibliothèque',  en:'a library',               g:'f', cat:'travel'},
+    {id:238, added:'2025-05-13', fr:'un supermarché',    en:'a supermarket',           g:'m', cat:'travel'},
+  ],
 
+  // ── TRAVEL PHRASES (static) ────────────────────────────────────
+  travel_phrases: [
+    // Shopping
+    {id:239, added:'2025-05-13', fr:"C'est combien ?",              en:"How much is it?",                cat:'travel'},
+    {id:240, added:'2025-05-13', fr:"Je voudrais…",                 en:"I would like…",                  cat:'travel'},
+    {id:241, added:'2025-05-13', fr:"Avez-vous… ?",                 en:"Do you have…?",                  cat:'travel'},
+    {id:242, added:'2025-05-13', fr:"L'addition, s'il vous plaît",  en:"The bill, please",               cat:'travel'},
+    {id:243, added:'2025-05-13', fr:"C'est trop cher",              en:"It's too expensive",             cat:'travel'},
+    {id:244, added:'2025-05-13', fr:"Je prends ça",                 en:"I'll take this",                 cat:'travel'},
+    {id:245, added:'2025-05-13', fr:"Je regarde, merci",            en:"I'm just looking, thanks",       cat:'travel'},
+    {id:246, added:'2025-05-13', fr:"Vous acceptez les cartes ?",   en:"Do you accept cards?",           cat:'travel'},
+    // Emergency
+    {id:247, added:'2025-05-13', fr:"Au secours !",                 en:"Help!",                          cat:'travel'},
+    {id:248, added:'2025-05-13', fr:"Appelez la police !",          en:"Call the police!",               cat:'travel'},
+    {id:249, added:'2025-05-13', fr:"J'ai besoin d'un médecin",    en:"I need a doctor",                cat:'travel'},
+    {id:250, added:'2025-05-13', fr:"Je suis perdu(e)",             en:"I'm lost",                       cat:'travel'},
+    {id:251, added:'2025-05-13', fr:"Où est l'hôpital ?",          en:"Where is the hospital?",         cat:'travel'},
+    {id:252, added:'2025-05-13', fr:"J'ai mal ici",                en:"It hurts here",                  cat:'travel'},
+    {id:253, added:'2025-05-13', fr:"Appelez une ambulance !",      en:"Call an ambulance!",             cat:'travel'},
+  ],
+
+  // ── DESCRIPTORS VOCAB ─────────────────────────────────────────
+  descriptors: [
+    // Colours (no article — used as adjectives)
+    {id:254, added:'2025-05-13', fr:'rouge',        en:'red',           g:null, noArticle:true, cat:'descriptors'},
+    {id:255, added:'2025-05-13', fr:'bleu / bleue', en:'blue',          g:null, noArticle:true, cat:'descriptors'},
+    {id:256, added:'2025-05-13', fr:'vert / verte', en:'green',         g:null, noArticle:true, cat:'descriptors'},
+    {id:257, added:'2025-05-13', fr:'jaune',        en:'yellow',        g:null, noArticle:true, cat:'descriptors'},
+    {id:258, added:'2025-05-13', fr:'orange',       en:'orange',        g:null, noArticle:true, cat:'descriptors'},
+    {id:259, added:'2025-05-13', fr:'noir / noire', en:'black',         g:null, noArticle:true, cat:'descriptors'},
+    {id:260, added:'2025-05-13', fr:'blanc / blanche', en:'white',      g:null, noArticle:true, cat:'descriptors'},
+    {id:261, added:'2025-05-13', fr:'gris / grise', en:'grey',          g:null, noArticle:true, cat:'descriptors'},
+    {id:262, added:'2025-05-13', fr:'rose',         en:'pink',          g:null, noArticle:true, cat:'descriptors'},
+    {id:263, added:'2025-05-13', fr:'violet / violette', en:'purple',   g:null, noArticle:true, cat:'descriptors'},
+    {id:264, added:'2025-05-13', fr:'brun / brune', en:'brown',         g:null, noArticle:true, cat:'descriptors'},
+    // Adjectives
+    {id:265, added:'2025-05-13', fr:'grand / grande',   en:'big / tall',     g:null, noArticle:true, cat:'descriptors'},
+    {id:266, added:'2025-05-13', fr:'petit / petite',   en:'small / short',  g:null, noArticle:true, cat:'descriptors'},
+    {id:267, added:'2025-05-13', fr:'bon / bonne',      en:'good',           g:null, noArticle:true, cat:'descriptors'},
+    {id:268, added:'2025-05-13', fr:'mauvais / mauvaise',en:'bad',           g:null, noArticle:true, cat:'descriptors'},
+    {id:269, added:'2025-05-13', fr:'cher / chère',     en:'expensive',      g:null, noArticle:true, cat:'descriptors'},
+    {id:270, added:'2025-05-13', fr:'gratuit / gratuite',en:'free',          g:null, noArticle:true, cat:'descriptors'},
+    {id:271, added:'2025-05-13', fr:'rapide',           en:'fast / quick',   g:null, noArticle:true, cat:'descriptors'},
+    {id:272, added:'2025-05-13', fr:'lent / lente',     en:'slow',           g:null, noArticle:true, cat:'descriptors'},
+    {id:273, added:'2025-05-13', fr:'ouvert / ouverte', en:'open',           g:null, noArticle:true, cat:'descriptors'},
+    {id:274, added:'2025-05-13', fr:'fermé / fermée',   en:'closed',         g:null, noArticle:true, cat:'descriptors'},
+    {id:275, added:'2025-05-13', fr:'nouveau / nouvelle',en:'new',           g:null, noArticle:true, cat:'descriptors'},
+    {id:276, added:'2025-05-13', fr:'vieux / vieille',  en:'old',            g:null, noArticle:true, cat:'descriptors'},
+    {id:277, added:'2025-05-13', fr:'propre',           en:'clean',          g:null, noArticle:true, cat:'descriptors'},
+    {id:278, added:'2025-05-13', fr:'sale',             en:'dirty',          g:null, noArticle:true, cat:'descriptors'},
+    // Body parts
+    {id:279, added:'2025-05-13', fr:'la tête',      en:'the head',       g:'f', cat:'descriptors'},
+    {id:280, added:'2025-05-13', fr:'le bras',      en:'the arm',        g:'m', cat:'descriptors'},
+    {id:281, added:'2025-05-13', fr:'la jambe',     en:'the leg',        g:'f', cat:'descriptors'},
+    {id:282, added:'2025-05-13', fr:'la main',      en:'the hand',       g:'f', cat:'descriptors'},
+    {id:283, added:'2025-05-13', fr:'le pied',      en:'the foot',       g:'m', cat:'descriptors'},
+    {id:284, added:'2025-05-13', fr:'le dos',       en:'the back',       g:'m', cat:'descriptors'},
+    {id:285, added:'2025-05-13', fr:'le ventre',    en:'the stomach',    g:'m', cat:'descriptors'},
+    {id:286, added:'2025-05-13', fr:'la gorge',     en:'the throat',     g:'f', cat:'descriptors'},
+    {id:287, added:'2025-05-13', fr:"l'œil",       en:'the eye',        g:'m', cat:'descriptors'},
+    {id:288, added:'2025-05-13', fr:"l'oreille",   en:'the ear',        g:'f', cat:'descriptors'},
+    {id:289, added:'2025-05-13', fr:'le nez',       en:'the nose',       g:'m', cat:'descriptors'},
+    {id:290, added:'2025-05-13', fr:'la dent',      en:'the tooth',      g:'f', cat:'descriptors'},
+    {id:291, added:'2025-05-13', fr:"l'épaule",    en:'the shoulder',   g:'f', cat:'descriptors'},
+    {id:292, added:'2025-05-13', fr:'le genou',     en:'the knee',       g:'m', cat:'descriptors'},
+    // Time expressions
+    {id:293, added:'2025-05-13', fr:"aujourd'hui",  en:'today',          g:null, noArticle:true, cat:'descriptors'},
+    {id:294, added:'2025-05-13', fr:'demain',       en:'tomorrow',       g:null, noArticle:true, cat:'descriptors'},
+    {id:295, added:'2025-05-13', fr:'hier',         en:'yesterday',      g:null, noArticle:true, cat:'descriptors'},
+    {id:296, added:'2025-05-13', fr:'maintenant',   en:'now',            g:null, noArticle:true, cat:'descriptors'},
+    {id:297, added:'2025-05-13', fr:'bientôt',      en:'soon',           g:null, noArticle:true, cat:'descriptors'},
+    {id:298, added:'2025-05-13', fr:'tard',         en:'late',           g:null, noArticle:true, cat:'descriptors'},
+    {id:299, added:'2025-05-13', fr:'tôt',          en:'early',          g:null, noArticle:true, cat:'descriptors'},
+    {id:300, added:'2025-05-13', fr:'toujours',     en:'always',         g:null, noArticle:true, cat:'descriptors'},
+    {id:301, added:'2025-05-13', fr:'jamais',       en:'never',          g:null, noArticle:true, cat:'descriptors'},
+    {id:302, added:'2025-05-13', fr:'souvent',      en:'often',          g:null, noArticle:true, cat:'descriptors'},
+    {id:303, added:'2025-05-13', fr:'parfois',      en:'sometimes',      g:null, noArticle:true, cat:'descriptors'},
+    {id:304, added:'2025-05-13', fr:'déjà',         en:'already',        g:null, noArticle:true, cat:'descriptors'},
+  ],
+
+  // ── QUESTION WORDS ────────────────────────────────────────────
+  questions: [
+    // Vocab cards
+    {id:305, added:'2025-05-13', fr:'qui',        en:'who',            g:null, noArticle:true, cat:'questions'},
+    {id:306, added:'2025-05-13', fr:'quoi / que', en:'what',           g:null, noArticle:true, cat:'questions'},
+    {id:307, added:'2025-05-13', fr:'où',         en:'where',          g:null, noArticle:true, cat:'questions'},
+    {id:308, added:'2025-05-13', fr:'quand',      en:'when',           g:null, noArticle:true, cat:'questions'},
+    {id:309, added:'2025-05-13', fr:'comment',    en:'how',            g:null, noArticle:true, cat:'questions'},
+    {id:310, added:'2025-05-13', fr:'pourquoi',   en:'why',            g:null, noArticle:true, cat:'questions'},
+    {id:311, added:'2025-05-13', fr:'combien',    en:'how much / how many', g:null, noArticle:true, cat:'questions'},
+    {id:312, added:'2025-05-13', fr:'lequel / laquelle', en:'which one', g:null, noArticle:true, cat:'questions'},
+    // Common question phrases
+    {id:313, added:'2025-05-13', fr:"Où est… ?",                   en:"Where is…?",                    cat:'questions'},
+    {id:314, added:'2025-05-13', fr:"Où sont… ?",                  en:"Where are…?",                   cat:'questions'},
+    {id:315, added:'2025-05-13', fr:"Qu'est-ce que c'est ?",       en:"What is this?",                 cat:'questions'},
+    {id:316, added:'2025-05-13', fr:"Comment tu t'appelles ?",     en:"What's your name? (informal)",  cat:'questions'},
+    {id:317, added:'2025-05-13', fr:"Comment vous appelez-vous ?", en:"What's your name? (formal)",    cat:'questions'},
+    {id:318, added:'2025-05-13', fr:"Quel âge as-tu ?",            en:"How old are you? (informal)",   cat:'questions'},
+    {id:319, added:'2025-05-13', fr:"D'où viens-tu ?",             en:"Where are you from? (informal)",cat:'questions'},
+    {id:320, added:'2025-05-13', fr:"Qu'est-ce que tu fais ?",     en:"What are you doing?",           cat:'questions'},
+    {id:321, added:'2025-05-13', fr:"Tu parles français ?",        en:"Do you speak French?",          cat:'questions'},
+    {id:322, added:'2025-05-13', fr:"C'est quoi ton numéro ?",     en:"What's your number?",           cat:'questions'},
+    {id:323, added:'2025-05-13', fr:"C'est combien, l'entrée ?",   en:"How much is admission?",        cat:'questions'},
+    {id:324, added:'2025-05-13', fr:"Pourquoi pas ?",              en:"Why not?",                      cat:'questions'},
+    {id:325, added:'2025-05-13', fr:"Quand est-ce que ça ouvre ?", en:"When does it open?",            cat:'questions'},
+    {id:326, added:'2025-05-13', fr:"Comment on dit… en français ?",en:"How do you say… in French?",  cat:'questions'},
+  ],
+
+  // ── CONNECTORS & FUNCTION WORDS ───────────────────────────────
+  connectors: [
+    {id:327, added:'2025-05-13', fr:'mais',         en:'but',                 g:null, noArticle:true, cat:'connectors'},
+    {id:328, added:'2025-05-13', fr:'ou',           en:'or',                  g:null, noArticle:true, cat:'connectors'},
+    {id:329, added:'2025-05-13', fr:'et',           en:'and',                 g:null, noArticle:true, cat:'connectors'},
+    {id:330, added:'2025-05-13', fr:'donc',         en:'so / therefore',      g:null, noArticle:true, cat:'connectors'},
+    {id:331, added:'2025-05-13', fr:'car / parce que', en:'because',          g:null, noArticle:true, cat:'connectors'},
+    {id:332, added:'2025-05-13', fr:'aussi',        en:'also / too',          g:null, noArticle:true, cat:'connectors'},
+    {id:333, added:'2025-05-13', fr:'avec',         en:'with',                g:null, noArticle:true, cat:'connectors'},
+    {id:334, added:'2025-05-13', fr:'sans',         en:'without',             g:null, noArticle:true, cat:'connectors'},
+    {id:335, added:'2025-05-13', fr:'pour',         en:'for / in order to',   g:null, noArticle:true, cat:'connectors'},
+    {id:336, added:'2025-05-13', fr:'pendant',      en:'during / while',      g:null, noArticle:true, cat:'connectors'},
+    {id:337, added:'2025-05-13', fr:'depuis',       en:'since / for',         g:null, noArticle:true, cat:'connectors'},
+    {id:338, added:'2025-05-13', fr:'avant',        en:'before',              g:null, noArticle:true, cat:'connectors'},
+    {id:339, added:'2025-05-13', fr:'après',        en:'after',               g:null, noArticle:true, cat:'connectors'},
+    {id:340, added:'2025-05-13', fr:'ici',          en:'here',                g:null, noArticle:true, cat:'connectors'},
+    {id:341, added:'2025-05-13', fr:'là',           en:'there',               g:null, noArticle:true, cat:'connectors'},
+    {id:342, added:'2025-05-13', fr:'quelque chose',en:'something',           g:null, noArticle:true, cat:'connectors'},
+    {id:343, added:'2025-05-13', fr:'rien',         en:'nothing',             g:null, noArticle:true, cat:'connectors'},
+    {id:344, added:'2025-05-13', fr:'tout / toute', en:'everything / all',    g:null, noArticle:true, cat:'connectors'},
+    {id:345, added:'2025-05-13', fr:'très',         en:'very',                g:null, noArticle:true, cat:'connectors'},
+    {id:346, added:'2025-05-13', fr:'beaucoup',     en:'a lot / many',        g:null, noArticle:true, cat:'connectors'},
+    {id:347, added:'2025-05-13', fr:'trop',         en:'too much / too many', g:null, noArticle:true, cat:'connectors'},
+    {id:348, added:'2025-05-13', fr:'peu',          en:'little / few',        g:null, noArticle:true, cat:'connectors'},
+    {id:349, added:'2025-05-13', fr:'encore',       en:'again / still / more',g:null, noArticle:true, cat:'connectors'},
+    {id:350, added:'2025-05-13', fr:'seulement',    en:'only',                g:null, noArticle:true, cat:'connectors'},
+  ],
+
+  // ── NEW VERB INFINITIVES ──────────────────────────────────────
+  // (these are added to existing verbs array conceptually but as new entries)
+  verbs2: [
+    {id:351, added:'2025-05-13', fr:'faire',      en:'to do / to make',  cat:'irregular'},
+    {id:352, added:'2025-05-13', fr:'dire',       en:'to say / to tell', cat:'irregular'},
+    {id:353, added:'2025-05-13', fr:'voir',       en:'to see',           cat:'irregular'},
+    {id:354, added:'2025-05-13', fr:'savoir',     en:'to know (a fact)', cat:'irregular'},
+    {id:355, added:'2025-05-13', fr:'venir',      en:'to come',          cat:'irregular'},
+    {id:356, added:'2025-05-13', fr:'prendre',    en:'to take',          cat:'irregular'},
+    {id:357, added:'2025-05-13', fr:'partir',     en:'to leave',         cat:'irregular'},
+    {id:358, added:'2025-05-13', fr:'mettre',     en:'to put / to place',cat:'irregular'},
+    {id:359, added:'2025-05-13', fr:'chercher',   en:'to look for',      cat:'regular'},
+    {id:360, added:'2025-05-13', fr:'aimer',      en:'to like / to love',cat:'regular'},
+    {id:361, added:'2025-05-13', fr:'parler',     en:'to speak / to talk',cat:'regular'},
+    {id:362, added:'2025-05-13', fr:'habiter',    en:'to live (somewhere)',cat:'regular'},
+    {id:363, added:'2025-05-13', fr:'travailler', en:'to work',          cat:'regular'},
+    {id:364, added:'2025-05-13', fr:'acheter',    en:'to buy',           cat:'regular'},
+    {id:365, added:'2025-05-13', fr:'connaître',  en:'to know (a person/place)',cat:'irregular'},
+  ],
+};
 // ═══════════════════════════════════════════════════════════════
 // FORMAT GUIDE
 // ═══════════════════════════════════════════════════════════════
 //
-// ADDING NEW CARDS:
-//   1. Use the next available id shown at the top of this file
-//   2. Increment the NEXT AVAILABLE ID comment
-//   3. Never reuse or change an existing id
+// NEXT AVAILABLE ID: 366
 //
-// TO REMOVE A CARD:
-//   Add disabled:true — do NOT delete the entry or reuse its id
-//   Example: {id:6, added:'2025-05-10', base:'calendrier', ..., disabled:true}
+// ID RULES:
+//   • Never change or reuse an existing id — ever
+//   • New cards: use next available id, update comment above
+//   • To remove: add disabled:true — do NOT delete
+//   • Edit base/fr/en/g freely — only id is the stable key
+//
+// ADDED DATE: 'YYYY-MM-DD' — set to today when adding cards
 //
 // VOCAB ENTRY:
-//   {id:N, added:'YYYY-MM-DD', base:'mot', enBase:'word', g:'m'|'f'|'pm'|'pf'|null,
-//    noArticle:true,    ← prepositions/adverbs (no un/le forms)
-//    pluralOnly:true,   ← only appears as des/les
-//    vowelStart:true,   ← uses l' instead of le/la
-//    disabled:true}     ← hidden but id reserved
+//   {id:N, added:'YYYY-MM-DD', base:'mot', enBase:'word',
+//    g:'m'|'f'|'pm'|'pf'|null,
+//    noArticle:true, pluralOnly:true, vowelStart:true, disabled:true}
 //
-// PHRASE ENTRY:
-//   {id:N, added:'YYYY-MM-DD', fr:'French phrase', en:'English phrase',
-//    cat:'greet'|'weather'|'nav', disabled:true}
+// PHRASE/TRAVEL/QUESTION ENTRY:
+//   {id:N, added:'YYYY-MM-DD', fr:'French', en:'English', cat:'...'}
 //
-// JOB ENTRY:
-//   {id:N, added:'YYYY-MM-DD', fr:'un avocat (m)', en:'a lawyer (male)', g:'m'}
-//   {id:N, fr:'une avocate (f)', en:'a lawyer (female)', g:'f'}
-//
-// ADAPTIVE LISTS (nationalities, jobs_adaptive, dir_places, etc.):
-//   No IDs needed — edit freely, changes take effect immediately
-//
-// CATEGORY VALUES: 'vocab' | 'nav' | 'greet' | 'weather' | 'jobs' | 'adaptive'
+// CATEGORIES: vocab|nav|greet|weather|jobs|irregular|regular|
+//             travel|descriptors|questions|connectors
