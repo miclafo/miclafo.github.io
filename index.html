@@ -13,7 +13,6 @@
     if(location.pathname.endsWith('/index')||location.pathname.endsWith('/index.html'))
       location.replace(location.href.replace(/\/index(\.html)?$/,'/'));
   </script>
-  <script src="cards.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -94,6 +93,16 @@
     .cat-disclosure-body{display:none;background:var(--surface);border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--shape-lg) var(--shape-lg);padding:10px}
     .cat-disclosure-body.open{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .cat-active-summary{font-size:12px;color:var(--accent);font-weight:500}
+    /* ── CATEGORY DROPDOWN ── */
+    .cat-disclosure{width:100%;max-width:380px;margin-bottom:16px}
+    .cat-disc-btn{width:100%;background:var(--surface);border:1px solid var(--border-sub);border-radius:var(--shape-lg);padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--mid);transition:background .2s}
+    .cat-disc-btn:active{background:var(--surface2)}
+    .cat-disc-btn.open{border-color:var(--accent);color:var(--text);border-radius:var(--shape-lg) var(--shape-lg) 0 0}
+    .cat-chev{font-size:12px;transition:transform .2s}
+    .cat-disc-btn.open .cat-chev{transform:rotate(180deg)}
+    .cat-disc-body{display:none;background:var(--surface);border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--shape-lg) var(--shape-lg);padding:10px}
+    .cat-disc-body.open{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .cat-active{font-size:12px;color:var(--accent);font-weight:500}
     /* ── TOPBAR ── */
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px)+12px) 16px 8px;z-index:10;gap:8px;flex-shrink:0}
     .topbar-left{display:flex;align-items:center;gap:6px}
@@ -171,6 +180,10 @@
     @keyframes pulse{from{opacity:1}to{opacity:.35}}
     /* mute toggle in topbar */
     .icon-btn.muted{color:var(--red);border-color:var(--red)}
+    .icon-btn.vol{min-width:56px;text-align:center;padding:6px 16px}
+    .icon-btn.rslp{position:relative;overflow:hidden}
+    .icon-btn.rslp.holding::after{content:'';position:absolute;bottom:0;left:0;height:2px;background:var(--red);animation:rsh .8s linear forwards}
+    @keyframes rsh{from{width:0}to{width:100%}}
     .icon-btn.vol{min-width:56px;text-align:center;padding:6px 16px}
     .icon-btn.reset-btn-lp{color:var(--dim);position:relative;overflow:hidden}
     .icon-btn.reset-btn-lp.holding::after{content:'';position:absolute;bottom:0;left:0;height:2px;background:var(--red);animation:resethold .8s linear forwards}
@@ -252,6 +265,7 @@
 <body>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
+<script src="cards.js"></script>
 <script>
 'use strict';
 // ═══════════════════════════════════════════════════
@@ -313,15 +327,20 @@ const CONJ_KEY='adaptive|conj';
 function genConj(){
   const pr=pick(PRONOUNS);
   const pl=isPl(pr), fem=isF(pr);
-  const type=pick(['nat','nat','job','job','age','age']); // weighted
-  if(type==='nat'){
-    const nat=pick(DB.nationalities);
+  const _nats=DB.nationalities||[];
+  const _jadapt=DB.jobs_adaptive||[];
+  const _tp=['age','age'];
+  if(_nats.length)_tp.push('nat','nat');
+  if(_jadapt.length)_tp.push('job','job');
+  const type=pick(_tp);
+  if(type==='nat'&&_nats.length){
+    const nat=pick(_nats);
     const adj=pl?(fem?nat.fr_f+'s':nat.fr_m+'s'):(fem?nat.fr_f:nat.fr_m);
     return{key:CONJ_KEY,fr:`${cap(pr)} ${ETRE[pr]} ${adj}`,
       en:`${PR_EN[pr]} ${ETRE_EN[pr]} ${nat.en}`,g:null,cat:'adaptive',subtype:'conj'};
   }
-  if(type==='job'){
-    const job=pick(DB.jobs_adaptive);
+  if(type==='job'&&_jadapt.length){
+    const job=pick(_jadapt);
     const frJ=pl?(fem?job.fr_f+'s':job.fr_m+'s'):(fem?job.fr_f:job.fr_m);
     const enJ=pl?(fem?job.en_f+'s':job.en_m+'s'):(fem?job.en_f:job.en_m);
     return{key:CONJ_KEY,fr:`${cap(pr)} ${ETRE[pr]} ${frJ}`,
@@ -336,16 +355,19 @@ function genConj(){
 
 const DIR_KEY='adaptive|dir';
 function genDir(){
-  const pl=pick(DB.dir_places),dr=pick(DB.dir_directions);
+  const _dp=DB.dir_places&&DB.dir_places.length?DB.dir_places:[{fr:"L'ascenseur",fr_v:'est',en:'The elevator',en_v:'is'}];
+  const _dd=DB.dir_directions&&DB.dir_directions.length?DB.dir_directions:[{fr:'à gauche',en:'to the left'}];
+  const pl=pick(_dp),dr=pick(_dd);
   return{key:DIR_KEY,fr:`${pl.fr} ${pl.fr_v} ${dr.fr}`,
     en:`${pl.en} ${pl.en_v} ${dr.en}`,g:null,cat:'adaptive',subtype:'dir'};
 }
 
 const OBJ_KEY='adaptive|obj';
 function genObj(){
-  let i1=rnd(0,DB.obj_items.length-1),i2;
-  do{i2=rnd(0,DB.obj_items.length-1);}while(i2===i1);
-  const o1=DB.obj_items[i1],o2=DB.obj_items[i2],prep=pick([{fr:'sur',en:'on'},{fr:'sous',en:'under'},{fr:'devant',en:'in front of'},{fr:'derrière',en:'behind'},{fr:'dans',en:'in'}]);
+  const _oi=(DB.obj_items&&DB.obj_items.length>1)?DB.obj_items:[{fr:'le stylo',en:'the pen'},{fr:'le cahier',en:'the notebook'},{fr:'la table',en:'the table'}];
+  const i1=rnd(0,_oi.length-1);
+  let i2=rnd(0,_oi.length-1);while(i2===i1&&_oi.length>1){i2=rnd(0,_oi.length-1);}
+  const o1=_oi[i1],o2=_oi[i2],prep=pick([{fr:'sur',en:'on'},{fr:'sous',en:'under'},{fr:'devant',en:'in front of'},{fr:'derrière',en:'behind'},{fr:'dans',en:'in'}]);
   return{key:OBJ_KEY,fr:`${cap(o1.fr)} est ${prep.fr} ${o2.fr}`,
     en:`${cap(o1.en)} is ${prep.en} ${o2.en}`,g:null,cat:'adaptive',subtype:'obj'};
 }
@@ -361,14 +383,16 @@ function genTemp(){
 const NUM_KEY='adaptive|num';
 const PRICE_VALS=[1,2,3,4,5,6,7,8,9,10,12,15,18,20,25,30,50];
 function genNum(){
+  const _pi=DB.price_items&&DB.price_items.length?DB.price_items:[{fr:'Le café',en:'The coffee'}];
+  const _qi=DB.qty_items&&DB.qty_items.length?DB.qty_items:[{fr:'personnes',en:'people'}];
   if(Math.random()<0.5){
-    const item=pick(DB.price_items), price=pick(PRICE_VALS);
+    const item=pick(_pi), price=pick(PRICE_VALS);
     const cents=Math.random()<0.4?pick([25,50,75,99]):0;
     const frFull=cents>0?`${numToFr(price)} dollars et ${numToFr(cents)} cents`:`${numToFr(price)} dollar${price!==1?'s':''}`;
     const enFull=cents>0?`$${price}.${String(cents).padStart(2,'0')}`:`$${price}`;
     return{key:NUM_KEY,fr:`${item.fr} coûte ${frFull}`,en:`${item.en} costs ${enFull}`,g:null,cat:'adaptive',subtype:'num'};
   }
-  const item=pick(DB.qty_items), qty=rnd(2,30);
+  const item=pick(_qi), qty=rnd(2,30);
   return{key:NUM_KEY,fr:`Il y a ${numToFr(qty)} ${item.fr}`,en:`There are ${qty} ${item.en}`,g:null,cat:'adaptive',subtype:'num'};
 }
 
@@ -1338,17 +1362,20 @@ function renderHome(){
       </div>
       <button class="start-btn" onclick="startSession()">Start</button>
       <button onclick="renderBrowse()" style="margin-top:14px;background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">Browse all cards →</button>
-      ${loadFlags().length>0?`<button onclick="renderFlagged()" style="margin-top:6px;background:none;border:none;color:#e8934a;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">⚑ ${loadFlags().length} flagged for review →</button>`:''}
-      <div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
-        <button onclick="manualExport()" style="background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.04em">↓ Export progress</button>
-        <button onclick="triggerImport()" style="background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.04em">↑ Restore from backup</button>
+      <div style="display:flex;gap:16px;margin-top:10px;justify-content:center">
+        <button onclick="manualExport()" style="background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer">↓ Export progress</button>
+        <button onclick="triggerImport()" style="background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer">↑ Restore backup</button>
       </div>
+      ${audioMuted?'<div style="margin-top:6px;font-size:11px;color:var(--red)">🔇 Audio muted</div>':''}
+      ${loadFlags().length>0?`<button onclick="renderFlagged()" style="margin-top:6px;background:none;border:none;color:#e8934a;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">⚑ ${loadFlags().length} flagged for review →</button>`:''}
+
       ${audioMuted?'<div style="margin-top:8px;font-size:11px;color:var(--red);letter-spacing:.06em">🔇 Audio muted</div>':''}
     </div>`;
 }
 
 function selMode(m){_selMode=m;if(m==='free')_selTimer=0;_selRecent=false;renderHome();}
 function toggleCatOpen(){_catOpen=!_catOpen;renderHome();}
+
 function selTimer(t){_selTimer=t;renderHome();}
 function toggleRecent(){_selRecent=!_selRecent;if(_selRecent){_selMode='free';_selTimer=0;}renderHome();}
 function toggleCat(k){
@@ -1359,6 +1386,7 @@ function toggleCat(k){
 
 function startSession(){
   if(_selMode==='timer'&&_selTimer===0){showToast('Pick a duration first');return;}
+  if(!Object.values(enabledCats).some(Boolean)){showToast('Enable at least one category');return;}
   // Verify at least one pool would have cards
   const hasCards=Object.entries(enabledCats).some(([k,v])=>v&&['vocab','nav','greet','weather','jobs','travel','descriptors','questions','connectors','irregular','regular','adaptive'].includes(k));
   if(!hasCards){showToast('Enable at least one category');return;}
@@ -1880,6 +1908,18 @@ function browseLongPress(e, probKey) {
   renderBrowse(document.getElementById('browseSearch')?.value||'');
 }
 
+
+let _blt=null,_blk=null;
+function bts(e,k){_blk=k;_blt=setTimeout(()=>blp(null,k),600);}
+function bte(){clearTimeout(_blt);_blt=null;}
+function blp(e,k){
+  if(e)e.preventDefault();clearTimeout(_blt);
+  const isMast=!!mastered[k];
+  if(isMast){delete mastered[k];probs[k+'|fr']=PROB_DEFAULT;probs[k+'|en']=PROB_DEFAULT;saveProgress();showToast('Unmarked as mastered');}
+  else{markMastered(k);saveProgress();showToast('Marked as mastered ★');}
+  renderBrowse(document.getElementById('browseSearch')?.value||'');
+}
+
 function renderBrowse(query='') {
   const q = query.toLowerCase().trim();
   const allPools = [
@@ -1969,6 +2009,11 @@ function cancelResetHold() {
   _resetHoldTimer = null;
   document.getElementById('resetLpBtn')?.classList.remove('holding');
 }
+
+
+let _rhTimer=null;
+function startRH(e){if(e)e.preventDefault();document.getElementById('resetLpBtn')?.classList.add('holding');_rhTimer=setTimeout(()=>{cancelRH();confirmReset();},800);}
+function cancelRH(){clearTimeout(_rhTimer);_rhTimer=null;document.getElementById('resetLpBtn')?.classList.remove('holding');}
 
 // ═══════════════════════════════════════════════════
 // MODALS / UTILS
