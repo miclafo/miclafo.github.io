@@ -103,6 +103,7 @@
     .card-tag .new-dot{color:var(--accent);font-weight:600}
     .card-lang{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:500}
     .card-word{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(17px,5vw,32px);color:var(--text);text-align:center;line-height:1.3}
+    .card-prompt-echo{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(11px,3vw,15px);color:var(--dim);text-align:center;opacity:.5;margin-bottom:4px;letter-spacing:.02em}
     .card-tap{font-size:11px;color:var(--dim);letter-spacing:.06em;margin-top:2px}
     .gpill{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 11px;border-radius:100px}
     .gm{background:rgba(100,160,240,.15);color:#7ab0f0;border:1px solid rgba(100,160,240,.25)}
@@ -1224,7 +1225,12 @@ let recentBatches = []; // cached sorted batch dates for current session
 // SESSION STATE
 // ═══════════════════════════════════════════════════
 let screen='home', timerMode=0, timerSecs=0, timerInterval=null;
-let session={correct:0,wrong:0,wrongWords:[]};
+let session={correct:0,wrong:0,wrongWords:[],wrongCards:[]};
+let isRetryRound=false;
+let retryDeck=[];
+let retrySession={correct:0,wrong:0,wrongCards:[]};
+let retryPick=null;
+let retryFlipped=false;
 let currentPick=null, currentCard=null, flipped=false;
 let touchStartX=0, touchStartY=0, lastMark=0;
 let hsResult=null;
@@ -1235,6 +1241,7 @@ function render(){
   if(screen==='home') renderHome();
   else if(screen==='game') renderGame();
   else if(screen==='score') renderScore();
+  else if(screen==='retry') renderRetryGame();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1409,6 +1416,7 @@ function renderGame(){
             <button class="flag-btn ${cardFlagged?'flagged':''}" id="flagBtnBack" onclick="handleFlag(event)">⚑</button>
             <span class="card-lang">${answerLang}</span>
             ${gBadge(g)}
+            <span class="card-prompt-echo">${promptWord}</span>
             <span class="card-word">${answerWord}</span>
           </div>
         </div>
@@ -1499,6 +1507,9 @@ function doMark(wasCorrect){
     session.wrong++;
     const frWord=currentCard.fr;
     if(frWord&&!session.wrongWords.includes(frWord)) session.wrongWords.push(frWord);
+    if(!session.wrongCards) session.wrongCards=[];
+    if(!session.wrongCards.find(w=>w.card.fr===currentCard.fr&&w.lang===currentPick.lang))
+      session.wrongCards.push({card:currentCard, lang:currentPick.lang});
   }
   saveProgress();
   setTimeout(()=>{doPickNext();renderGame();},340);
@@ -1552,8 +1563,8 @@ function renderScore(){
 
   document.getElementById('app').innerHTML=`
     <div class="score-screen">
-      <div class="serif-i score-title">${timerMode>0?"Time's up!":'Session'}</div>
-      <div class="score-sub">${timerMode?fmtT(timerMode):'Practice'} · ${total} card${total!==1?'s':''} seen</div>
+      <div class="serif-i score-title">${isRetryRound?'Retry round':(timerMode>0?"Time's up!":'Session')}</div>
+      <div class="score-sub">${isRetryRound?'Wrong cards':(timerMode?fmtT(timerMode):'Practice')} · ${total} card${total!==1?'s':''} seen</div>
       <div class="score-grid">
         <div class="score-cell"><span class="score-val good">${session.correct}</span><span class="score-lbl">Correct</span></div>
         <div class="score-cell"><span class="score-val bad">${session.wrong}</span><span class="score-lbl">Wrong</span></div>
@@ -1563,14 +1574,15 @@ function renderScore(){
       ${wrongHTML}
       ${hsRows?`<div class="hs-section"><div class="hs-title">High Scores</div>${hsRows}</div>`:''}
       <div class="score-btns">
-        ${timerMode>0?`<button class="score-btn primary" onclick="retryTimer()">Try again (${fmtT(timerMode)})</button>`:''}
-        <button class="score-btn ${timerMode===0?'primary':''}" onclick="goHome()">Back to menu</button>
+        ${!isRetryRound&&timerMode>0?`<button class="score-btn primary" onclick="retryTimer()">Try again (${fmtT(timerMode)})</button>`:''}
+        ${session.wrongCards&&session.wrongCards.length>0?`<button class="score-btn" onclick="startRetryRound(session.wrongCards)">Retry ${session.wrongCards.length} wrong card${session.wrongCards.length!==1?'s':''}</button>`:''}
+        <button class="score-btn" onclick="goHome()">Back to menu</button>
       </div>
     </div>`;
 }
 
 function retryTimer(){
-  session={correct:0,wrong:0,wrongWords:[]};flipped=false;
+  session={correct:0,wrong:0,wrongWords:[],wrongCards:[]};flipped=false;
   cardsSeen=0;cardsSinceMastered=0;recentCooldown=[];
   screen='game';doPickNext();timerSecs=timerMode;clearInterval(timerInterval);
   timerInterval=setInterval(()=>{timerSecs--;updateTimerUI();if(timerSecs<=0){clearInterval(timerInterval);endSession();}},1000);
@@ -1578,6 +1590,161 @@ function retryTimer(){
 }
 function goHome(){clearInterval(timerInterval);screen='home';render();}
 
+
+
+// ═══════════════════════════════════════════════════
+// WRONG CARD RETRY ROUND
+// ═══════════════════════════════════════════════════
+function shuffleArr(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function startRetryRound(wrongCards){
+  isRetryRound=true;
+  retryDeck=shuffleArr([...wrongCards]);
+  retrySession={correct:0,wrong:0,wrongCards:[]};
+  retryFlipped=false;
+  screen='retry';
+  renderRetryGame();
+}
+
+function renderRetryGame(){
+  if(!retryDeck.length){endRetryRound();return;}
+  retryFlipped=false;
+  retryPick=retryDeck[0];
+  const card=retryPick.card;
+  const isFr=retryPick.lang==='fr';
+  const promptLang=isFr?'French':'English';
+  const answerLang=isFr?'English':'French';
+  const promptWord=isFr?stripGender(card.fr):card.en;
+  const answerWord=isFr?card.en:card.fr;
+  const g=card.g;
+  const bgBack=bgCls(g);
+  const cardFlagged=isFlagged(card.fr,card.en);
+  const remaining=retryDeck.length;
+  const total=remaining+retrySession.correct+retrySession.wrong;
+
+  document.getElementById('app').innerHTML=`
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn" onclick="endRetryRound()">Done</button>
+      </div>
+      <span style="font-size:12px;color:var(--mid)">Retry · ${remaining} left</span>
+      <div class="top-stats">
+        <span class="s-correct">✓ ${retrySession.correct}</span>
+        <span class="s-wrong">✗ ${retrySession.wrong}</span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.round((retrySession.correct+retrySession.wrong)/Math.max(total,1)*100)}%"></div></div>
+    </div>
+    <div class="card-area" id="cardArea">
+      <div class="hint-zone left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="hint-zone right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg></div>
+      <div class="swipe-overlay" id="swipeOverlay"></div>
+      <div class="card-scene">
+        <div class="card" id="theCard">
+          <div class="card-face">
+            <span class="card-tag">${catLbl(card.cat)} · retry</span>
+            <button class="flag-btn ${cardFlagged?'flagged':''}" id="flagBtn" onclick="handleRetryFlag(event)">⚑</button>
+            <span class="card-lang">${promptLang}</span>
+            <span class="card-word">${promptWord}</span>
+            <span class="card-tap">tap to flip</span>
+          </div>
+          <div class="card-face card-back-face ${bgBack}">
+            <span class="card-tag">${catLbl(card.cat)} · retry</span>
+            <button class="flag-btn ${cardFlagged?'flagged':''}" id="flagBtnBack" onclick="handleRetryFlag(event)">⚑</button>
+            <span class="card-lang">${answerLang}</span>
+            ${gBadge(g)}
+            <span class="card-prompt-echo">${promptWord}</span>
+            <span class="card-word">${answerWord}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="prob-wrap">
+      <span class="prob-label">Recall</span>
+      <div class="prob-track"><div class="prob-fill" style="width:0%"></div></div>
+      <span class="prob-val">&nbsp;</span>
+    </div>
+    <div class="bottom-hint">
+      <span class="hint-label wl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Wrong</span>
+      <span class="hint-label rl">Correct<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg></span>
+    </div>`;
+
+  const area=document.getElementById('cardArea');
+  area.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX;touchStartY=e.changedTouches[0].clientY},{passive:true});
+  area.addEventListener('touchend',onRetryTouchEnd,{passive:true});
+  area.addEventListener('click',onRetryClick);
+}
+
+function onRetryClick(e){
+  if(e.target.id==='flagBtn'||e.target.id==='flagBtnBack')return;
+  if(!retryFlipped){doRetryFlip();return;}
+  const x=e.clientX,w=window.innerWidth;
+  if(x<w*.38)markRetryCard(false);
+  else if(x>w*.62)markRetryCard(true);
+}
+function onRetryTouchEnd(e){
+  if(e.target.id==='flagBtn'||e.target.id==='flagBtnBack')return;
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  const dy=e.changedTouches[0].clientY-touchStartY;
+  if(!retryFlipped){doRetryFlip();return;}
+  if(Math.abs(dx)>=30&&Math.abs(dx)>Math.abs(dy)){markRetryCard(dx>0);return;}
+  const x=e.changedTouches[0].clientX,w=window.innerWidth;
+  if(x<w*.38)markRetryCard(false);
+  else if(x>w*.62)markRetryCard(true);
+}
+function doRetryFlip(){
+  retryFlipped=true;
+  document.getElementById('theCard')?.classList.add('flipped');
+  document.getElementById('cardArea')?.classList.add('flipped');
+  if(retryPick) speakFrench(retryPick.card.fr);
+}
+function markRetryCard(wasCorrect){
+  const now=Date.now();if(now-lastMark<380)return;lastMark=now;
+  const overlay=document.getElementById('swipeOverlay');
+  if(overlay)overlay.classList.add(wasCorrect?'show-right':'show-left');
+  // Affects real probability — retry still counts for learning
+  if(retryPick?.card?.probKey){
+    const key=retryPick.card.probKey+'|'+(retryPick.lang||'fr');
+    adjustProb(key,wasCorrect);
+    saveProgress();
+  }
+  retryDeck.shift();
+  if(wasCorrect){
+    retrySession.correct++;
+  } else {
+    retrySession.wrong++;
+    if(!retrySession.wrongCards.find(w=>w.card.fr===retryPick.card.fr&&w.lang===retryPick.lang))
+      retrySession.wrongCards.push(retryPick);
+  }
+  setTimeout(()=>renderRetryGame(),340);
+}
+function handleRetryFlag(e){
+  e.stopPropagation();
+  if(!retryPick)return;
+  const nowFlagged=toggleFlag(retryPick.card.fr,retryPick.card.en,retryPick.card.cat||'');
+  ['flagBtn','flagBtnBack'].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn)btn.classList.toggle('flagged',nowFlagged);
+  });
+  showToast(nowFlagged?'⚑ Flagged for review':'Flag removed');
+}
+function endRetryRound(){
+  // Show score screen with retry session stats
+  const prev=session;
+  session={
+    correct:retrySession.correct,
+    wrong:retrySession.wrong,
+    wrongWords:retrySession.wrongCards.map(w=>w.card.fr),
+    wrongCards:retrySession.wrongCards,
+  };
+  screen='score';
+  render();
+}
 
 // ═══════════════════════════════════════════════════
 // BROWSE SCREEN
