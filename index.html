@@ -1288,6 +1288,10 @@ function renderHome(){
       <button class="start-btn" onclick="startSession()">Start</button>
       <button onclick="renderBrowse()" style="margin-top:14px;background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">Browse all cards →</button>
       ${loadFlags().length>0?`<button onclick="renderFlagged()" style="margin-top:6px;background:none;border:none;color:#e8934a;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">⚑ ${loadFlags().length} flagged for review →</button>`:''}
+      <div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
+        <button onclick="manualExport()" style="background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.04em">↓ Export progress</button>
+        <button onclick="triggerImport()" style="background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.04em">↑ Restore from backup</button>
+      </div>
     </div>`;
 }
 
@@ -1529,6 +1533,8 @@ function endSession(){
   const acc=total?Math.round(session.correct/total*100):0;
   hsResult=timerMode>0?checkHS(timerMode,session.correct,acc):null;
   screen='score';render();
+  // Auto-save progress after every session
+  setTimeout(autoSaveProgress, 600); // slight delay so score screen renders first
 }
 
 // ═══════════════════════════════════════════════════
@@ -1735,7 +1741,6 @@ function handleRetryFlag(e){
 }
 function endRetryRound(){
   // Show score screen with retry session stats
-  const prev=session;
   session={
     correct:retrySession.correct,
     wrong:retrySession.wrong,
@@ -1744,6 +1749,8 @@ function endRetryRound(){
   };
   screen='score';
   render();
+  // Auto-save after retry round too
+  setTimeout(autoSaveProgress, 600);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1893,6 +1900,86 @@ function toggleFlag(fr, en, cat) {
   }
   saveFlags(flags);
   return idx === -1; // true = just flagged
+}
+
+
+// ═══════════════════════════════════════════════════
+// BACKUP — EXPORT / IMPORT
+// ═══════════════════════════════════════════════════
+const BACKUP_FILENAME = 'francais-progress.json';
+
+function buildBackupPayload() {
+  return JSON.stringify({
+    version: 2,
+    saved: new Date().toISOString(),
+    probs:   probs,
+    mastered: mastered,
+    flags:   loadFlags(),
+  });
+}
+
+function triggerDownload(jsonStr) {
+  try {
+    const blob = new Blob([jsonStr], {type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = BACKUP_FILENAME;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    return true;
+  } catch(e) {
+    console.error('Export failed:', e);
+    return false;
+  }
+}
+
+function autoSaveProgress() {
+  // Called after each session ends — fires alongside score screen render
+  const ok = triggerDownload(buildBackupPayload());
+  if (ok) showToast('Progress saved ✓');
+}
+
+function manualExport() {
+  const ok = triggerDownload(buildBackupPayload());
+  showToast(ok ? 'Progress exported ✓' : 'Export failed — try again');
+}
+
+function importProgress(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.probs) throw new Error('Invalid backup file');
+      // Merge: imported probs take priority, new cards since backup get default prob
+      Object.assign(probs, data.probs);
+      if (data.mastered) Object.assign(mastered, data.mastered);
+      if (data.flags)    saveFlags(data.flags);
+      // Re-apply mastered prob caps
+      Object.keys(mastered).forEach(k => {
+        if (mastered[k]) { probs[k+'|fr'] = MASTERED_P; probs[k+'|en'] = MASTERED_P; }
+      });
+      saveProgress(); // write merged result back to localStorage too
+      showToast('Progress restored ✓');
+      renderHome();
+    } catch(err) {
+      showToast('Could not read backup file');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function triggerImport() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => importProgress(e.target.files[0]);
+  document.body.appendChild(input);
+  input.click();
+  setTimeout(() => input.remove(), 2000);
 }
 
 // ═══════════════════════════════════════════════════
