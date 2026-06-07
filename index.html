@@ -103,6 +103,32 @@
     .cat-disc-body{display:none;background:var(--surface);border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--shape-lg) var(--shape-lg);padding:10px}
     .cat-disc-body.open{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .cat-active{font-size:12px;color:var(--accent);font-weight:500}
+
+    /* ── TIER PROGRESS ── */
+    .tier-progress{width:100%;max-width:380px;margin-bottom:16px}
+    .tier-overall{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .tier-overall-label{font-size:12px;color:var(--mid);white-space:nowrap}
+    .tier-overall-bar{flex:1;height:6px;background:var(--border-sub);border-radius:3px;overflow:hidden}
+    .tier-overall-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s}
+    .tier-overall-pct{font-size:12px;color:var(--accent);font-weight:500;width:36px;text-align:right}
+    .tier-rows{display:flex;flex-direction:column;gap:4px}
+    .tier-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface);border-radius:var(--shape-sm);border:1px solid var(--border-sub)}
+    .tier-row.locked{opacity:.45}
+    .tier-row.complete{border-color:var(--green)}
+    .tier-label{font-size:11px;color:var(--mid);width:90px;flex-shrink:0}
+    .tier-bar{flex:1;height:4px;background:var(--border-sub);border-radius:2px;overflow:hidden}
+    .tier-bar-fill{height:100%;border-radius:2px;transition:width .5s}
+    .tier-pct{font-size:11px;color:var(--mid);width:36px;text-align:right}
+    .tier-unlock{font-size:10px;color:var(--dim);margin-left:4px}
+    /* ── SETTINGS SECTION ── */
+    .settings-disc{width:100%;max-width:380px;margin-bottom:8px}
+    .settings-disc-btn{width:100%;background:none;border:none;display:flex;align-items:center;justify-content:space-between;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--dim);cursor:pointer;padding:6px 2px;letter-spacing:.04em}
+    .settings-body{display:none;background:var(--surface);border:1px solid var(--border-sub);border-radius:var(--shape-md);padding:12px 14px;gap:10px;flex-direction:column}
+    .settings-body.open{display:flex}
+    .settings-row{display:flex;gap:12px;justify-content:center}
+    /* ── FLOATING SAVE ── */
+    .fab-save{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+20px);right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-on);border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:50;transition:transform .15s}
+    .fab-save:active{transform:scale(.92)}
     /* ── TOPBAR ── */
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px)+12px) 16px 8px;z-index:10;gap:8px;flex-shrink:0}
     .topbar-left{display:flex;align-items:center;gap:6px}
@@ -747,6 +773,257 @@ const POSS_NOUNS = [
   {fr_pl:"affaires",fr_m:null, fr_f:null,  en:"things / belongings", g:'p', use:'pl'},
 ];
 
+
+// ── CONVERSATIONAL QUESTION GENERATOR ────────────────────────
+const QUESTION_KEY = 'adaptive|question';
+
+const Q_REGISTERS = ['tu','tu','vous','il','elle']; // tu weighted more
+
+const Q_FAM_MEMBERS = [
+  {ton:'ton frère',  votre:'votre frère',  son:'son frère',   sa:'son frère',   en:'your brother',   en3:'his/her brother'},
+  {ton:'ta sœur',   votre:'votre sœur',   son:'sa sœur',     sa:'sa sœur',     en:'your sister',    en3:'his/her sister'},
+  {ton:'ta mère',   votre:'votre mère',   son:'sa mère',     sa:'sa mère',     en:'your mother',    en3:'his/her mother'},
+  {ton:'ton père',  votre:'votre père',   son:'son père',     sa:'son père',    en:'your father',    en3:'his/her father'},
+  {ton:'ton conjoint', votre:'votre conjoint', son:'son conjoint', sa:'sa conjointe', en:'your partner', en3:'his/her partner'},
+];
+
+const Q_STATUSES = [
+  {fr:'célibataire', en:'single'},
+  {fr:'marié(e)',    en:'married'},
+  {fr:'divorcé(e)', en:'divorced'},
+  {fr:'en couple',   en:'in a relationship'},
+];
+
+const Q_CITIES = ['Montréal','Québec','Ottawa','Toronto','Vancouver'];
+
+// Each topic: {id, tu_fr, vous_fr, il_fr, elle_fr, tu_en, vous_en, il_en, elle_en, qc_tu (optional)}
+const Q_TOPICS = [
+  // How are you
+  {id:'how_are_you',
+   tu_fr:"Comment tu vas ?",       tu_en:"How are you?",
+   vous_fr:"Comment allez-vous ?", vous_en:"How are you? (formal)",
+   il_fr:"Comment il va ?",        il_en:"How is he?",
+   elle_fr:"Comment elle va ?",    elle_en:"How is she?",
+   qc_tu:"Comment tu vas, toi ?"},
+  // What's your name
+  {id:'name',
+   tu_fr:"Comment tu t'appelles ?",       tu_en:"What's your name?",
+   vous_fr:"Comment vous appelez-vous ?", vous_en:"What's your name? (formal)",
+   il_fr:"Comment il s'appelle ?",        il_en:"What's his name?",
+   elle_fr:"Comment elle s'appelle ?",    elle_en:"What's her name?"},
+  // Where from
+  {id:'from',
+   tu_fr:"D'où tu viens ?",         tu_en:"Where are you from?",
+   vous_fr:"D'où venez-vous ?",     vous_en:"Where are you from? (formal)",
+   il_fr:"D'où il vient ?",         il_en:"Where is he from?",
+   elle_fr:"D'où elle vient ?",     elle_en:"Where is she from?",
+   qc_tu:"T'es d'où ?"},
+  // Where do you live
+  {id:'live',
+   tu_fr:"Où est-ce que tu habites ?",   tu_en:"Where do you live?",
+   vous_fr:"Où habitez-vous ?",          vous_en:"Where do you live? (formal)",
+   il_fr:"Où est-ce qu'il habite ?",     il_en:"Where does he live?",
+   elle_fr:"Où est-ce qu'elle habite ?", elle_en:"Where does she live?",
+   qc_tu:"Tu restes où ?"},
+  // Address
+  {id:'address',
+   tu_fr:"C'est quoi ton adresse ?",      tu_en:"What's your address?",
+   vous_fr:"Quelle est votre adresse ?",  vous_en:"What's your address? (formal)",
+   il_fr:"C'est quoi son adresse ?",      il_en:"What's his address?",
+   elle_fr:"C'est quoi son adresse ?",    elle_en:"What's her address?"},
+  // Phone
+  {id:'phone',
+   tu_fr:"C'est quoi ton numéro de téléphone ?",   tu_en:"What's your phone number?",
+   vous_fr:"Quel est votre numéro de téléphone ?", vous_en:"What's your phone number? (formal)",
+   il_fr:"C'est quoi son numéro ?",                il_en:"What's his number?",
+   elle_fr:"C'est quoi son numéro ?",              elle_en:"What's her number?",
+   qc_tu:"C'est quoi ton numéro ?"},
+  // Email
+  {id:'email',
+   tu_fr:"C'est quoi ton courriel ?",     tu_en:"What's your email?",
+   vous_fr:"Quel est votre courriel ?",   vous_en:"What's your email? (formal)",
+   il_fr:"C'est quoi son courriel ?",     il_en:"What's his email?",
+   elle_fr:"C'est quoi son courriel ?",   elle_en:"What's her email?"},
+  // Relationship status (randomizes status)
+  {id:'status', _variable:'status',
+   tu_fr:(s)=>`Tu es ${s.fr} ?`,          tu_en:(s)=>`Are you ${s.en}?`,
+   vous_fr:(s)=>`Vous êtes ${s.fr} ?`,    vous_en:(s)=>`Are you ${s.en}? (formal)`,
+   il_fr:(s)=>`Il est ${s.fr} ?`,         il_en:(s)=>`Is he ${s.en}?`,
+   elle_fr:(s)=>`Elle est ${s.fr} ?`,     elle_en:(s)=>`Is she ${s.en}?`,
+   qc_tu:(s)=>`T'es-tu ${s.fr} ?`},
+  // Kids
+  {id:'kids',
+   tu_fr:"Tu as des enfants ?",        tu_en:"Do you have kids?",
+   vous_fr:"Vous avez des enfants ?",  vous_en:"Do you have kids? (formal)",
+   il_fr:"Il a des enfants ?",         il_en:"Does he have kids?",
+   elle_fr:"Elle a des enfants ?",     elle_en:"Does she have kids?",
+   qc_tu:"T'as-tu des enfants ?"},
+  // How many kids
+  {id:'how_many_kids',
+   tu_fr:"Combien d'enfants tu as ?",       tu_en:"How many kids do you have?",
+   vous_fr:"Combien d'enfants avez-vous ?", vous_en:"How many kids do you have? (formal)",
+   il_fr:"Combien d'enfants il a ?",        il_en:"How many kids does he have?",
+   elle_fr:"Combien d'enfants elle a ?",    elle_en:"How many kids does she have?",
+   qc_tu:"T'en as combien, des enfants ?"},
+  // Is this your family member (randomizes member)
+  {id:'family', _variable:'family',
+   tu_fr:(f)=>`C'est ${f.ton} ?`,         tu_en:(f)=>`Is this ${f.en}?`,
+   vous_fr:(f)=>`C'est ${f.votre} ?`,     vous_en:(f)=>`Is this ${f.en}? (formal)`,
+   il_fr:(f)=>`C'est ${f.son} ?`,         il_en:(f)=>`Is this ${f.en3}?`,
+   elle_fr:(f)=>`C'est ${f.sa} ?`,        elle_en:(f)=>`Is this ${f.en3}?`,
+   qc_tu:(f)=>`C'est-tu ${f.ton} ?`},
+  // How old
+  {id:'age',
+   tu_fr:"Tu as quel âge ?",        tu_en:"How old are you?",
+   vous_fr:"Vous avez quel âge ?",  vous_en:"How old are you? (formal)",
+   il_fr:"Il a quel âge ?",         il_en:"How old is he?",
+   elle_fr:"Elle a quel âge ?",     elle_en:"How old is she?",
+   qc_tu:"T'as quel âge ?"},
+  // Date
+  {id:'date',
+   tu_fr:"C'est quoi la date aujourd'hui ?",     tu_en:"What's today's date?",
+   vous_fr:"Quelle est la date d'aujourd'hui ?", vous_en:"What is today's date? (formal)",
+   il_fr:"C'est quoi la date aujourd'hui ?",     il_en:"What's today's date?",
+   elle_fr:"C'est quoi la date aujourd'hui ?",   elle_en:"What's today's date?",
+   qc_tu:"On est quel jour ?"},
+  // Weather (randomizes city)
+  {id:'weather', _variable:'city',
+   tu_fr:(c)=>`Il fait quel temps à ${c} ?`,      tu_en:(c)=>`How's the weather in ${c}?`,
+   vous_fr:(c)=>`Quel temps fait-il à ${c} ?`,    vous_en:(c)=>`What's the weather like in ${c}? (formal)`,
+   il_fr:"Quel temps fait-il ?",                   il_en:"What's the weather like?",
+   elle_fr:"Quel temps fait-il ?",                 elle_en:"What's the weather like?"},
+  // When do you work
+  {id:'work_when',
+   tu_fr:"Tu travailles quand ?",       tu_en:"When do you work?",
+   vous_fr:"Vous travaillez quand ?",   vous_en:"When do you work? (formal)",
+   il_fr:"Il travaille quand ?",        il_en:"When does he work?",
+   elle_fr:"Elle travaille quand ?",    elle_en:"When does she work?"},
+  // What do you do for work
+  {id:'work_what',
+   tu_fr:"Qu'est-ce que tu fais dans la vie ?",       tu_en:"What do you do for work?",
+   vous_fr:"Qu'est-ce que vous faites dans la vie ?", vous_en:"What do you do for work? (formal)",
+   il_fr:"Qu'est-ce qu'il fait dans la vie ?",        il_en:"What does he do for work?",
+   elle_fr:"Qu'est-ce qu'elle fait dans la vie ?",    elle_en:"What does she do for work?",
+   qc_tu:"Tu fais quoi comme travail ?"},
+  // Where do you work
+  {id:'work_where',
+   tu_fr:"Où est-ce que tu travailles ?",   tu_en:"Where do you work?",
+   vous_fr:"Où travaillez-vous ?",          vous_en:"Where do you work? (formal)",
+   il_fr:"Où est-ce qu'il travaille ?",     il_en:"Where does he work?",
+   elle_fr:"Où est-ce qu'elle travaille ?", elle_en:"Where does she work?",
+   qc_tu:"Tu travailles où ?"},
+  // Family member's job (randomizes member)
+  {id:'family_job', _variable:'family',
+   tu_fr:(f)=>`Qu'est-ce que ${f.ton} fait dans la vie ?`,         tu_en:(f)=>`What does ${f.en} do for work?`,
+   vous_fr:(f)=>`Qu'est-ce que ${f.votre} fait dans la vie ?`,     vous_en:(f)=>`What does ${f.en} do for work? (formal)`,
+   il_fr:(f)=>`Qu'est-ce que ${f.son} fait dans la vie ?`,         il_en:(f)=>`What does ${f.en3} do for work?`,
+   elle_fr:(f)=>`Qu'est-ce que ${f.sa} fait dans la vie ?`,        elle_en:(f)=>`What does ${f.en3} do for work?`,
+   qc_tu:(f)=>`${cap(f.ton)}, il/elle fait quoi ?`},
+  // When is the class
+  {id:'class_when',
+   tu_fr:"Le cours est à quelle heure ?",          tu_en:"When is the class?",
+   vous_fr:"Quand est-ce que le cours commence ?", vous_en:"When does the class start?",
+   il_fr:"C'est quel jour, le cours ?",            il_en:"What day is the class?",
+   elle_fr:"Le cours commence quand ?",            elle_en:"When does the class start?",
+   qc_tu:"Le cours, c'est à quelle heure ?"},
+  // When are you free
+  {id:'free_when',
+   tu_fr:"Tu es libre quand ?",      tu_en:"When are you free?",
+   vous_fr:"Vous êtes libre quand ?",vous_en:"When are you free? (formal)",
+   il_fr:"Il est libre quand ?",     il_en:"When is he free?",
+   elle_fr:"Elle est libre quand ?", elle_en:"When is she free?",
+   qc_tu:"T'es libre quand ?"},
+  // What do you like for fun
+  {id:'fun',
+   tu_fr:"Qu'est-ce que tu aimes faire pour t'amuser ?",           tu_en:"What do you like to do for fun?",
+   vous_fr:"Qu'est-ce que vous aimez faire pour vous amuser ?",    vous_en:"What do you like to do for fun? (formal)",
+   il_fr:"Qu'est-ce qu'il aime faire pour s'amuser ?",             il_en:"What does he like to do for fun?",
+   elle_fr:"Qu'est-ce qu'elle aime faire pour s'amuser ?",         elle_en:"What does she like to do for fun?",
+   qc_tu:"Tu fais quoi pour te divertir ?"},
+  // Do you speak French/English
+  {id:'language',
+   tu_fr:"Tu parles français ?",        tu_en:"Do you speak French?",
+   vous_fr:"Vous parlez anglais ?",     vous_en:"Do you speak English? (formal)",
+   il_fr:"Il parle français ?",         il_en:"Does he speak French?",
+   elle_fr:"Elle parle anglais ?",      elle_en:"Does she speak English?"},
+  // Can you repeat
+  {id:'repeat',
+   tu_fr:"Tu peux répéter ?",               tu_en:"Can you repeat that?",
+   vous_fr:"Vous pouvez répéter, s'il vous plaît ?", vous_en:"Can you repeat that? (formal)",
+   il_fr:"Tu peux parler plus lentement ?", il_en:"Can you speak more slowly?",
+   elle_fr:"Vous pouvez parler plus lentement ?", elle_en:"Can you speak more slowly? (formal)"},
+  // Is there a place nearby
+  {id:'nearby', _variable:'city',
+   tu_fr:"Est-ce qu'il y a une pharmacie près d'ici ?", tu_en:"Is there a pharmacy nearby?",
+   vous_fr:"Y a-t-il un restaurant près d'ici ?",       vous_en:"Is there a restaurant nearby? (formal)",
+   il_fr:"Est-ce qu'il y a un café par ici ?",          il_en:"Is there a café around here?",
+   elle_fr:"Il y a un métro proche ?",                   elle_en:"Is there a metro nearby?"},
+  // What time does it close/open
+  {id:'hours',
+   tu_fr:"Ça ferme à quelle heure ?",       tu_en:"What time does it close?",
+   vous_fr:"Ça ouvre à quelle heure ?",     vous_en:"What time does it open?",
+   il_fr:"C'est ouvert jusqu'à quelle heure ?", il_en:"How late is it open?",
+   elle_fr:"C'est ouvert le weekend ?",     elle_en:"Is it open on weekends?"},
+  // Are you coming / making plans
+  {id:'plans',
+   tu_fr:"Tu viens ?",                   tu_en:"Are you coming?",
+   vous_fr:"Vous venez ?",               vous_en:"Are you coming? (formal)",
+   il_fr:"On se retrouve où ?",          il_en:"Where do we meet?",
+   elle_fr:"On se retrouve à quelle heure ?", elle_en:"What time do we meet?"},
+  // Do you want to
+  {id:'want',
+   tu_fr:"Tu veux manger quelque chose ?",    tu_en:"Do you want to eat something?",
+   vous_fr:"Vous voulez prendre un café ?",   vous_en:"Do you want to grab a coffee? (formal)",
+   il_fr:"Tu veux sortir ce soir ?",          il_en:"Do you want to go out tonight?",
+   elle_fr:"Vous voulez venir avec nous ?",   elle_en:"Do you want to come with us?"},
+  // Do you like
+  {id:'like',
+   tu_fr:"Tu aimes Montréal ?",           tu_en:"Do you like Montreal?",
+   vous_fr:"Vous aimez la cuisine québécoise ?", vous_en:"Do you like Quebec food? (formal)",
+   il_fr:"Il aime le hockey ?",           il_en:"Does he like hockey?",
+   elle_fr:"Elle aime la musique ?",      elle_en:"Does she like music?"},
+  // What's your favourite
+  {id:'favourite',
+   tu_fr:"C'est quoi ton film préféré ?",     tu_en:"What's your favourite movie?",
+   vous_fr:"C'est quoi votre restaurant préféré ?", vous_en:"What's your favourite restaurant? (formal)",
+   il_fr:"C'est quoi ta musique préférée ?",  il_en:"What's your favourite music?",
+   elle_fr:"C'est quoi ton sport préféré ?",  elle_en:"What's your favourite sport?"},
+];
+
+function genQuestion(){
+  const topic = pick(Q_TOPICS);
+  const reg = pick(Q_REGISTERS);
+  let frText, enText, qcVariant=null;
+
+  // Resolve variable if needed
+  let varObj = null;
+  if (topic._variable === 'status') varObj = pick(Q_STATUSES);
+  else if (topic._variable === 'family') varObj = pick(Q_FAM_MEMBERS);
+  else if (topic._variable === 'city') varObj = pick(Q_CITIES);
+
+  function resolve(field) {
+    const val = topic[field];
+    if (!val) return null;
+    if (typeof val === 'function') return val(varObj);
+    return val;
+  }
+
+  frText = resolve(reg+'_fr') || resolve('tu_fr');
+  enText = resolve(reg+'_en') || resolve('tu_en');
+
+  // Quebec variant for tu register
+  if (reg === 'tu' && topic.qc_tu) {
+    const qc = topic.qc_tu;
+    qcVariant = typeof qc === 'function' ? qc(varObj) : qc;
+  }
+
+  // Store Quebec variant in fr text as subtle suffix on back face
+  const frFinal = frText;
+  const enFinal = qcVariant ? enText + ' | QC: ' + qcVariant : enText;
+
+  return {key:QUESTION_KEY, fr:frFinal, en:enFinal, g:null, cat:'questions', subtype:'question'};
+}
+
 // ── ADAPTIVE KEYS for new verbs ────────────────────────────────
 const FAIRE_KEY     = 'adaptive|faire';
 const PARLER_KEY    = 'adaptive|parler';
@@ -923,8 +1200,93 @@ function genComplexDir(){
     g:null,cat:'travel',subtype:'complexdir'};
 }
 
-const ADAPTIVE_GENS={[CONJ_KEY]:genConj,[DIR_KEY]:genDir,[OBJ_KEY]:genObj,[TEMP_KEY]:genTemp,[NUM_KEY]:genNum,[TIME_KEY]:genTime,[ALLER_KEY]:genAller,[DEVOIR_KEY]:genDevoir,[POUVOIR_KEY]:genPouvoir,[ARRIVER_KEY]:genArriver2,[BOIRE_KEY]:genBoire,[MANGER_KEY]:genManger,[DORMIR_KEY]:genDormir,[ECRIRE_KEY]:genEcrire,[ECOUTER_KEY]:genEcouter,[FUMER_KEY]:genFumer,[LIRE_KEY]:genLire,[TEXTER_KEY]:genTexter,[FAIRE_KEY]:genFaire,[PARLER_KEY]:genParler,[HABITER_KEY]:genHabiter,[TRAVAILLER_KEY]:genTravailler,[AIMER_KEY]:genAimer,[PRENDRE_KEY]:genPrendre,[VENIR_KEY]:genVenir,[CHERCHER_KEY]:genChercher,[ACHETER_KEY]:genAcheter,[POSS_KEY]:genPossessives,[SHOPPING_KEY]:genShopping,[DESCRIBE_KEY]:genDescribe,[COMPLEX_DIR_KEY]:genComplexDir};
+const ADAPTIVE_GENS={[CONJ_KEY]:genConj,[DIR_KEY]:genDir,[OBJ_KEY]:genObj,[TEMP_KEY]:genTemp,[NUM_KEY]:genNum,[TIME_KEY]:genTime,[ALLER_KEY]:genAller,[DEVOIR_KEY]:genDevoir,[POUVOIR_KEY]:genPouvoir,[ARRIVER_KEY]:genArriver2,[BOIRE_KEY]:genBoire,[MANGER_KEY]:genManger,[DORMIR_KEY]:genDormir,[ECRIRE_KEY]:genEcrire,[ECOUTER_KEY]:genEcouter,[FUMER_KEY]:genFumer,[LIRE_KEY]:genLire,[TEXTER_KEY]:genTexter,[FAIRE_KEY]:genFaire,[PARLER_KEY]:genParler,[HABITER_KEY]:genHabiter,[TRAVAILLER_KEY]:genTravailler,[AIMER_KEY]:genAimer,[PRENDRE_KEY]:genPrendre,[VENIR_KEY]:genVenir,[CHERCHER_KEY]:genChercher,[ACHETER_KEY]:genAcheter,[POSS_KEY]:genPossessives,[SHOPPING_KEY]:genShopping,[DESCRIBE_KEY]:genDescribe,[COMPLEX_DIR_KEY]:genComplexDir,[QUESTION_KEY]:genQuestion};
 const ADAPTIVE_KEYS=Object.keys(ADAPTIVE_GENS);
+
+
+
+// ── LEARNED % (logarithmic scale) ──
+// prob 0.5 → 40% learned, 0.1 → 80% learned
+function probToLearned(prob) {
+  // Linear on log scale: p=0.5→40%, p=0.1→80%, p=0.02→100%
+  // Derived from two-point log-linear fit
+  const p = Math.max(0.001, Math.min(0.999, prob));
+  const learned = -24.84 * Math.log(p) + 22.8;
+  return Math.round(Math.max(0, Math.min(100, learned)));
+}
+function learnedToProb(learnedPct) {
+  // Inverse: p = e^((learned - 22.8) / -24.84)
+  return Math.exp((learnedPct - 22.8) / -24.84);
+}
+
+// ═══════════════════════════════════════════════════
+// TIER SYSTEM
+// ═══════════════════════════════════════════════════
+const TIER_THRESHOLDS = {1:90, 2:80, 3:80, 4:75, 5:75};
+const TIER_NAMES = {1:'Core', 2:'Essential', 3:'Important', 4:'Supplementary', 5:'Extended'};
+// Base weight multiplier for each tier relative to unlocked state
+// While tier N-1 is in progress, tier N gets suppressed weight that rises as N-1 improves
+const TIER_BASE_PROB = 0.1; // 10% weight for next locked tier
+
+function getTierProgress() {
+  // Returns {tier: {total, learned, pct, unlocked}} for all tiers
+  const result = {};
+  for (let t = 1; t <= 5; t++) result[t] = {total:0, learned:0, pct:0, unlocked:false};
+
+  const allCards = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL,
+    ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL,
+    ...QUESTION_POOL, ...CONNECTOR_POOL,
+    ...(FAMILY_POOL||[]), ...(RELATIONSHIP_POOL||[]), ...(QUEBEC_POOL||[])];
+
+  // De-dup by probKey
+  const seen = new Set();
+  allCards.forEach(c => {
+    if (!c.probKey || seen.has(c.probKey)) return;
+    seen.add(c.probKey);
+    const tier = c.tier || 3;
+    if (!result[tier]) result[tier] = {total:0, learned:0, pct:0, unlocked:false};
+    result[tier].total++;
+    const p = (probs[c.probKey+'|fr']||PROB_DEFAULT + (probs[c.probKey+'|en']||PROB_DEFAULT)) / 2;
+    const learned = probToLearned(p);
+    if (learned >= TIER_THRESHOLDS[tier]) result[tier].learned++;
+  });
+
+  // Calculate pct and unlock status
+  for (let t = 1; t <= 5; t++) {
+    const r = result[t];
+    r.pct = r.total > 0 ? Math.round((r.learned / r.total) * 100) : 0;
+    r.unlocked = t === 1 || (result[t-1] && result[t-1].pct >= TIER_THRESHOLDS[t-1]);
+  }
+  return result;
+}
+
+function getTierWeight(tier, tierProgress) {
+  // Returns weight multiplier for a card based on its tier
+  if (tier === 1) return 1.0;
+  if (!tierProgress) return 0.1;
+  const prevTier = tierProgress[tier - 1];
+  if (!prevTier) return 0.1;
+  if (prevTier.unlocked && tierProgress[tier-1]?.pct >= TIER_THRESHOLDS[tier-1]) {
+    return 1.0; // fully unlocked
+  }
+  // Scale from 10% to 100% as previous tier goes from 0% to threshold
+  const prevPct = prevTier.pct || 0;
+  const threshold = TIER_THRESHOLDS[tier-1];
+  const progress = Math.min(1, prevPct / threshold);
+  return 0.1 + (progress * 0.9);
+}
+
+let _tierCache = null;
+let _tierCacheTime = 0;
+function getCachedTierProgress() {
+  const now = Date.now();
+  if (!_tierCache || now - _tierCacheTime > 5000) {
+    _tierCache = getTierProgress();
+    _tierCacheTime = now;
+  }
+  return _tierCache;
+}
+function invalidateTierCache() { _tierCache = null; }
 
 // ═══════════════════════════════════════════════════
 // SPACED REPETITION  — improved algorithm
@@ -968,6 +1330,9 @@ let TRAVEL_POOL = [];
 let DESCRIPTOR_POOL = [];
 let QUESTION_POOL = [];
 let CONNECTOR_POOL = [];
+let FAMILY_POOL = [];
+let RELATIONSHIP_POOL = [];
+let QUEBEC_POOL = [];
 
 function buildPool() {
   VOCAB_POOL = [];
@@ -983,19 +1348,19 @@ function buildPool() {
 
   PHRASE_POOL = DB.phrases
     .filter(p => !p.disabled)
-    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat}));
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat, tier:p.p||2}));
 
   JOB_POOL = DB.jobs
     .filter(j => !j.disabled)
-    .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:'jobs'}));
+    .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:'jobs', tier:j.p||3}));
 
   VERB_POOL = [...(DB.verbs||[]), ...(DB.verbs2||[])]
     .filter(v => !v.disabled)
-    .map(v => ({fr:v.fr, en:v.en, g:null, probKey:'id:'+v.id, cat:v.cat}));
+    .map(v => ({fr:v.fr, en:v.en, g:null, probKey:'id:'+v.id, cat:v.cat, tier:v.p||3}));
 
   PERM_POOL = (DB.permission||[])
     .filter(p => !p.disabled)
-    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:'irregular'}));
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:'irregular', tier:1}));
 
   TRAVEL_POOL = [...(DB.travel||[]), ...(DB.travel_phrases||[])]
     .filter(c => !c.disabled)
@@ -1003,15 +1368,34 @@ function buildPool() {
 
   DESCRIPTOR_POOL = (DB.descriptors||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr||c.base, en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:'descriptors'}));
+    .map(c => ({fr:c.fr||c.base, en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:'descriptors', tier:c.p||4}));
 
   QUESTION_POOL = (DB.questions||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'questions'}));
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'questions', tier:c.p||1}));
 
   CONNECTOR_POOL = (DB.connectors||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'connectors'}));
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'connectors', tier:c.p||3}));
+
+  FAMILY_POOL = (DB.family||[])
+    .filter(c => !c.disabled)
+    .map(c => {
+      const forms = getArticleForms(c);
+      return forms.map(f => ({...f, probKey:'id:'+c.id, cat:'family', tier:c.p||3}));
+    }).flat();
+
+  RELATIONSHIP_POOL = (DB.relationship||[])
+    .filter(c => !c.disabled)
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'relationship', tier:c.p||4}));
+
+  QUEBEC_POOL = (DB.quebec||[])
+    .filter(c => !c.disabled)
+    .map(c => {
+      if (c.noArticle) return [{fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'quebec', tier:c.p||2}];
+      const forms = getArticleForms(c);
+      return forms.map(f => ({...f, probKey:'id:'+c.id, cat:'quebec', tier:c.p||2}));
+    }).flat();
 
   buildAddedDateLookup();
   recentBatches = getAddedBatches();
@@ -1021,6 +1405,9 @@ function buildPool() {
     ...new Set(DESCRIPTOR_POOL.map(c=>c.probKey)),
     ...new Set(QUESTION_POOL.map(c=>c.probKey)),
     ...new Set(CONNECTOR_POOL.map(c=>c.probKey)),
+    ...new Set(FAMILY_POOL.map(c=>c.probKey)),
+    ...new Set(RELATIONSHIP_POOL.map(c=>c.probKey)),
+    ...new Set(QUEBEC_POOL.map(c=>c.probKey)),
     ...new Set(VERB_POOL.map(c=>c.probKey)),
     ...new Set(PERM_POOL.map(c=>c.probKey)),
     ...new Set(JOB_POOL.map(c=>c.probKey)),
@@ -1067,9 +1454,19 @@ function initProbs(hardReset) {
   buildPool();
 
   // Init any card not yet in saved probs (new cards added to cards.js)
+  // known:true cards start at 0.15 (85% learned) — occasional reminder only
+  const KNOWN_PROB = 0.15;
+  const allDBCards = [...(DB.vocab||[]),...(DB.phrases||[]),...(DB.jobs||[]),
+    ...(DB.verbs||[]),...(DB.verbs2||[]),...(DB.permission||[]),
+    ...(DB.travel||[]),...(DB.travel_phrases||[]),...(DB.descriptors||[]),
+    ...(DB.questions||[]),...(DB.connectors||[]),...(DB.family||[]),
+    ...(DB.relationship||[]),...(DB.quebec||[])];
+  const knownIds = new Set(allDBCards.filter(c=>c.known).map(c=>'id:'+c.id));
+
   allStaticProbKeys.forEach(k => {
-    if (probs[k+'|fr'] === undefined) probs[k+'|fr'] = PROB_DEFAULT;
-    if (probs[k+'|en'] === undefined) probs[k+'|en'] = PROB_DEFAULT;
+    const initProb = knownIds.has(k) ? KNOWN_PROB : PROB_DEFAULT;
+    if (probs[k+'|fr'] === undefined) probs[k+'|fr'] = initProb;
+    if (probs[k+'|en'] === undefined) probs[k+'|en'] = initProb;
   });
   ADAPTIVE_KEYS.forEach(k => {
     if (probs[k+'|fr'] === undefined) probs[k+'|fr'] = PROB_DEFAULT;
@@ -1082,6 +1479,7 @@ function initProbs(hardReset) {
   });
 
   ADAPTIVE_KEYS.forEach(k => { adaptiveLive[k] = ADAPTIVE_GENS[k](); });
+  setTimeout(checkAndClearStaleFlags, 200);
 }
 
 function adjustProb(key, wasCorrect) {
@@ -1146,6 +1544,7 @@ function weightedPick(enabledCats) {
   const pool = [];
 
   const CAT_BOOST = {irregular:2.0, regular:2.0, travel:1.3, questions:1.3, connectors:1.2};
+  const tierProgress = getCachedTierProgress();
 
   function addStaticCards(cards) {
     cards.forEach(c => {
@@ -1157,6 +1556,9 @@ function weightedPick(enabledCats) {
       const prob = probs[key] ?? PROB_DEFAULT;
       let boosted = seenKeys.has(c.probKey) ? prob : prob * 1.4;
       boosted *= (CAT_BOOST[c.cat] || 1.0);
+      // Tier weight — suppresses cards from locked tiers
+      const tierW = getTierWeight(c.tier||3, tierProgress);
+      boosted *= tierW;
       if (recentMode) {
         const addedDate = addedDateByKey[c.probKey];
         boosted *= recencyMult(addedDate, recentBatches);
@@ -1166,6 +1568,9 @@ function weightedPick(enabledCats) {
   }
 
   if (enabledCats.travel)       addStaticCards(TRAVEL_POOL);
+  if (enabledCats.family)       addStaticCards(FAMILY_POOL);
+  if (enabledCats.relationship)  addStaticCards(RELATIONSHIP_POOL);
+  if (enabledCats.quebec)        addStaticCards(QUEBEC_POOL);
   if (enabledCats.descriptors)  addStaticCards(DESCRIPTOR_POOL);
   if (enabledCats.questions)    addStaticCards(QUESTION_POOL);
   if (enabledCats.connectors)   addStaticCards(CONNECTOR_POOL);
@@ -1218,7 +1623,7 @@ function resolveCard(pick_) {
     return adaptiveLive[pick_.adKey];
   }
   // Static: find all forms for this probKey, pick one randomly
-  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL, ...QUESTION_POOL, ...CONNECTOR_POOL];
+  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL, ...QUESTION_POOL, ...CONNECTOR_POOL, ...FAMILY_POOL, ...RELATIONSHIP_POOL, ...QUEBEC_POOL];
   const forms = allPools.filter(c => c.probKey === pick_.probKey);
   return forms.length ? pick(forms) : forms[0];
 }
@@ -1304,8 +1709,11 @@ let retryFlipped=false;
 let currentPick=null, currentCard=null, flipped=false;
 let touchStartX=0, touchStartY=0, lastMark=0;
 let hsResult=null;
-let _selMode='free', _selTimer=0, _selRecent=false, _catOpen=false;
-let enabledCats={travel:true,descriptors:true,questions:true,connectors:true,irregular:true,regular:true,jobs:true,adaptive:true,weather:true,greet:true,nav:true,vocab:true};
+let _selMode='free', _selTimer=0, _selRecent=false, _catOpen=false, _settingsOpen=false;
+let _browseFilter={mastered:false, flagged:false};
+let _browseOpenCats={}; // category open state
+let _browseSwipeState={}; // track active swipe per row
+let enabledCats={travel:true,descriptors:true,questions:true,connectors:true,family:true,relationship:true,quebec:true,irregular:true,regular:true,jobs:true,adaptive:true,weather:true,greet:true,nav:true,vocab:true};
 
 function render(){
   if(screen==='home') renderHome();
@@ -1317,9 +1725,42 @@ function render(){
 // ═══════════════════════════════════════════════════
 // HOME
 // ═══════════════════════════════════════════════════
+
+function renderTierProgress() {
+  const tp = getCachedTierProgress();
+  const totalCards = Object.values(tp).reduce((s,t)=>s+t.total,0);
+  const totalLearned = Object.values(tp).reduce((s,t)=>s+t.learned,0);
+  const overallPct = totalCards>0?Math.round((totalLearned/totalCards)*100):0;
+
+  const tierRows = [1,2,3,4,5].map(t => {
+    const tier = tp[t];
+    if (!tier || tier.total===0) return '';
+    const pct = tier.pct;
+    const threshold = TIER_THRESHOLDS[t];
+    const complete = pct >= threshold;
+    const locked = t>1 && !tier.unlocked;
+    const fillColor = complete?'var(--green)':locked?'var(--border)':'var(--accent)';
+    return `<div class="tier-row ${locked?'locked':''} ${complete?'complete':''}">
+      <span class="tier-label">${TIER_NAMES[t]}</span>
+      <div class="tier-bar"><div class="tier-bar-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+      <span class="tier-pct" style="color:${complete?'var(--green)':'var(--mid)'}">${pct}%</span>
+      <span class="tier-unlock">${complete?'✓':locked?'🔒':tier.learned+'/'+tier.total}</span>
+    </div>`;
+  }).join('');
+
+  return `<div class="tier-progress">
+    <div class="tier-overall">
+      <span class="tier-overall-label">Overall progress</span>
+      <div class="tier-overall-bar"><div class="tier-overall-fill" style="width:${overallPct}%"></div></div>
+      <span class="tier-overall-pct">${overallPct}%</span>
+    </div>
+    <div class="tier-rows">${tierRows}</div>
+  </div>`;
+}
+
 function renderHome(){
   const hs=loadHS();
-  const CAT_LABELS={travel:'Travel',descriptors:'Descriptors',questions:'Questions',connectors:'Connectors',irregular:'Irregular Verbs',regular:'Regular Verbs',jobs:'Jobs',adaptive:'Adaptive',weather:'Weather',greet:'Greetings',nav:'Navigation',vocab:'Vocabulary'};
+  const CAT_LABELS={travel:'Travel',descriptors:'Descriptors',questions:'Questions',connectors:'Connectors',family:'Family',relationship:'Relationships',quebec:'Québec',irregular:'Irregular Verbs',regular:'Regular Verbs',jobs:'Jobs',adaptive:'Adaptive',weather:'Weather',greet:'Greetings',nav:'Navigation',vocab:'Vocabulary'};
   const cats=Object.entries(CAT_LABELS).map(([k,l])=>`
     <div class="cat-toggle ${enabledCats[k]?'on':''}" onclick="toggleCat('${k}')">
       <span class="cat-name">${l}</span><span class="cat-dot"></span>
@@ -1375,6 +1816,7 @@ function renderHome(){
 
 function selMode(m){_selMode=m;if(m==='free')_selTimer=0;_selRecent=false;renderHome();}
 function toggleCatOpen(){_catOpen=!_catOpen;renderHome();}
+function toggleSettings(){_settingsOpen=!_settingsOpen;renderHome();}
 
 function selTimer(t){_selTimer=t;renderHome();}
 function toggleRecent(){_selRecent=!_selRecent;if(_selRecent){_selMode='free';_selTimer=0;}renderHome();}
@@ -1432,7 +1874,7 @@ function bgCls(g){
   if(g==='f')return'bg-f';
   return'';
 }
-function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs',irregular:'irrég.',regular:'régulier',travel:'voyage',descriptors:'descr.',questions:'question',connectors:'connecteur',verbs2:'verbe'}[c]||c;}
+function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs',irregular:'irrég.',regular:'régulier',travel:'voyage',descriptors:'descr.',questions:'question',connectors:'connecteur',verbs2:'verbe',family:'famille',relationship:'relation',quebec:'québec'}[c]||c;}
 function fmtT(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
 
 function timerRingHTML(){
@@ -1463,7 +1905,8 @@ function renderGame(){
   const g = currentCard.g;
   const bgFront = ''; // gender never shown on front face
   const bgBack  = bgCls(g); // gender always shown on back face after flip
-  const prob=Math.round((probs[currentPick.key]??PROB_DEFAULT)*100);
+  const rawProb=probs[currentPick.key]??PROB_DEFAULT;
+  const learnedPct=probToLearned(rawProb);
   const progPct=Math.round((1-avgProb())*100);
   const probKey=currentPick.probKey;
   const isMastered=!!mastered[probKey];
@@ -1515,9 +1958,9 @@ function renderGame(){
       ${flipped&&probKey&&!isMastered?`<button class="mastered-btn" id="masteredBtn">I know this ✓</button>`:''}
     </div>
     <div class="prob-wrap">
-      <span class="prob-label">Recall</span>
-      <div class="prob-track"><div class="prob-fill" style="width:${prob}%"></div></div>
-      <span class="prob-val">${prob}%</span>
+      <span class="prob-label">Learned</span>
+      <div class="prob-track"><div class="prob-fill" style="width:${learnedPct}%"></div></div>
+      <span class="prob-val">${learnedPct}%</span>
     </div>
     <div class="bottom-hint">
       <span class="hint-label wl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Wrong</span>
@@ -1603,6 +2046,7 @@ function doMark(wasCorrect){
       session.wrongCards.push({card:currentCard, lang:currentPick.lang});
   }
   saveProgress();
+  invalidateTierCache();
   setTimeout(()=>{doPickNext();renderGame();},340);
 }
 
@@ -1620,8 +2064,7 @@ function endSession(){
   const acc=total?Math.round(session.correct/total*100):0;
   hsResult=timerMode>0?checkHS(timerMode,session.correct,acc):null;
   screen='score';render();
-  // Auto-save progress after every session
-  setTimeout(autoSaveProgress, 600); // slight delay so score screen renders first
+  saveProgress(); // silent localStorage save
 }
 
 // ═══════════════════════════════════════════════════
@@ -1681,7 +2124,7 @@ function retryTimer(){
   timerInterval=setInterval(()=>{timerSecs--;updateTimerUI();if(timerSecs<=0){clearInterval(timerInterval);endSession();}},1000);
   render();
 }
-function goHome(){clearInterval(timerInterval);screen='home';render();}
+function goHome(){clearInterval(timerInterval);saveProgress();screen='home';render();}
 
 
 
@@ -1758,7 +2201,7 @@ function renderRetryGame(){
       </div>
     </div>
     <div class="prob-wrap">
-      <span class="prob-label">Recall</span>
+      <span class="prob-label">Learned</span>
       <div class="prob-track"><div class="prob-fill" style="width:0%"></div></div>
       <span class="prob-val">&nbsp;</span>
     </div>
@@ -1836,13 +2279,168 @@ function endRetryRound(){
   };
   screen='score';
   render();
-  // Auto-save after retry round too
-  setTimeout(autoSaveProgress, 600);
+  saveProgress(); // silent localStorage save
 }
 
 // ═══════════════════════════════════════════════════
 // BROWSE SCREEN
 // ═══════════════════════════════════════════════════
+
+
+function renderBrowse(query='') {
+  const q = query.toLowerCase().trim();
+  const flags = loadFlags();
+  const flaggedFrs = new Set(flags.map(f=>f.fr));
+
+  const allPools = [
+    {label:'Travel',        cat:'travel',      cards:TRAVEL_POOL},
+    {label:'Descriptors',   cat:'descriptors', cards:DESCRIPTOR_POOL},
+    {label:'Questions',     cat:'questions',   cards:QUESTION_POOL},
+    {label:'Connectors',    cat:'connectors',  cards:CONNECTOR_POOL},
+    {label:'Family',        cat:'family',      cards:FAMILY_POOL},
+    {label:'Relationships', cat:'relationship',cards:RELATIONSHIP_POOL},
+    {label:'Québec',        cat:'quebec',      cards:QUEBEC_POOL},
+    {label:'Irregular Verbs',cat:'irregular',  cards:VERB_POOL.filter(c=>c.cat==='irregular')},
+    {label:'Regular Verbs', cat:'regular',     cards:VERB_POOL.filter(c=>c.cat==='regular')},
+    {label:'Permission',    cat:'irregular',   cards:PERM_POOL},
+    {label:'Jobs',          cat:'jobs',        cards:JOB_POOL},
+    {label:'Weather',       cat:'weather',     cards:PHRASE_POOL.filter(c=>c.cat==='weather')},
+    {label:'Greetings',     cat:'greet',       cards:PHRASE_POOL.filter(c=>c.cat==='greet')},
+    {label:'Navigation',    cat:'nav',         cards:[...VOCAB_POOL.filter(c=>c.cat==='nav'),...PHRASE_POOL.filter(c=>c.cat==='nav')]},
+    {label:'Vocabulary',    cat:'vocab',       cards:VOCAB_POOL.filter(c=>c.cat==='vocab')},
+  ];
+
+  const sections = allPools.map(({label, cat, cards}) => {
+    const seen = new Set();
+    let filtered = cards.filter(c => {
+      if (seen.has(c.probKey)) return false;
+      seen.add(c.probKey);
+      if (q && !c.fr.toLowerCase().includes(q) && !c.en.toLowerCase().includes(q)) return false;
+      const isMast = !!mastered[c.probKey];
+      const isFlagged = flaggedFrs.has(c.fr);
+      if (_browseFilter.mastered && !isMast) return false;
+      if (_browseFilter.flagged && !isFlagged) return false;
+      return true;
+    });
+    if (!filtered.length) return '';
+
+    const isOpen = _browseOpenCats[label] !== false; // default open
+    const rowsHtml = filtered.map((c,idx) => {
+      const pFr=probs[c.probKey+'|fr']??PROB_DEFAULT;
+      const pEn=probs[c.probKey+'|en']??PROB_DEFAULT;
+      const learned=probToLearned((pFr+pEn)/2);
+      const isMast=!!mastered[c.probKey];
+      const isFlagged=flaggedFrs.has(c.fr);
+      const isNew=isNewCard(addedDateByKey[c.probKey]||null);
+      const rowId='br_'+c.probKey.replace(/[^a-zA-Z0-9]/g,'_')+'_'+idx;
+      return `<div class="browse-row-wrap" id="wrap_${rowId}">
+        <div class="browse-row-bg">
+          <div class="browse-row-bg-left">★ Master</div>
+          <div class="browse-row-bg-right">⚑ Flag</div>
+        </div>
+        <div class="browse-row ${isMast?'mast':''} ${isFlagged?'flagged-row':''}"
+          id="${rowId}"
+          ontouchstart="browseSwipeStart(event,'${rowId}','${c.probKey.replace(/'/g,'')}','${c.fr.replace(/'/g,'')}','${c.en.replace(/'/g,'')}')"
+          ontouchmove="browseSwipeMove(event,'${rowId}')"
+          ontouchend="browseSwipeEnd(event,'${rowId}','${c.probKey.replace(/'/g,'')}','${c.fr.replace(/'/g,'')}','${c.en.replace(/'/g,'')}')"
+          ontouchcancel="browseSwipeCancel('${rowId}')">
+          ${isNew?'<span class="browse-new-dot"></span>':''}
+          <span class="browse-fr">${stripGender(c.fr)}</span>
+          <span class="browse-en">${c.en}</span>
+          <span class="browse-recall ${isMast?'mpct':''}">${isMast?'★':learned+'%'}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div>
+      <div class="browse-cat-header" onclick="toggleBrowseCat('${label}')">
+        <span class="browse-cat-title">${label}</span>
+        <span class="browse-cat-count">${filtered.length} ${isOpen?'▾':'▸'}</span>
+      </div>
+      <div class="browse-cat-body ${isOpen?'':'collapsed'}">${rowsHtml}</div>
+    </div>`;
+  }).join('');
+
+  const mastActive = _browseFilter.mastered;
+  const flagActive = _browseFilter.flagged;
+
+  document.getElementById('app').innerHTML = `
+    <div class="browse-screen">
+      <div class="browse-header">
+        <h2>All Cards</h2>
+        <input class="browse-search" type="search" placeholder="Search…" value="${query}"
+          oninput="renderBrowse(this.value)" id="browseSearch"/>
+        <button class="icon-btn" onclick="saveProgress();screen='home';render()">✕</button>
+      </div>
+      <div class="browse-filter-row">
+        <button class="filter-pill ${mastActive?'active':''}" onclick="toggleBrowseFilter('mastered')">✓ Mastered</button>
+        <button class="filter-pill ${flagActive?'active-flag':''}" onclick="toggleBrowseFilter('flagged')">⚑ Flagged</button>
+        <button class="collapse-btn" onclick="collapseAllBrowse()">Collapse all</button>
+      </div>
+      <div class="browse-list">${sections||'<div style="padding:32px;color:var(--dim);text-align:center">No cards found</div>'}</div>
+    </div>`;
+}
+
+function toggleBrowseFilter(f){
+  _browseFilter[f]=!_browseFilter[f];
+  renderBrowse(document.getElementById('browseSearch')?.value||'');
+}
+function toggleBrowseCat(label){
+  _browseOpenCats[label] = _browseOpenCats[label]===false ? true : false;
+  renderBrowse(document.getElementById('browseSearch')?.value||'');
+}
+function collapseAllBrowse(){
+  ['Travel','Descriptors','Questions','Connectors','Family','Relationships','Québec',
+   'Irregular Verbs','Regular Verbs','Permission','Jobs','Weather','Greetings','Navigation','Vocabulary'
+  ].forEach(l=>_browseOpenCats[l]=false);
+  renderBrowse(document.getElementById('browseSearch')?.value||'');
+}
+
+// ── SWIPE ACTIONS IN BROWSE ──
+let _bsStart={}, _bsActive={};
+function browseSwipeStart(e,id,pk,fr,en){
+  _bsStart[id]={x:e.touches[0].clientX, pk, fr, en};
+  _bsActive[id]=0;
+}
+function browseSwipeMove(e,id){
+  if(!_bsStart[id]) return;
+  const dx=e.touches[0].clientX-_bsStart[id].x;
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(Math.abs(dx)>8){
+    e.preventDefault();
+    el.style.transform=`translateX(${Math.max(-120,Math.min(120,dx))}px)`;
+    _bsActive[id]=dx;
+  }
+}
+function browseSwipeEnd(e,id,pk,fr,en){
+  const dx=_bsActive[id]||0;
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.style.transform='';
+  if(Math.abs(dx)>60){
+    if(dx<0){
+      // Swipe left = master toggle
+      const isMast=!!mastered[pk];
+      if(isMast){delete mastered[pk];probs[pk+'|fr']=PROB_DEFAULT;probs[pk+'|en']=PROB_DEFAULT;}
+      else{markMastered(pk);}
+      saveProgress();invalidateTierCache();
+      showToast(isMast?'Unmarked as mastered':'Marked as mastered ★');
+      setTimeout(()=>renderBrowse(document.getElementById('browseSearch')?.value||''),300);
+    } else {
+      // Swipe right = flag toggle
+      const nowFlagged=toggleFlag(fr,en,'');
+      showToast(nowFlagged?'⚑ Flagged for review':'Flag removed');
+      setTimeout(()=>renderBrowse(document.getElementById('browseSearch')?.value||''),300);
+    }
+  }
+  delete _bsStart[id]; delete _bsActive[id];
+}
+function browseSwipeCancel(id){
+  const el=document.getElementById(id);
+  if(el) el.style.transform='';
+  delete _bsStart[id]; delete _bsActive[id];
+}
 
 function renderFlagged() {
   const flags = loadFlags();
@@ -1909,111 +2507,8 @@ function browseLongPress(e, probKey) {
 }
 
 
-let _blt=null,_blk=null;
-function bts(e,k){_blk=k;_blt=setTimeout(()=>blp(null,k),600);}
-function bte(){clearTimeout(_blt);_blt=null;}
-function blp(e,k){
-  if(e)e.preventDefault();clearTimeout(_blt);
-  const isMast=!!mastered[k];
-  if(isMast){delete mastered[k];probs[k+'|fr']=PROB_DEFAULT;probs[k+'|en']=PROB_DEFAULT;saveProgress();showToast('Unmarked as mastered');}
-  else{markMastered(k);saveProgress();showToast('Marked as mastered ★');}
-  renderBrowse(document.getElementById('browseSearch')?.value||'');
-}
-
-function renderBrowse(query='') {
-  const q = query.toLowerCase().trim();
-  const allPools = [
-    {label:'Travel', cards:TRAVEL_POOL},
-    {label:'Descriptors', cards:DESCRIPTOR_POOL},
-    {label:'Questions', cards:QUESTION_POOL},
-    {label:'Connectors', cards:CONNECTOR_POOL},
-    {label:'Irregular Verbs', cards:VERB_POOL.filter(c=>c.cat==='irregular')},
-    {label:'Regular Verbs', cards:VERB_POOL.filter(c=>c.cat==='regular')},
-    {label:'Permission', cards:PERM_POOL},
-    {label:'Jobs', cards:JOB_POOL},
-    {label:'Weather', cards:PHRASE_POOL.filter(c=>c.cat==='weather')},
-    {label:'Greetings', cards:PHRASE_POOL.filter(c=>c.cat==='greet')},
-    {label:'Navigation', cards:[...VOCAB_POOL.filter(c=>c.cat==='nav'), ...PHRASE_POOL.filter(c=>c.cat==='nav')]},
-    {label:'Vocabulary', cards:VOCAB_POOL.filter(c=>!['nav'].includes(c.cat))},
-  ];
-
-  const rows = allPools.map(({label, cards}) => {
-    const filtered = cards.filter(c =>
-      !q || c.fr.toLowerCase().includes(q) || c.en.toLowerCase().includes(q)
-    );
-    // De-dup by probKey
-    const seen = new Set();
-    const unique = filtered.filter(c => { if(seen.has(c.probKey)) return false; seen.add(c.probKey); return true; });
-    if (!unique.length) return '';
-    const rowsHtml = unique.map(c => {
-      const pFr = probs[c.probKey+'|fr'] ?? PROB_DEFAULT;
-      const pEn = probs[c.probKey+'|en'] ?? PROB_DEFAULT;
-      const pct = Math.round(((pFr+pEn)/2)*100);
-      const isNew = isNewCard(addedDateByKey[c.probKey]||null);
-      const isMast = !!mastered[c.probKey];
-      const pkSafe = c.probKey.replace(/['"]/g,'');
-      return `<div class="browse-row ${isMast?'mastered-row':''}"
-        oncontextmenu="browseLongPress(event,'${pkSafe}')"
-        ontouchstart="browseTouchStart(event,'${pkSafe}')"
-        ontouchend="browseTouchEnd(event)"
-        ontouchcancel="browseTouchEnd(event)">
-        ${isNew?'<span class="browse-new-dot"></span>':''}
-        <span class="browse-fr">${stripGender(c.fr)}</span>
-        <span class="browse-en">${c.en}</span>
-        <span class="browse-recall ${isMast?'mastered-pct':''}">${isMast?'★':pct+'%'}</span>
-      </div>`;
-    }).join('');
-    return `<div class="browse-cat-label">${label} (${unique.length})</div>${rowsHtml}`;
-  }).join('');
-
-  document.getElementById('app').innerHTML = `
-    <div class="browse-screen">
-      <div class="browse-header">
-        <h2>All Cards</h2>
-        <input class="browse-search" type="search" placeholder="Search…" value="${query}"
-          oninput="renderBrowse(this.value)" id="browseSearch"/>
-        <button class="icon-btn" onclick="goHome()">✕</button>
-      </div>
-      <div class="browse-list">${rows||'<div style="padding:20px;color:var(--dim);text-align:center">No cards found</div>'}</div>
-    </div>`;
-  // Don't auto-focus on mobile — prevents keyboard popping immediately
-}
 
 
-function handleFlag(e) {
-  e.stopPropagation();
-  if (!currentCard) return;
-  const nowFlagged = toggleFlag(currentCard.fr, currentCard.en, currentCard.cat||'unknown');
-  // Update both flag buttons without re-rendering the whole card
-  ['flagBtn','flagBtnBack'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.classList.toggle('flagged', nowFlagged);
-  });
-  showToast(nowFlagged ? '⚑ Flagged for review' : 'Flag removed');
-}
-
-
-// ── LONG-PRESS RESET ──
-let _resetHoldTimer = null;
-function startResetHold(e) {
-  if(e) e.preventDefault();
-  const btn = document.getElementById('resetLpBtn');
-  btn?.classList.add('holding');
-  _resetHoldTimer = setTimeout(() => {
-    cancelResetHold();
-    confirmReset();
-  }, 800);
-}
-function cancelResetHold() {
-  clearTimeout(_resetHoldTimer);
-  _resetHoldTimer = null;
-  document.getElementById('resetLpBtn')?.classList.remove('holding');
-}
-
-
-let _rhTimer=null;
-function startRH(e){if(e)e.preventDefault();document.getElementById('resetLpBtn')?.classList.add('holding');_rhTimer=setTimeout(()=>{cancelRH();confirmReset();},800);}
-function cancelRH(){clearTimeout(_rhTimer);_rhTimer=null;document.getElementById('resetLpBtn')?.classList.remove('holding');}
 
 // ═══════════════════════════════════════════════════
 // MODALS / UTILS
@@ -2181,6 +2676,20 @@ function speakerMutedIcon(){
     <line x1="23" y1="9" x2="17" y2="15"/>
     <line x1="17" y1="9" x2="23" y2="15"/>
   </svg>`;
+}
+
+
+// ── AUTO-CLEAR FLAGS IF CARD CONTENT CHANGED ──
+function checkAndClearStaleFlags() {
+  const flags = loadFlags();
+  if (!flags.length) return;
+  const allCards = [...VOCAB_POOL,...PHRASE_POOL,...JOB_POOL,...VERB_POOL,...PERM_POOL,
+    ...TRAVEL_POOL,...DESCRIPTOR_POOL,...QUESTION_POOL,...CONNECTOR_POOL,
+    ...(FAMILY_POOL||[]),...(RELATIONSHIP_POOL||[]),...(QUEBEC_POOL||[])];
+  const currentContent = new Map();
+  allCards.forEach(c => currentContent.set(c.fr+'||'+c.en, true));
+  const kept = flags.filter(f => currentContent.has(f.fr+'||'+f.en));
+  if (kept.length < flags.length) saveFlags(kept);
 }
 
 function speakFrench(text) {
