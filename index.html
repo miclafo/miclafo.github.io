@@ -1806,6 +1806,111 @@ const ADAPTIVE_KEYS=Object.keys(ADAPTIVE_GENS);
 
 
 
+
+// ═══════════════════════════════════════════════════
+// SUPABASE SYNC ENGINE
+// ═══════════════════════════════════════════════════
+const SB_URL = 'https://gffhavwmlfpnadeniwop.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmZmhhdndtbGZwbmFkZW5pd29wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwODAwOTIsImV4cCI6MjA5OTY1NjA5Mn0.ob-oEU38z0yz0oU0R3yj49YRhHV1yl_QeYuu5ZC2AWU';
+const SB_STORAGE_KEY = 'sb_user_id';
+
+// ── Anonymous user ID (persists in localStorage) ──
+function getSbUserId() {
+  let id = localStorage.getItem(SB_STORAGE_KEY);
+  if (!id) {
+    id = 'anon_' + Math.random().toString(36).slice(2) + '_' + Date.now();
+    localStorage.setItem(SB_STORAGE_KEY, id);
+  }
+  return id;
+}
+
+// ── Supabase fetch helper ──
+async function sbFetch(path, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'resolution=merge-duplicates' : '',
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(SB_URL + path, opts);
+    if (!r.ok) { console.warn('SB error', r.status, await r.text()); return null; }
+    return method === 'DELETE' ? true : await r.json();
+  } catch(e) {
+    console.warn('SB fetch failed (offline?):', e.message);
+    return null;
+  }
+}
+
+// ── SYNC: push local progress to Supabase ──
+let _syncPending = false;
+let _syncTimer = null;
+function scheduleSbSync() {
+  // Debounce — sync at most once every 10 seconds
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(doSbSync, 10000);
+}
+
+async function doSbSync() {
+  const userId = getSbUserId();
+  const payload = {
+    user_id: userId,
+    probs: JSON.stringify(probs),
+    mastered: JSON.stringify(mastered),
+    flags: JSON.stringify(loadFlags()),
+    updated_at: new Date().toISOString(),
+  };
+  const result = await sbFetch('/rest/v1/progress', 'POST', payload);
+  if (result !== null) {
+    console.log('✓ Synced to Supabase');
+    showSyncIndicator(true);
+  } else {
+    console.warn('Sync failed — will retry next save');
+    showSyncIndicator(false);
+  }
+}
+
+// ── LOAD: pull progress from Supabase on startup ──
+async function loadFromSupabase() {
+  const userId = getSbUserId();
+  const data = await sbFetch(`/rest/v1/progress?user_id=eq.${userId}&select=*`);
+  if (!data || !data.length) {
+    console.log('No Supabase data yet — using local storage');
+    return false;
+  }
+  const row = data[0];
+  try {
+    const sbProbs    = JSON.parse(row.probs    || '{}');
+    const sbMastered = JSON.parse(row.mastered || '{}');
+    const sbFlags    = JSON.parse(row.flags    || '[]');
+    // Merge: Supabase wins for any key it has, local fills in the rest
+    Object.assign(probs, sbProbs);
+    Object.assign(mastered, sbMastered);
+    saveFlags(sbFlags);
+    saveProgress(); // write merged back to localStorage
+    console.log('✓ Loaded from Supabase');
+    return true;
+  } catch(e) {
+    console.warn('Failed to parse Supabase data:', e);
+    return false;
+  }
+}
+
+// ── Sync indicator (small dot on home screen) ──
+let _lastSyncOk = null;
+function showSyncIndicator(ok) {
+  _lastSyncOk = ok;
+  const el = document.getElementById('syncDot');
+  if (el) {
+    el.style.background = ok ? 'var(--green)' : 'var(--red)';
+    el.title = ok ? 'Synced to cloud ✓' : 'Sync failed — offline?';
+  }
+}
+
 // ── LEARNED % (logarithmic scale) ──
 // prob 0.5 → 40% learned, 0.1 → 80% learned
 function probToLearned(prob) {
@@ -2369,7 +2474,10 @@ function renderHome(){
 
   document.getElementById('app').innerHTML=`
     <div class="home">
-      <div class="serif-i home-title">Français</div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+        <div class="serif-i home-title">Français</div>
+        <div id="syncDot" style="width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .5s" title="Cloud sync status"></div>
+      </div>
       <div class="home-sub">Quebec French · A1</div>
 
       ${renderTierProgress()}
@@ -3232,6 +3340,7 @@ function autoSaveProgress() {
 function manualExport() {
   const ok = triggerDownload(buildBackupPayload());
   showToast(ok ? 'Progress exported ✓' : 'Export failed — try again');
+  doSbSync(); // immediate sync on manual save
 }
 
 function importProgress(file) {
@@ -3354,6 +3463,13 @@ if('speechSynthesis' in window){
 // ═══════════════════════════════════════════════════
 initProbs();
 render();
+// Load from Supabase after initial render (non-blocking)
+loadFromSupabase().then(loaded => {
+  if (loaded) {
+    invalidateTierCache();
+    if (screen === 'home') renderHome();
+  }
+});
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
