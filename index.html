@@ -101,7 +101,7 @@
     .cat-chev{font-size:12px;transition:transform .2s}
     .cat-disc-btn.open .cat-chev{transform:rotate(180deg)}
     .cat-disc-body{display:none;background:var(--surface);border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--shape-lg) var(--shape-lg);padding:10px}
-    .cat-disc-body.open{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .cat-disc-body.open{display:block}
     .cat-active{font-size:12px;color:var(--accent);font-weight:500}
 
     /* ── TIER PROGRESS ── */
@@ -129,6 +129,11 @@
     /* ── FLOATING SAVE ── */
     .fab-save{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+20px);right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-on);border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:50;transition:transform .15s}
     .fab-save:active{transform:scale(.92)}
+
+    /* ── GROUPED CATEGORY TOGGLES ── */
+    .cat-book-group{width:100%;margin-bottom:8px}
+    .cat-book-header{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;padding-left:2px;font-weight:600}
+    .cat-grid-inner{display:grid;grid-template-columns:1fr 1fr;gap:6px}
     /* ── TOPBAR ── */
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px)+12px) max(16px,env(safe-area-inset-right,16px)) 8px max(16px,env(safe-area-inset-left,16px));z-index:10;gap:8px;flex-shrink:0}
     .topbar-left{display:flex;align-items:center;gap:6px}
@@ -297,6 +302,7 @@
 // ═══════════════════════════════════════════════════════════════
 //
 // NEXT AVAILABLE ID: 440
+// NEXT A2 ID BLOCK: 500+
 //
 // ID RULES — read before editing:
 //   • Never change or reuse an existing id — ever
@@ -318,171 +324,171 @@ const DB = {
   // disabled:true   = hidden from deck but id is reserved
   vocab: [
     // Prepositions (no article)
-    {id:1, p:1, known:true, added:'2025-05-10',  base:'sous',            enBase:'under / beneath',        g:null, noArticle:true},
-    {id:2, p:1, known:true, added:'2025-05-10',  base:'sur',             enBase:'on / on top of',         g:null, noArticle:true},
-    {id:3, p:1, known:true, added:'2025-05-10',  base:'devant',          enBase:'in front of',            g:null, noArticle:true},
-    {id:4, p:1, known:true, added:'2025-05-10',  base:'derrière',        enBase:'behind',                 g:null, noArticle:true},
-    {id:5, p:1, known:true, added:'2025-05-10',  base:'dans',            enBase:'in / inside',            g:null, noArticle:true},
+    {id:1, p:1, level:"a1", known:true, added:'2025-05-10',  base:'sous',            enBase:'under / beneath',        g:null, noArticle:true, cat:'ep3'},
+    {id:2, p:1, level:"a1", known:true, added:'2025-05-10',  base:'sur',             enBase:'on / on top of',         g:null, noArticle:true, cat:'ep3'},
+    {id:3, p:1, level:"a1", known:true, added:'2025-05-10',  base:'devant',          enBase:'in front of',            g:null, noArticle:true, cat:'ep3'},
+    {id:4, p:1, level:"a1", known:true, added:'2025-05-10',  base:'derrière',        enBase:'behind',                 g:null, noArticle:true, cat:'ep3'},
+    {id:5, p:1, level:"a1", known:true, added:'2025-05-10',  base:'dans',            enBase:'in / inside',            g:null, noArticle:true, cat:'ep3'},
 
     // Masculine nouns
-    {id:6, p:2, added:'2025-05-10',  base:'calendrier',      enBase:'calendar',               g:'m'},
-    {id:7, p:2, added:'2025-05-10',  base:'bac à recyclage', enBase:'recycling bin',          g:'m'},
-    {id:8, p:2, added:'2025-05-10',  base:'tableau',         enBase:'board / chalkboard',     g:'m'},
-    {id:9, p:2, added:'2025-05-10',  base:'bureau',          enBase:'desk',                   g:'m'},
-    {id:10, p:2, added:'2025-05-10', base:'parapluie',       enBase:'umbrella',               g:'m'},
-    {id:11, p:3, added:'2025-05-10', base:'manteau',         enBase:'coat',                   g:'m'},
-    {id:12, p:3, added:'2025-05-10', base:'sac à dos',       enBase:'backpack',               g:'m'},
-    {id:13, p:3, added:'2025-05-10', base:'sac à main',      enBase:'purse / handbag',        g:'m'},
-    {id:14, p:2, added:'2025-05-10', base:'cellulaire',      enBase:'cell phone',             g:'m'},
-    {id:15, p:3, added:'2025-05-10', base:'étui à crayons',  enBase:'pencil case',            g:'m'},
-    {id:16, p:2, added:'2025-05-10', base:'stylo',           enBase:'pen',                    g:'m'},
-    {id:17, p:2, added:'2025-05-10', base:'cahier',          enBase:'notebook',               g:'m'},
-    {id:18, p:2, added:'2025-05-10', base:'guichet',         enBase:'counter / wicket',       g:'m'},
+    {id:6, p:2, level:"a1", added:'2025-05-10',  base:'calendrier',      enBase:'calendar',               g:'m', cat:'ep14'},
+    {id:7, p:2, level:"a1", added:'2025-05-10',  base:'bac à recyclage', enBase:'recycling bin',          g:'m', cat:'ep14'},
+    {id:8, p:2, level:"a1", added:'2025-05-10',  base:'tableau',         enBase:'board / chalkboard',     g:'m', cat:'ep14'},
+    {id:9, p:2, level:"a1", added:'2025-05-10',  base:'bureau',          enBase:'desk',                   g:'m', cat:'ep14'},
+    {id:10, p:2, level:"a1", added:'2025-05-10', base:'parapluie',       enBase:'umbrella',               g:'m', cat:'ep14'},
+    {id:11, p:3, level:"a1", added:'2025-05-10', base:'manteau',         enBase:'coat',                   g:'m', cat:'ep14'},
+    {id:12, p:3, level:"a1", added:'2025-05-10', base:'sac à dos',       enBase:'backpack',               g:'m', cat:'ep14'},
+    {id:13, p:3, level:"a1", added:'2025-05-10', base:'sac à main',      enBase:'purse / handbag',        g:'m', cat:'ep14'},
+    {id:14, p:2, level:"a1", added:'2025-05-10', base:'cellulaire',      enBase:'cell phone',             g:'m', cat:'ep14'},
+    {id:15, p:3, level:"a1", added:'2025-05-10', base:'étui à crayons',  enBase:'pencil case',            g:'m', cat:'ep14'},
+    {id:16, p:2, level:"a1", added:'2025-05-10', base:'stylo',           enBase:'pen',                    g:'m', cat:'ep14'},
+    {id:17, p:2, level:"a1", added:'2025-05-10', base:'cahier',          enBase:'notebook',               g:'m', cat:'ep14'},
+    {id:18, p:2, level:"a1", added:'2025-05-10', base:'guichet',         enBase:'counter / wicket',       g:'m', cat:'ep14'},
 
     // Masculine vowel-start (l' article)
-    {id:19, p:2, added:'2025-05-10', base:'ordinateur',      enBase:'computer',               g:'m', vowelStart:true},
-    {id:20, p:2, added:'2025-05-10', base:'ascenseur',       enBase:'elevator',               g:'m', vowelStart:true},
-    {id:21, p:2, added:'2025-05-10', base:'accueil',         enBase:'reception / front desk', g:'m', vowelStart:true},
-    {id:22, p:2, added:'2025-05-10', base:'abreuvoir',       enBase:'water fountain',         g:'m', vowelStart:true},
-    {id:23, p:3, added:'2025-05-10', base:'éclair',          enBase:'lightning',              g:'m', vowelStart:true},
-    {id:24, p:3, added:'2025-05-10', base:'hiver',           enBase:'winter',                 g:'m', vowelStart:true},
-    {id:25, p:4, added:'2025-05-10', base:'été',             enBase:'summer',                 g:'m', vowelStart:true},
-    {id:26, p:4, added:'2025-05-10', base:'automne',         enBase:'autumn / fall',          g:'m', vowelStart:true},
+    {id:19, p:2, level:"a1", added:'2025-05-10', base:'ordinateur',      enBase:'computer',               g:'m', vowelStart:true, cat:'ep14'},
+    {id:20, p:2, level:"a1", added:'2025-05-10', base:'ascenseur',       enBase:'elevator',               g:'m', vowelStart:true, cat:'ep14'},
+    {id:21, p:2, level:"a1", added:'2025-05-10', base:'accueil',         enBase:'reception / front desk', g:'m', vowelStart:true, cat:'ep14'},
+    {id:22, p:2, level:"a1", added:'2025-05-10', base:'abreuvoir',       enBase:'water fountain',         g:'m', vowelStart:true, cat:'ep14'},
+    {id:23, p:3, level:"a1", added:'2025-05-10', base:'éclair',          enBase:'lightning',              g:'m', vowelStart:true, cat:'ep14'},
+    {id:24, p:3, level:"a1", added:'2025-05-10', base:'hiver',           enBase:'winter',                 g:'m', vowelStart:true, cat:'ep14'},
+    {id:25, p:4, level:"a1", added:'2025-05-10', base:'été',             enBase:'summer',                 g:'m', vowelStart:true, cat:'ep14'},
+    {id:26, p:4, level:"a1", added:'2025-05-10', base:'automne',         enBase:'autumn / fall',          g:'m', vowelStart:true, cat:'ep3'},
 
     // Feminine nouns
-    {id:27, p:3, added:'2025-05-10', base:'poubelle',        enBase:'garbage can',            g:'f'},
-    {id:28, p:3, added:'2025-05-10', base:'chaise',          enBase:'chair',                  g:'f'},
-    {id:29, p:3, added:'2025-05-10', base:'lampe',           enBase:'lamp',                   g:'f'},
-    {id:30, p:3, added:'2025-05-10', base:'affiche',         enBase:'poster',                 g:'f'},
-    {id:31, p:3, added:'2025-05-10', base:'plante',          enBase:'plant',                  g:'f'},
-    {id:32, p:3, added:'2025-05-10', base:'porte',           enBase:'door',                   g:'f'},
-    {id:33, p:3, added:'2025-05-10', base:'fenêtre',         enBase:'window',                 g:'f'},
-    {id:34, p:3, added:'2025-05-10', base:'imprimante',      enBase:'printer',                g:'f'},
-    {id:35, p:3, added:'2025-05-10', base:'souris',          enBase:'mouse',                  g:'f'},
-    {id:36, p:3, added:'2025-05-10', base:'veste',           enBase:'jacket',                 g:'f'},
-    {id:37, p:3, added:'2025-05-10', base:'étagère',         enBase:'shelf',                  g:'f'},
-    {id:38, p:3, added:'2025-05-10', base:'table',           enBase:'table',                  g:'f'},
-    {id:39, p:3, added:'2025-05-10', base:'efface',          enBase:'eraser',                 g:'f'},
-    {id:40, p:3, added:'2025-05-10', base:'montre',          enBase:'watch',                  g:'f'},
-    {id:41, p:3, added:'2025-05-10', base:'tablette électronique', enBase:'electronic tablet',g:'f'},
-    {id:42, p:3, added:'2025-05-10', base:'température',     enBase:'temperature',            g:'f'},
-    {id:43, p:3, added:'2025-05-10', base:'météo',           enBase:'forecast',               g:'f'},
-    {id:44, p:3, added:'2025-05-10', base:'saison',          enBase:'season',                 g:'f'},
-    {id:45, p:3, added:'2025-05-10', base:'pluie',           enBase:'rain',                   g:'f'},
-    {id:46, p:3, added:'2025-05-10', base:'neige',           enBase:'snow',                   g:'f'},
-    {id:47, p:3, added:'2025-05-10', base:'tempête',         enBase:'storm',                  g:'f'},
-    {id:48, p:3, added:'2025-05-10', base:'glace',           enBase:'ice',                    g:'f'},
+    {id:27, p:3, level:"a1", added:'2025-05-10', base:'poubelle',        enBase:'garbage can',            g:'f', cat:'ep3'},
+    {id:28, p:3, level:"a1", added:'2025-05-10', base:'chaise',          enBase:'chair',                  g:'f', cat:'ep3'},
+    {id:29, p:3, level:"a1", added:'2025-05-10', base:'lampe',           enBase:'lamp',                   g:'f', cat:'ep3'},
+    {id:30, p:3, level:"a1", added:'2025-05-10', base:'affiche',         enBase:'poster',                 g:'f', cat:'ep3'},
+    {id:31, p:3, level:"a1", added:'2025-05-10', base:'plante',          enBase:'plant',                  g:'f', cat:'ep3'},
+    {id:32, p:3, level:"a1", added:'2025-05-10', base:'porte',           enBase:'door',                   g:'f', cat:'ep3'},
+    {id:33, p:3, level:"a1", added:'2025-05-10', base:'fenêtre',         enBase:'window',                 g:'f', cat:'ep3'},
+    {id:34, p:3, level:"a1", added:'2025-05-10', base:'imprimante',      enBase:'printer',                g:'f', cat:'ep3'},
+    {id:35, p:3, level:"a1", added:'2025-05-10', base:'souris',          enBase:'mouse',                  g:'f', cat:'ep3'},
+    {id:36, p:3, level:"a1", added:'2025-05-10', base:'veste',           enBase:'jacket',                 g:'f', cat:'ep3'},
+    {id:37, p:3, level:"a1", added:'2025-05-10', base:'étagère',         enBase:'shelf',                  g:'f', cat:'ep3'},
+    {id:38, p:3, level:"a1", added:'2025-05-10', base:'table',           enBase:'table',                  g:'f', cat:'ep3'},
+    {id:39, p:3, level:"a1", added:'2025-05-10', base:'efface',          enBase:'eraser',                 g:'f', cat:'ep3'},
+    {id:40, p:3, level:"a1", added:'2025-05-10', base:'montre',          enBase:'watch',                  g:'f', cat:'ep3'},
+    {id:41, p:3, level:"a1", added:'2025-05-10', base:'tablette électronique', enBase:'electronic tablet',g:'f', cat:'ep3'},
+    {id:42, p:3, level:"a1", added:'2025-05-10', base:'température',     enBase:'temperature',            g:'f', cat:'ep3'},
+    {id:43, p:3, level:"a1", added:'2025-05-10', base:'météo',           enBase:'forecast',               g:'f', cat:'ep3'},
+    {id:44, p:3, level:"a1", added:'2025-05-10', base:'saison',          enBase:'season',                 g:'f', cat:'ep3'},
+    {id:45, p:3, level:"a1", added:'2025-05-10', base:'pluie',           enBase:'rain',                   g:'f', cat:'ep3'},
+    {id:46, p:3, level:"a1", added:'2025-05-10', base:'neige',           enBase:'snow',                   g:'f', cat:'ep3'},
+    {id:47, p:3, level:"a1", added:'2025-05-10', base:'tempête',         enBase:'storm',                  g:'f', cat:'ep3'},
+    {id:48, p:3, level:"a1", added:'2025-05-10', base:'glace',           enBase:'ice',                    g:'f', cat:'ep3'},
 
     // Feminine vowel-start
-    {id:49, p:5, added:'2025-05-10', base:'efface',          enBase:'eraser',                 g:'f', vowelStart:true, disabled:true}, // duplicate of id:39, kept for id reservation
+    {id:49, p:5, level:"a1", added:'2025-05-10', base:'efface',          enBase:'eraser',                 g:'f', vowelStart:true, disabled:true, cat:'ep3'}, // duplicate of id:39, kept for id reservation
 
     // Masculine weather/nav (non-vowel)
-    {id:50, p:3, added:'2025-05-10', base:'soleil',          enBase:'sun',                    g:'m'},
-    {id:51, p:3, added:'2025-05-10', base:'vent',            enBase:'wind',                   g:'m'},
-    {id:52, p:3, added:'2025-05-10', base:'nuage',           enBase:'cloud',                  g:'m'},
-    {id:53, p:3, added:'2025-05-10', base:'brouillard',      enBase:'fog',                    g:'m'},
-    {id:54, p:3, added:'2025-05-10', base:'givre',           enBase:'frost',                  g:'m'},
-    {id:55, p:3, added:'2025-05-10', base:'tonnerre',        enBase:'thunder',                g:'m'},
-    {id:56, p:3, added:'2025-05-10', base:'printemps',       enBase:'spring',                 g:'m'},
-    {id:57, p:3, added:'2025-05-10', base:'degré',           enBase:'degree',                 g:'m'},
+    {id:50, p:3, level:"a1", added:'2025-05-10', base:'soleil',          enBase:'sun',                    g:'m', cat:'ep3'},
+    {id:51, p:3, level:"a1", added:'2025-05-10', base:'vent',            enBase:'wind',                   g:'m', cat:'ep3'},
+    {id:52, p:3, level:"a1", added:'2025-05-10', base:'nuage',           enBase:'cloud',                  g:'m', cat:'ep3'},
+    {id:53, p:3, level:"a1", added:'2025-05-10', base:'brouillard',      enBase:'fog',                    g:'m', cat:'ep3'},
+    {id:54, p:3, level:"a1", added:'2025-05-10', base:'givre',           enBase:'frost',                  g:'m', cat:'ep3'},
+    {id:55, p:3, level:"a1", added:'2025-05-10', base:'tonnerre',        enBase:'thunder',                g:'m', cat:'ep3'},
+    {id:56, p:3, level:"a1", added:'2025-05-10', base:'printemps',       enBase:'spring',                 g:'m', cat:'ep3'},
+    {id:57, p:3, level:"a1", added:'2025-05-10', base:'degré',           enBase:'degree',                 g:'m', cat:'ep3'},
 
     // Nav adverbs (no article)
-    {id:58, p:1, known:true, added:'2025-05-10', base:'gauche',          enBase:'left',                   g:null, noArticle:true},
-    {id:59, p:1, known:true, added:'2025-05-10', base:'droite',          enBase:'right',                  g:null, noArticle:true},
-    {id:60, p:1, added:'2025-05-10', base:'en face',         enBase:'across / facing',        g:null, noArticle:true},
-    {id:61, p:1, added:'2025-05-10', base:'à côté',          enBase:'beside / next to',       g:null, noArticle:true},
-    {id:62, p:1, added:'2025-05-10', base:'au bout',         enBase:'at the end',             g:null, noArticle:true},
-    {id:63, p:1, added:'2025-05-10', base:'loin',            enBase:'far',                    g:null, noArticle:true},
-    {id:64, p:1, added:'2025-05-10', base:'près',            enBase:'near / close',           g:null, noArticle:true},
-    {id:65, p:1, added:'2025-05-10', base:'au-dessus',       enBase:'above / over',           g:null, noArticle:true},
+    {id:58, p:1, level:"a1", known:true, added:'2025-05-10', base:'gauche',          enBase:'left',                   g:null, noArticle:true, cat:'ep6'},
+    {id:59, p:1, level:"a1", known:true, added:'2025-05-10', base:'droite',          enBase:'right',                  g:null, noArticle:true, cat:'ep6'},
+    {id:60, p:1, level:"a1", added:'2025-05-10', base:'en face',         enBase:'across / facing',        g:null, noArticle:true, cat:'ep6'},
+    {id:61, p:1, level:"a1", added:'2025-05-10', base:'à côté',          enBase:'beside / next to',       g:null, noArticle:true, cat:'ep6'},
+    {id:62, p:1, level:"a1", added:'2025-05-10', base:'au bout',         enBase:'at the end',             g:null, noArticle:true, cat:'ep6'},
+    {id:63, p:1, level:"a1", added:'2025-05-10', base:'loin',            enBase:'far',                    g:null, noArticle:true, cat:'ep6'},
+    {id:64, p:1, level:"a1", added:'2025-05-10', base:'près',            enBase:'near / close',           g:null, noArticle:true, cat:'ep6'},
+    {id:65, p:1, level:"a1", added:'2025-05-10', base:'au-dessus',       enBase:'above / over',           g:null, noArticle:true, cat:'ep6'},
 
     // Plural only
-    {id:66, p:3, added:'2025-05-10', base:'clés',            enBase:'keys',                   g:'pf', pluralOnly:true},
-    {id:67, p:3, added:'2025-05-10', base:'livres',          enBase:'books',                  g:'pm', pluralOnly:true},
-    {id:68, p:3, added:'2025-05-10', base:'souliers',        enBase:'shoes',                  g:'pm', pluralOnly:true},
-    {id:69, p:3, added:'2025-05-10', base:'lunettes',        enBase:'glasses',                g:'pf', pluralOnly:true},
-    {id:70, p:3, added:'2025-05-10', base:'crayons',         enBase:'pencils',                g:'pm', pluralOnly:true},
-    {id:71, p:3, added:'2025-05-10', base:'dictionnaires',   enBase:'dictionaries',           g:'pm', pluralOnly:true},
-    {id:72, p:3, added:'2025-05-10', base:'feuilles',        enBase:'sheets of paper',        g:'pf', pluralOnly:true},
-    {id:73, p:3, added:'2025-05-10', base:'escaliers',       enBase:'stairs',                 g:'pm', pluralOnly:true},
+    {id:66, p:3, level:"a1", added:'2025-05-10', base:'clés',            enBase:'keys',                   g:'pf', pluralOnly:true, cat:'ep6'},
+    {id:67, p:3, level:"a1", added:'2025-05-10', base:'livres',          enBase:'books',                  g:'pm', pluralOnly:true, cat:'ep6'},
+    {id:68, p:3, level:"a1", added:'2025-05-10', base:'souliers',        enBase:'shoes',                  g:'pm', pluralOnly:true, cat:'ep6'},
+    {id:69, p:3, level:"a1", added:'2025-05-10', base:'lunettes',        enBase:'glasses',                g:'pf', pluralOnly:true, cat:'ep6'},
+    {id:70, p:3, level:"a1", added:'2025-05-10', base:'crayons',         enBase:'pencils',                g:'pm', pluralOnly:true, cat:'ep6'},
+    {id:71, p:3, level:"a1", added:'2025-05-10', base:'dictionnaires',   enBase:'dictionaries',           g:'pm', pluralOnly:true, cat:'ep6'},
+    {id:72, p:3, level:"a1", added:'2025-05-10', base:'feuilles',        enBase:'sheets of paper',        g:'pf', pluralOnly:true, cat:'ep6'},
+    {id:73, p:3, level:"a1", added:'2025-05-10', base:'escaliers',       enBase:'stairs',                 g:'pm', pluralOnly:true, cat:'ep6'},
   ],
 
   // ── STATIC PHRASE CARDS ───────────────────────────────────────
   phrases: [
     // Greetings
-    {id:101, p:1, known:true, added:'2025-05-10', fr:'Allô !',                           en:"Hi! / Hey!",                    cat:'greet'},
-    {id:102, p:1, known:true, added:'2025-05-10', fr:'Bonjour',                          en:"Good morning",                  cat:'greet'},
-    {id:103, p:1, known:true, added:'2025-05-10', fr:'Bonsoir',                          en:"Good evening",                  cat:'greet'},
-    {id:104, p:1, known:true, added:'2025-05-10', fr:'Bonne nuit',                       en:"Good night",                    cat:'greet'},
-    {id:105, p:1, added:'2025-05-10', fr:'Comment allez-vous ?',             en:"How are you? (formal)",         cat:'greet'},
-    {id:106, p:1, added:'2025-05-10', fr:'Comment ça va ?',                  en:"How are you? (informal)",       cat:'greet'},
-    {id:107, p:1, known:true, added:'2025-05-10', fr:'Ça va bien',                       en:"I'm doing well",                cat:'greet'},
-    {id:108, p:1, known:true, added:'2025-05-10', fr:'Pas pire',                         en:"Not bad / Pretty good",         cat:'greet'},
-    {id:109, p:1, added:'2025-05-10', fr:'Et toi ? / Et vous ?',             en:"And you? (informal / formal)",  cat:'greet'},
-    {id:110, p:1, added:'2025-05-10', fr:"Je m'appelle…",                    en:"My name is…",                   cat:'greet'},
-    {id:111, p:1, added:'2025-05-10', fr:'Enchanté(e)',                      en:"Nice to meet you",              cat:'greet'},
-    {id:112, p:1, added:'2025-05-10', fr:'À plus tard',                      en:"See you later",                 cat:'greet'},
-    {id:113, p:1, added:'2025-05-10', fr:'À demain',                         en:"See you tomorrow",              cat:'greet'},
-    {id:114, p:1, added:'2025-05-10', fr:'Bonne journée',                    en:"Have a good day",               cat:'greet'},
-    {id:115, p:1, added:'2025-05-10', fr:'Bonne soirée',                     en:"Have a good evening",           cat:'greet'},
-    {id:116, p:1, added:'2025-05-10', fr:"S'il vous plaît / S'il te plaît",  en:"Please (formal / informal)",    cat:'greet'},
-    {id:117, p:1, known:true, added:'2025-05-10', fr:'Merci',                            en:"Thank you",                     cat:'greet'},
-    {id:118, p:1, known:true, added:'2025-05-10', fr:'De rien / Bienvenue',              en:"You're welcome",                cat:'greet'},
-    {id:119, p:1, added:'2025-05-10', fr:'Je ne comprends pas',              en:"I don't understand",            cat:'greet'},
+    {id:101, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Allô !',                           en:"Hi! / Hey!", cat:'ep1'},
+    {id:102, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Bonjour',                          en:"Good morning", cat:'ep1'},
+    {id:103, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Bonsoir',                          en:"Good evening", cat:'ep1'},
+    {id:104, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Bonne nuit',                       en:"Good night", cat:'ep1'},
+    {id:105, p:1, level:"a1", added:'2025-05-10', fr:'Comment allez-vous ?',             en:"How are you? (formal)", cat:'ep1'},
+    {id:106, p:1, level:"a1", added:'2025-05-10', fr:'Comment ça va ?',                  en:"How are you? (informal)", cat:'ep1'},
+    {id:107, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Ça va bien',                       en:"I'm doing well", cat:'ep1'},
+    {id:108, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Pas pire',                         en:"Not bad / Pretty good", cat:'ep1'},
+    {id:109, p:1, level:"a1", added:'2025-05-10', fr:'Et toi ? / Et vous ?',             en:"And you? (informal / formal)", cat:'ep1'},
+    {id:110, p:1, level:"a1", added:'2025-05-10', fr:"Je m'appelle…",                    en:"My name is…", cat:'ep1'},
+    {id:111, p:1, level:"a1", added:'2025-05-10', fr:'Enchanté(e)',                      en:"Nice to meet you", cat:'ep1'},
+    {id:112, p:1, level:"a1", added:'2025-05-10', fr:'À plus tard',                      en:"See you later", cat:'ep1'},
+    {id:113, p:1, level:"a1", added:'2025-05-10', fr:'À demain',                         en:"See you tomorrow", cat:'ep1'},
+    {id:114, p:1, level:"a1", added:'2025-05-10', fr:'Bonne journée',                    en:"Have a good day", cat:'ep1'},
+    {id:115, p:1, level:"a1", added:'2025-05-10', fr:'Bonne soirée',                     en:"Have a good evening", cat:'ep1'},
+    {id:116, p:1, level:"a1", added:'2025-05-10', fr:"S'il vous plaît / S'il te plaît",  en:"Please (formal / informal)", cat:'ep1'},
+    {id:117, p:1, level:"a1", known:true, added:'2025-05-10', fr:'Merci',                            en:"Thank you", cat:'ep1'},
+    {id:118, p:1, level:"a1", known:true, added:'2025-05-10', fr:'De rien / Bienvenue',              en:"You're welcome", cat:'ep1'},
+    {id:119, p:1, level:"a1", added:'2025-05-10', fr:'Je ne comprends pas',              en:"I don't understand", cat:'ep1'},
 
     // Weather phrases
-    {id:120, p:2, added:'2025-05-10', fr:'Quel temps fait-il ?',             en:"What's the weather like?",      cat:'weather'},
-    {id:121, p:2, added:'2025-05-10', fr:'Il fait beau',                     en:"It's nice out",                 cat:'weather'},
-    {id:122, p:2, added:'2025-05-10', fr:'Il fait froid',                    en:"It's cold",                     cat:'weather'},
-    {id:123, p:2, added:'2025-05-10', fr:'Il fait chaud',                    en:"It's hot",                      cat:'weather'},
-    {id:124, p:2, added:'2025-05-10', fr:'Il pleut',                         en:"It's raining",                  cat:'weather'},
-    {id:125, p:2, added:'2025-05-10', fr:'Il neige',                         en:"It's snowing",                  cat:'weather'},
-    {id:126, p:2, added:'2025-05-10', fr:'Il fait du vent / Il vente',       en:"It's windy",                    cat:'weather'},
-    {id:127, p:2, added:'2025-05-10', fr:'Il est nuageux',                   en:"It's cloudy",                   cat:'weather'},
-    {id:128, p:2, added:'2025-05-10', fr:'Il fait soleil',                   en:"It's sunny",                    cat:'weather'},
-    {id:129, p:2, added:'2025-05-10', fr:'Il fait frette / Il gèle',         en:"It's freezing",                 cat:'weather'},
-    {id:130, p:2, added:'2025-05-10', fr:"Il y a une tempête",               en:"There's a storm",               cat:'weather'},
-    {id:131, p:2, added:'2025-05-10', fr:"Il fait beau aujourd'hui",         en:"The weather is nice today",     cat:'weather'},
+    {id:120, p:2, level:"a1", added:'2025-05-10', fr:'Quel temps fait-il ?',             en:"What's the weather like?", cat:'ep14'},
+    {id:121, p:2, level:"a1", added:'2025-05-10', fr:'Il fait beau',                     en:"It's nice out", cat:'ep14'},
+    {id:122, p:2, level:"a1", added:'2025-05-10', fr:'Il fait froid',                    en:"It's cold", cat:'ep14'},
+    {id:123, p:2, level:"a1", added:'2025-05-10', fr:'Il fait chaud',                    en:"It's hot", cat:'ep14'},
+    {id:124, p:2, level:"a1", added:'2025-05-10', fr:'Il pleut',                         en:"It's raining", cat:'ep14'},
+    {id:125, p:2, level:"a1", added:'2025-05-10', fr:'Il neige',                         en:"It's snowing", cat:'ep14'},
+    {id:126, p:2, level:"a1", added:'2025-05-10', fr:'Il fait du vent / Il vente',       en:"It's windy", cat:'ep14'},
+    {id:127, p:2, level:"a1", added:'2025-05-10', fr:'Il est nuageux',                   en:"It's cloudy", cat:'ep14'},
+    {id:128, p:2, level:"a1", added:'2025-05-10', fr:'Il fait soleil',                   en:"It's sunny", cat:'ep14'},
+    {id:129, p:2, level:"a1", added:'2025-05-10', fr:'Il fait frette / Il gèle',         en:"It's freezing", cat:'ep14'},
+    {id:130, p:2, level:"a1", added:'2025-05-10', fr:"Il y a une tempête",               en:"There's a storm", cat:'ep14'},
+    {id:131, p:2, level:"a1", added:'2025-05-10', fr:"Il fait beau aujourd'hui",         en:"The weather is nice today", cat:'ep14'},
 
     // Nav phrases
-    {id:132, p:2, added:'2025-05-10', fr:"L'ascenseur est à gauche",         en:"The elevator is to the left",   cat:'nav'},
-    {id:133, p:2, added:'2025-05-10', fr:'Les escaliers sont à droite',      en:"The stairs are to the right",   cat:'nav'},
-    {id:134, p:2, added:'2025-05-10', fr:"L'accueil est tout droit",         en:"The reception is straight ahead",cat:'nav'},
-    {id:135, p:2, added:'2025-05-10', fr:'La sortie est au bout',            en:"The exit is at the end",        cat:'nav'},
-    {id:136, p:2, added:'2025-05-10', fr:"La salle de bain est près d'ici",  en:"The bathroom is nearby",        cat:'nav'},
-    {id:137, p:2, added:'2025-05-10', fr:"C'est en face de l'ascenseur",     en:"It's across from the elevator", cat:'nav'},
-    {id:138, p:2, added:'2025-05-10', fr:"C'est à côté des escaliers",       en:"It's next to the stairs",       cat:'nav'},
-    {id:139, p:2, added:'2025-05-10', fr:"C'est au-dessus du guichet",       en:"It's above the counter",        cat:'nav'},
-    {id:140, p:2, added:'2025-05-10', fr:"C'est loin d'ici",                 en:"It's far from here",            cat:'nav'},
+    {id:132, p:2, level:"a1", added:'2025-05-10', fr:"L'ascenseur est à gauche",         en:"The elevator is to the left", cat:'ep6'},
+    {id:133, p:2, level:"a1", added:'2025-05-10', fr:'Les escaliers sont à droite',      en:"The stairs are to the right", cat:'ep6'},
+    {id:134, p:2, level:"a1", added:'2025-05-10', fr:"L'accueil est tout droit",         en:"The reception is straight ahead", cat:'ep6'},
+    {id:135, p:2, level:"a1", added:'2025-05-10', fr:'La sortie est au bout',            en:"The exit is at the end", cat:'ep6'},
+    {id:136, p:2, level:"a1", added:'2025-05-10', fr:"La salle de bain est près d'ici",  en:"The bathroom is nearby", cat:'ep6'},
+    {id:137, p:2, level:"a1", added:'2025-05-10', fr:"C'est en face de l'ascenseur",     en:"It's across from the elevator", cat:'ep6'},
+    {id:138, p:2, level:"a1", added:'2025-05-10', fr:"C'est à côté des escaliers",       en:"It's next to the stairs", cat:'ep6'},
+    {id:139, p:2, level:"a1", added:'2025-05-10', fr:"C'est au-dessus du guichet",       en:"It's above the counter", cat:'ep6'},
+    {id:140, p:2, level:"a1", added:'2025-05-10', fr:"C'est loin d'ici",                 en:"It's far from here", cat:'ep6'},
   ],
 
   // ── JOB / PROFESSION VOCAB ────────────────────────────────────
   // Gendered pairs = separate cards with separate probabilities
   jobs: [
-    {id:151, p:3, added:'2025-05-10', fr:"un infirmier",     en:"a nurse (male)",              g:'m'},
-    {id:152, p:3, added:'2025-05-10', fr:"une infirmière",   en:"a nurse (female)",            g:'f'},
-    {id:153, p:3, added:'2025-05-10', fr:"un médecin",       en:"a doctor (male)",             g:'m'},
-    {id:154, p:3, added:'2025-05-10', fr:"une médecin",      en:"a doctor (female)",           g:'f'},
-    {id:155, p:3, added:'2025-05-10', fr:"un enseignant",        en:"a teacher (male)",            g:'m'},
-    {id:156, p:3, added:'2025-05-10', fr:"une enseignante",      en:"a teacher (female)",          g:'f'},
-    {id:157, p:3, added:'2025-05-10', fr:"un étudiant",      en:"a student (male)",            g:'m'},
-    {id:158, p:3, added:'2025-05-10', fr:"une étudiante",    en:"a student (female)",          g:'f'},
-    {id:159, p:3, added:'2025-05-10', fr:"un ingénieur",     en:"an engineer (male)",          g:'m'},
-    {id:160, p:3, added:'2025-05-10', fr:"une ingénieure",   en:"an engineer (female)",        g:'f'},
-    {id:161, p:3, added:'2025-05-10', fr:"un avocat",        en:"a lawyer (male)",             g:'m'},
-    {id:162, p:3, added:'2025-05-10', fr:"une avocate",      en:"a lawyer (female)",           g:'f'},
-    {id:163, p:3, added:'2025-05-10', fr:"un comptable",     en:"an accountant (male)",        g:'m'},
-    {id:164, p:3, added:'2025-05-10', fr:"une comptable",    en:"an accountant (female)",      g:'f'},
-    {id:165, p:3, added:'2025-05-10', fr:"un cuisinier",     en:"a cook (male)",               g:'m'},
-    {id:166, p:3, added:'2025-05-10', fr:"une cuisinière",   en:"a cook (female)",             g:'f'},
-    {id:167, p:3, added:'2025-05-10', fr:"un serveur",       en:"a server (male)",             g:'m'},
-    {id:168, p:3, added:'2025-05-10', fr:"une serveuse",     en:"a server (female)",           g:'f'},
-    {id:169, p:3, added:'2025-05-10', fr:"un directeur",     en:"a manager (male)",            g:'m'},
-    {id:170, p:3, added:'2025-05-10', fr:"une directrice",   en:"a manager (female)",          g:'f'},
-    {id:171, p:3, added:'2025-05-10', fr:"un développeur",   en:"a developer (male)",          g:'m'},
-    {id:172, p:3, added:'2025-05-10', fr:"une développeuse", en:"a developer (female)",        g:'f'},
-    {id:173, p:3, added:'2025-05-10', fr:"un policier",      en:"a police officer (male)",     g:'m'},
-    {id:174, p:3, added:'2025-05-10', fr:"une policière",    en:"a police officer (female)",   g:'f'},
+    {id:151, p:3, level:"a1", added:'2025-05-10', fr:"un infirmier",     en:"a nurse (male)",              g:'m', cat:'ep1'},
+    {id:152, p:3, level:"a1", added:'2025-05-10', fr:"une infirmière",   en:"a nurse (female)",            g:'f', cat:'ep1'},
+    {id:153, p:3, level:"a1", added:'2025-05-10', fr:"un médecin",       en:"a doctor (male)",             g:'m', cat:'ep1'},
+    {id:154, p:3, level:"a1", added:'2025-05-10', fr:"une médecin",      en:"a doctor (female)",           g:'f', cat:'ep1'},
+    {id:155, p:3, level:"a1", added:'2025-05-10', fr:"un enseignant",        en:"a teacher (male)",            g:'m', cat:'ep1'},
+    {id:156, p:3, level:"a1", added:'2025-05-10', fr:"une enseignante",      en:"a teacher (female)",          g:'f', cat:'ep1'},
+    {id:157, p:3, level:"a1", added:'2025-05-10', fr:"un étudiant",      en:"a student (male)",            g:'m', cat:'ep1'},
+    {id:158, p:3, level:"a1", added:'2025-05-10', fr:"une étudiante",    en:"a student (female)",          g:'f', cat:'ep1'},
+    {id:159, p:3, level:"a1", added:'2025-05-10', fr:"un ingénieur",     en:"an engineer (male)",          g:'m', cat:'ep1'},
+    {id:160, p:3, level:"a1", added:'2025-05-10', fr:"une ingénieure",   en:"an engineer (female)",        g:'f', cat:'ep1'},
+    {id:161, p:3, level:"a1", added:'2025-05-10', fr:"un avocat",        en:"a lawyer (male)",             g:'m', cat:'ep1'},
+    {id:162, p:3, level:"a1", added:'2025-05-10', fr:"une avocate",      en:"a lawyer (female)",           g:'f', cat:'ep1'},
+    {id:163, p:3, level:"a1", added:'2025-05-10', fr:"un comptable",     en:"an accountant (male)",        g:'m', cat:'ep1'},
+    {id:164, p:3, level:"a1", added:'2025-05-10', fr:"une comptable",    en:"an accountant (female)",      g:'f', cat:'ep1'},
+    {id:165, p:3, level:"a1", added:'2025-05-10', fr:"un cuisinier",     en:"a cook (male)",               g:'m', cat:'ep1'},
+    {id:166, p:3, level:"a1", added:'2025-05-10', fr:"une cuisinière",   en:"a cook (female)",             g:'f', cat:'ep1'},
+    {id:167, p:3, level:"a1", added:'2025-05-10', fr:"un serveur",       en:"a server (male)",             g:'m', cat:'ep1'},
+    {id:168, p:3, level:"a1", added:'2025-05-10', fr:"une serveuse",     en:"a server (female)",           g:'f', cat:'ep1'},
+    {id:169, p:3, level:"a1", added:'2025-05-10', fr:"un directeur",     en:"a manager (male)",            g:'m', cat:'ep1'},
+    {id:170, p:3, level:"a1", added:'2025-05-10', fr:"une directrice",   en:"a manager (female)",          g:'f', cat:'ep1'},
+    {id:171, p:3, level:"a1", added:'2025-05-10', fr:"un développeur",   en:"a developer (male)",          g:'m', cat:'ep1'},
+    {id:172, p:3, level:"a1", added:'2025-05-10', fr:"une développeuse", en:"a developer (female)",        g:'f', cat:'ep1'},
+    {id:173, p:3, level:"a1", added:'2025-05-10', fr:"un policier",      en:"a police officer (male)",     g:'m', cat:'ep1'},
+    {id:174, p:3, level:"a1", added:'2025-05-10', fr:"une policière",    en:"a police officer (female)",   g:'f', cat:'ep1'},
   ],
 
 
@@ -490,29 +496,29 @@ const DB = {
   // These appear as standalone vocab cards (to go = aller etc.)
   verbs: [
     // Irregular verbs
-    {id:185, p:1, added:'2025-05-10', fr:'aller',    en:'to go',              cat:'irregular'},
-    {id:186, p:1, added:'2025-05-10', fr:'devoir',   en:'to have to / must',  cat:'irregular'},
-    {id:187, p:1, added:'2025-05-10', fr:'pouvoir',  en:'to be able to / can',cat:'irregular'},
+    {id:185, p:1, level:"a1", added:'2025-05-10', fr:'aller',    en:'to go', cat:'ep6'},
+    {id:186, p:1, level:"a1", added:'2025-05-10', fr:'devoir',   en:'to have to / must', cat:'ep1'},
+    {id:187, p:1, level:"a1", added:'2025-05-10', fr:'pouvoir',  en:'to be able to / can', cat:'ep1'},
 
     // Regular verbs
-    {id:188, p:2, added:'2025-05-10', fr:'arriver',  en:'to arrive',           cat:'regular'},
-    {id:189, p:5, added:'2025-05-10', fr:'boire',    en:'to drink',             cat:'regular'},
-    {id:190, p:2, added:'2025-05-10', fr:'manger',   en:'to eat',               cat:'regular'},
-    {id:191, p:2, added:'2025-05-10', fr:'dormir',   en:'to sleep',             cat:'regular'},
-    {id:192, p:3, added:'2025-05-10', fr:'écrire',   en:'to write',             cat:'regular'},
-    {id:193, p:3, added:'2025-05-10', fr:'écouter',  en:'to listen (to)',       cat:'regular'},
-    {id:194, p:3, added:'2025-05-10', fr:'fumer',    en:'to smoke',             cat:'regular'},
-    {id:195, p:3, added:'2025-05-10', fr:'lire',     en:'to read',              cat:'regular'},
-    {id:196, p:3, added:'2025-05-10', fr:'texter',   en:'to text',              cat:'regular'},
+    {id:188, p:2, level:"a1", added:'2025-05-10', fr:'arriver',  en:'to arrive', cat:'ep1'},
+    {id:189, p:5, level:"a1", added:'2025-05-10', fr:'boire',    en:'to drink', cat:'ep1'},
+    {id:190, p:2, level:"a1", added:'2025-05-10', fr:'manger',   en:'to eat', cat:'ep7'},
+    {id:191, p:2, level:"a1", added:'2025-05-10', fr:'dormir',   en:'to sleep', cat:'ep7'},
+    {id:192, p:3, level:"a1", added:'2025-05-10', fr:'écrire',   en:'to write', cat:'ep7'},
+    {id:193, p:3, level:"a1", added:'2025-05-10', fr:'écouter',  en:'to listen (to)', cat:'ep7'},
+    {id:194, p:3, level:"a1", added:'2025-05-10', fr:'fumer',    en:'to smoke', cat:'ep7'},
+    {id:195, p:3, level:"a1", added:'2025-05-10', fr:'lire',     en:'to read', cat:'ep7'},
+    {id:196, p:3, level:"a1", added:'2025-05-10', fr:'texter',   en:'to text', cat:'ep7'},
   ],
 
   // ── PERMISSION PHRASES (static cards) ────────────────────────
   permission: [
-    {id:197, p:3, added:'2025-05-10', fr:'Je peux…',                en:'I can… / I am able to…',          cat:'irregular'},
-    {id:198, p:3, added:'2025-05-10', fr:'Puis-je… ?',              en:'May I…? (formal)',                 cat:'irregular'},
-    {id:199, p:3, added:'2025-05-10', fr:'Est-ce que je peux… ?',   en:'Can I…? (informal)',               cat:'irregular'},
-    {id:200, p:3, added:'2025-05-10', fr:"C'est possible de… ?",    en:'Is it possible to…?',             cat:'irregular'},
-    {id:201, p:3, added:'2025-05-10', fr:"C'est permis de… ?",      en:'Is it allowed / permitted to…?',  cat:'irregular'},
+    {id:197, p:3, level:"a1", added:'2025-05-10', fr:'Je peux…',                en:'I can… / I am able to…', cat:'ep7'},
+    {id:198, p:3, level:"a1", added:'2025-05-10', fr:'Puis-je… ?',              en:'May I…? (formal)', cat:'ep7'},
+    {id:199, p:3, level:"a1", added:'2025-05-10', fr:'Est-ce que je peux… ?',   en:'Can I…? (informal)', cat:'ep7'},
+    {id:200, p:3, level:"a1", added:'2025-05-10', fr:"C'est possible de… ?",    en:'Is it possible to…?', cat:'ep7'},
+    {id:201, p:3, level:"a1", added:'2025-05-10', fr:"C'est permis de… ?",      en:'Is it allowed / permitted to…?', cat:'ep7'},
   ],
 
   // ── ADAPTIVE SENTENCE DATA ─────────────────────────────────────
@@ -623,247 +629,247 @@ const DB = {
   // ── TRAVEL VOCAB ──────────────────────────────────────────────
   travel: [
     // Transport
-    {id:202, p:2, added:'2025-05-13', fr:'le métro',          en:'the metro / subway',      g:'m', cat:'travel'},
-    {id:203, p:2, added:'2025-05-13', fr:'un métro',          en:'a metro / subway',        g:'m', cat:'travel'},
-    {id:204, p:2, added:'2025-05-13', fr:'un autobus',        en:'a bus',                   g:'m', cat:'travel'},
-    {id:205, p:2, added:'2025-05-13', fr:"un arrêt",         en:'a stop',                  g:'m', cat:'travel'},
-    {id:206, p:2, added:'2025-05-13', fr:'une station',       en:'a station',               g:'f', cat:'travel'},
-    {id:207, p:2, added:'2025-05-13', fr:'un billet',         en:'a ticket',                g:'m', cat:'travel'},
-    {id:208, p:2, added:'2025-05-13', fr:'une correspondance',en:'a transfer / connection', g:'f', cat:'travel'},
-    {id:209, p:2, added:'2025-05-13', fr:'un aller-retour',   en:'a return ticket',         g:'m', cat:'travel'},
-    {id:210, p:2, added:'2025-05-13', fr:'une voiture',       en:'a car',                   g:'f', cat:'travel'},
-    {id:211, p:5, added:'2025-05-13', fr:'un vélo',           en:'a bicycle',               g:'m', cat:'travel'},
-    {id:212, p:5, added:'2025-05-13', fr:'un avion',          en:'a plane',                 g:'m', cat:'travel'},
-    {id:213, p:2, added:'2025-05-13', fr:"un aéroport",      en:'an airport',              g:'m', cat:'travel'},
-    {id:214, p:2, added:'2025-05-13', fr:'un taxi',           en:'a taxi',                  g:'m', cat:'travel'},
+    {id:202, p:2, level:"a1", added:'2025-05-13', fr:'le métro',          en:'the metro / subway',      g:'m', cat:'ep14'},
+    {id:203, p:2, level:"a1", added:'2025-05-13', fr:'un métro',          en:'a metro / subway',        g:'m', cat:'ep14'},
+    {id:204, p:2, level:"a1", added:'2025-05-13', fr:'un autobus',        en:'a bus',                   g:'m', cat:'ep14'},
+    {id:205, p:2, level:"a1", added:'2025-05-13', fr:"un arrêt",         en:'a stop',                  g:'m', cat:'ep14'},
+    {id:206, p:2, level:"a1", added:'2025-05-13', fr:'une station',       en:'a station',               g:'f', cat:'ep14'},
+    {id:207, p:2, level:"a1", added:'2025-05-13', fr:'un billet',         en:'a ticket',                g:'m', cat:'ep14'},
+    {id:208, p:2, level:"a1", added:'2025-05-13', fr:'une correspondance',en:'a transfer / connection', g:'f', cat:'ep14'},
+    {id:209, p:2, level:"a1", added:'2025-05-13', fr:'un aller-retour',   en:'a return ticket',         g:'m', cat:'ep14'},
+    {id:210, p:2, level:"a1", added:'2025-05-13', fr:'une voiture',       en:'a car',                   g:'f', cat:'ep14'},
+    {id:211, p:5, level:"a1", added:'2025-05-13', fr:'un vélo',           en:'a bicycle',               g:'m', cat:'ep14'},
+    {id:212, p:5, level:"a1", added:'2025-05-13', fr:'un avion',          en:'a plane',                 g:'m', cat:'ep14'},
+    {id:213, p:2, level:"a1", added:'2025-05-13', fr:"un aéroport",      en:'an airport',              g:'m', cat:'ep14'},
+    {id:214, p:2, level:"a1", added:'2025-05-13', fr:'un taxi',           en:'a taxi',                  g:'m', cat:'ep14'},
     // Hotel
-    {id:215, p:3, added:'2025-05-13', fr:'une chambre',       en:'a room',                  g:'f', cat:'travel'},
-    {id:216, p:3, added:'2025-05-13', fr:'une réservation',   en:'a reservation',           g:'f', cat:'travel'},
-    {id:217, p:3, added:'2025-05-13', fr:"un étage",         en:'a floor / storey',        g:'m', cat:'travel'},
-    {id:218, p:3, added:'2025-05-13', fr:'une clé',           en:'a key',                   g:'f', cat:'travel'},
-    {id:219, p:3, added:'2025-05-13', fr:'un lit',            en:'a bed',                   g:'m', cat:'travel'},
-    {id:220, p:3, added:'2025-05-13', fr:'une salle de bain', en:'a bathroom',              g:'f', cat:'travel'},
-    {id:221, p:3, added:'2025-05-13', fr:'le déjeuner',       en:'breakfast / lunch',       g:'m', cat:'travel'},
-    {id:222, p:3, added:'2025-05-13', fr:'le wifi',           en:'wifi',                    g:'m', cat:'travel'},
-    {id:223, p:3, added:'2025-05-13', fr:"un hôtel",         en:'a hotel',                 g:'m', cat:'travel'},
+    {id:215, p:3, level:"a1", added:'2025-05-13', fr:'une chambre',       en:'a room',                  g:'f', cat:'ep14'},
+    {id:216, p:3, level:"a1", added:'2025-05-13', fr:'une réservation',   en:'a reservation',           g:'f', cat:'ep14'},
+    {id:217, p:3, level:"a1", added:'2025-05-13', fr:"un étage",         en:'a floor / storey',        g:'m', cat:'ep14'},
+    {id:218, p:3, level:"a1", added:'2025-05-13', fr:'une clé',           en:'a key',                   g:'f', cat:'ep14'},
+    {id:219, p:3, level:"a1", added:'2025-05-13', fr:'un lit',            en:'a bed',                   g:'m', cat:'ep14'},
+    {id:220, p:3, level:"a1", added:'2025-05-13', fr:'une salle de bain', en:'a bathroom',              g:'f', cat:'ep14'},
+    {id:221, p:3, level:"a1", added:'2025-05-13', fr:'le déjeuner',       en:'breakfast / lunch',       g:'m', cat:'ep14'},
+    {id:222, p:3, level:"a1", added:'2025-05-13', fr:'le wifi',           en:'wifi',                    g:'m', cat:'ep14'},
+    {id:223, p:3, level:"a1", added:'2025-05-13', fr:"un hôtel",         en:'a hotel',                 g:'m', cat:'ep14'},
     // Buildings & places
-    {id:224, p:2, added:'2025-05-13', fr:"une école",        en:'a school',                g:'f', cat:'travel'},
-    {id:225, p:2, added:'2025-05-13', fr:"un hôpital",       en:'a hospital',              g:'m', cat:'travel'},
-    {id:226, p:2, added:'2025-05-13', fr:'une pharmacie',     en:'a pharmacy',              g:'f', cat:'travel'},
-    {id:227, p:2, added:'2025-05-13', fr:"une épicerie",     en:'a grocery store',         g:'f', cat:'travel'},
-    {id:228, p:2, added:'2025-05-13', fr:'un restaurant',     en:'a restaurant',            g:'m', cat:'travel'},
-    {id:229, p:2, added:'2025-05-13', fr:'un café',           en:'a café',                  g:'m', cat:'travel'},
-    {id:230, p:2, added:'2025-05-13', fr:'une banque',        en:'a bank',                  g:'f', cat:'travel'},
-    {id:231, p:3, added:'2025-05-13', fr:'un bureau de poste',en:'a post office',           g:'m', cat:'travel'},
-    {id:232, p:3, added:'2025-05-13', fr:'un parc',           en:'a park',                  g:'m', cat:'travel'},
-    {id:233, p:3, added:'2025-05-13', fr:'une rue',           en:'a street',                g:'f', cat:'travel'},
-    {id:234, p:3, added:'2025-05-13', fr:'un quartier',       en:'a neighbourhood',         g:'m', cat:'travel'},
-    {id:235, p:3, added:'2025-05-13', fr:'une ville',         en:'a city',                  g:'f', cat:'travel'},
-    {id:236, p:3, added:'2025-05-13', fr:'un aéroport',       en:'an airport',              g:'m', cat:'travel'},
-    {id:237, p:3, added:'2025-05-13', fr:'une bibliothèque',  en:'a library',               g:'f', cat:'travel'},
-    {id:238, p:3, added:'2025-05-13', fr:'un supermarché',    en:'a supermarket',           g:'m', cat:'travel'},
+    {id:224, p:2, level:"a1", added:'2025-05-13', fr:"une école",        en:'a school',                g:'f', cat:'ep6'},
+    {id:225, p:2, level:"a1", added:'2025-05-13', fr:"un hôpital",       en:'a hospital',              g:'m', cat:'ep6'},
+    {id:226, p:2, level:"a1", added:'2025-05-13', fr:'une pharmacie',     en:'a pharmacy',              g:'f', cat:'ep6'},
+    {id:227, p:2, level:"a1", added:'2025-05-13', fr:"une épicerie",     en:'a grocery store',         g:'f', cat:'ep6'},
+    {id:228, p:2, level:"a1", added:'2025-05-13', fr:'un restaurant',     en:'a restaurant',            g:'m', cat:'ep6'},
+    {id:229, p:2, level:"a1", added:'2025-05-13', fr:'un café',           en:'a café',                  g:'m', cat:'ep6'},
+    {id:230, p:2, level:"a1", added:'2025-05-13', fr:'une banque',        en:'a bank',                  g:'f', cat:'ep6'},
+    {id:231, p:3, level:"a1", added:'2025-05-13', fr:'un bureau de poste',en:'a post office',           g:'m', cat:'ep6'},
+    {id:232, p:3, level:"a1", added:'2025-05-13', fr:'un parc',           en:'a park',                  g:'m', cat:'ep6'},
+    {id:233, p:3, level:"a1", added:'2025-05-13', fr:'une rue',           en:'a street',                g:'f', cat:'ep6'},
+    {id:234, p:3, level:"a1", added:'2025-05-13', fr:'un quartier',       en:'a neighbourhood',         g:'m', cat:'ep6'},
+    {id:235, p:3, level:"a1", added:'2025-05-13', fr:'une ville',         en:'a city',                  g:'f', cat:'ep6'},
+    {id:236, p:3, level:"a1", added:'2025-05-13', fr:'un aéroport',       en:'an airport',              g:'m', cat:'ep6'},
+    {id:237, p:3, level:"a1", added:'2025-05-13', fr:'une bibliothèque',  en:'a library',               g:'f', cat:'ep6'},
+    {id:238, p:3, level:"a1", added:'2025-05-13', fr:'un supermarché',    en:'a supermarket',           g:'m', cat:'ep6'},
   ],
 
   // ── TRAVEL PHRASES (static) ────────────────────────────────────
   travel_phrases: [
     // Shopping
-    {id:239, p:2, added:'2025-05-13', fr:"C'est combien ?",              en:"How much is it?",                cat:'travel'},
-    {id:240, p:2, added:'2025-05-13', fr:"Je voudrais…",                 en:"I would like…",                  cat:'travel'},
-    {id:241, p:2, added:'2025-05-13', fr:"Avez-vous… ?",                 en:"Do you have…?",                  cat:'travel'},
-    {id:242, p:2, added:'2025-05-13', fr:"L'addition, s'il vous plaît",  en:"The bill, please",               cat:'travel'},
-    {id:243, p:2, added:'2025-05-13', fr:"C'est trop cher",              en:"It's too expensive",             cat:'travel'},
-    {id:244, p:2, added:'2025-05-13', fr:"Je prends ça",                 en:"I'll take this",                 cat:'travel'},
-    {id:245, p:2, added:'2025-05-13', fr:"Je regarde, merci",            en:"I'm just looking, thanks",       cat:'travel'},
-    {id:246, p:2, added:'2025-05-13', fr:"Vous acceptez les cartes ?",   en:"Do you accept cards?",           cat:'travel'},
+    {id:239, p:2, level:"a1", added:'2025-05-13', fr:"C'est combien ?",              en:"How much is it?", cat:'ep15'},
+    {id:240, p:2, level:"a1", added:'2025-05-13', fr:"Je voudrais…",                 en:"I would like…", cat:'ep15'},
+    {id:241, p:2, level:"a1", added:'2025-05-13', fr:"Avez-vous… ?",                 en:"Do you have…?", cat:'ep15'},
+    {id:242, p:2, level:"a1", added:'2025-05-13', fr:"L'addition, s'il vous plaît",  en:"The bill, please", cat:'ep15'},
+    {id:243, p:2, level:"a1", added:'2025-05-13', fr:"C'est trop cher",              en:"It's too expensive", cat:'ep15'},
+    {id:244, p:2, level:"a1", added:'2025-05-13', fr:"Je prends ça",                 en:"I'll take this", cat:'ep15'},
+    {id:245, p:2, level:"a1", added:'2025-05-13', fr:"Je regarde, merci",            en:"I'm just looking, thanks", cat:'ep15'},
+    {id:246, p:2, level:"a1", added:'2025-05-13', fr:"Vous acceptez les cartes ?",   en:"Do you accept cards?", cat:'ep15'},
     // Emergency
-    {id:247, p:1, added:'2025-05-13', fr:"Au secours !",                 en:"Help!",                          cat:'travel'},
-    {id:248, p:1, added:'2025-05-13', fr:"Appelez la police !",          en:"Call the police!",               cat:'travel'},
-    {id:249, p:1, added:'2025-05-13', fr:"J'ai besoin d'un médecin",    en:"I need a doctor",                cat:'travel'},
-    {id:250, p:1, added:'2025-05-13', fr:"Je suis perdu(e)",             en:"I'm lost",                       cat:'travel'},
-    {id:251, p:1, added:'2025-05-13', fr:"Où est l'hôpital ?",          en:"Where is the hospital?",         cat:'travel'},
-    {id:252, p:1, added:'2025-05-13', fr:"J'ai mal ici",                en:"It hurts here",                  cat:'travel'},
-    {id:253, p:1, added:'2025-05-13', fr:"Appelez une ambulance !",      en:"Call an ambulance!",             cat:'travel'},
+    {id:247, p:1, level:"a1", added:'2025-05-13', fr:"Au secours !",                 en:"Help!", cat:'ep6'},
+    {id:248, p:1, level:"a1", added:'2025-05-13', fr:"Appelez la police !",          en:"Call the police!", cat:'ep6'},
+    {id:249, p:1, level:"a1", added:'2025-05-13', fr:"J'ai besoin d'un médecin",    en:"I need a doctor", cat:'ep6'},
+    {id:250, p:1, level:"a1", added:'2025-05-13', fr:"Je suis perdu(e)",             en:"I'm lost", cat:'ep6'},
+    {id:251, p:1, level:"a1", added:'2025-05-13', fr:"Où est l'hôpital ?",          en:"Where is the hospital?", cat:'ep6'},
+    {id:252, p:1, level:"a1", added:'2025-05-13', fr:"J'ai mal ici",                en:"It hurts here", cat:'ep6'},
+    {id:253, p:1, level:"a1", added:'2025-05-13', fr:"Appelez une ambulance !",      en:"Call an ambulance!", cat:'ep6'},
   ],
 
   // ── DESCRIPTORS VOCAB ─────────────────────────────────────────
   descriptors: [
     // Colours (no article — used as adjectives)
-    {id:254, p:4, added:'2025-05-13', fr:'rouge',        en:'red',           g:null, noArticle:true, cat:'descriptors'},
-    {id:255, p:4, added:'2025-05-13', fr:'bleu / bleue', en:'blue',          g:null, noArticle:true, cat:'descriptors'},
-    {id:256, p:4, added:'2025-05-13', fr:'vert / verte', en:'green',         g:null, noArticle:true, cat:'descriptors'},
-    {id:257, p:4, added:'2025-05-13', fr:'jaune',        en:'yellow',        g:null, noArticle:true, cat:'descriptors'},
-    {id:258, p:4, added:'2025-05-13', fr:'orange',       en:'orange',        g:null, noArticle:true, cat:'descriptors'},
-    {id:259, p:4, added:'2025-05-13', fr:'noir / noire', en:'black',         g:null, noArticle:true, cat:'descriptors'},
-    {id:260, p:4, added:'2025-05-13', fr:'blanc / blanche', en:'white',      g:null, noArticle:true, cat:'descriptors'},
-    {id:261, p:4, added:'2025-05-13', fr:'gris / grise', en:'grey',          g:null, noArticle:true, cat:'descriptors'},
-    {id:262, p:4, added:'2025-05-13', fr:'rose',         en:'pink',          g:null, noArticle:true, cat:'descriptors'},
-    {id:263, p:4, added:'2025-05-13', fr:'violet / violette', en:'purple',   g:null, noArticle:true, cat:'descriptors'},
-    {id:264, p:4, added:'2025-05-13', fr:'brun / brune', en:'brown',         g:null, noArticle:true, cat:'descriptors'},
+    {id:254, p:4, level:"a1", added:'2025-05-13', fr:'rouge',        en:'red',           g:null, noArticle:true, cat:'ep3'},
+    {id:255, p:4, level:"a1", added:'2025-05-13', fr:'bleu / bleue', en:'blue',          g:null, noArticle:true, cat:'ep3'},
+    {id:256, p:4, level:"a1", added:'2025-05-13', fr:'vert / verte', en:'green',         g:null, noArticle:true, cat:'ep3'},
+    {id:257, p:4, level:"a1", added:'2025-05-13', fr:'jaune',        en:'yellow',        g:null, noArticle:true, cat:'ep3'},
+    {id:258, p:4, level:"a1", added:'2025-05-13', fr:'orange',       en:'orange',        g:null, noArticle:true, cat:'ep3'},
+    {id:259, p:4, level:"a1", added:'2025-05-13', fr:'noir / noire', en:'black',         g:null, noArticle:true, cat:'ep3'},
+    {id:260, p:4, level:"a1", added:'2025-05-13', fr:'blanc / blanche', en:'white',      g:null, noArticle:true, cat:'ep3'},
+    {id:261, p:4, level:"a1", added:'2025-05-13', fr:'gris / grise', en:'grey',          g:null, noArticle:true, cat:'ep3'},
+    {id:262, p:4, level:"a1", added:'2025-05-13', fr:'rose',         en:'pink',          g:null, noArticle:true, cat:'ep3'},
+    {id:263, p:4, level:"a1", added:'2025-05-13', fr:'violet / violette', en:'purple',   g:null, noArticle:true, cat:'ep3'},
+    {id:264, p:4, level:"a1", added:'2025-05-13', fr:'brun / brune', en:'brown',         g:null, noArticle:true, cat:'ep3'},
     // Adjectives
-    {id:265, p:4, added:'2025-05-13', fr:'grand / grande',   en:'big / tall',     g:null, noArticle:true, cat:'descriptors'},
-    {id:266, p:4, added:'2025-05-13', fr:'petit / petite',   en:'small / short',  g:null, noArticle:true, cat:'descriptors'},
-    {id:267, p:4, added:'2025-05-13', fr:'bon / bonne',      en:'good',           g:null, noArticle:true, cat:'descriptors'},
-    {id:268, p:4, added:'2025-05-13', fr:'mauvais / mauvaise',en:'bad',           g:null, noArticle:true, cat:'descriptors'},
-    {id:269, p:4, added:'2025-05-13', fr:'cher / chère',     en:'expensive',      g:null, noArticle:true, cat:'descriptors'},
-    {id:270, p:4, added:'2025-05-13', fr:'gratuit / gratuite',en:'free',          g:null, noArticle:true, cat:'descriptors'},
-    {id:271, p:4, added:'2025-05-13', fr:'rapide',           en:'fast / quick',   g:null, noArticle:true, cat:'descriptors'},
-    {id:272, p:4, added:'2025-05-13', fr:'lent / lente',     en:'slow',           g:null, noArticle:true, cat:'descriptors'},
-    {id:273, p:4, added:'2025-05-13', fr:'ouvert / ouverte', en:'open',           g:null, noArticle:true, cat:'descriptors'},
-    {id:274, p:4, added:'2025-05-13', fr:'fermé / fermée',   en:'closed',         g:null, noArticle:true, cat:'descriptors'},
-    {id:275, p:4, added:'2025-05-13', fr:'nouveau / nouvelle',en:'new',           g:null, noArticle:true, cat:'descriptors'},
-    {id:276, p:4, added:'2025-05-13', fr:'vieux / vieille',  en:'old',            g:null, noArticle:true, cat:'descriptors'},
-    {id:277, p:4, added:'2025-05-13', fr:'propre',           en:'clean',          g:null, noArticle:true, cat:'descriptors'},
-    {id:278, p:4, added:'2025-05-13', fr:'sale',             en:'dirty',          g:null, noArticle:true, cat:'descriptors'},
+    {id:265, p:4, level:"a1", added:'2025-05-13', fr:'grand / grande',   en:'big / tall',     g:null, noArticle:true, cat:'ep3'},
+    {id:266, p:4, level:"a1", added:'2025-05-13', fr:'petit / petite',   en:'small / short',  g:null, noArticle:true, cat:'ep3'},
+    {id:267, p:4, level:"a1", added:'2025-05-13', fr:'bon / bonne',      en:'good',           g:null, noArticle:true, cat:'ep3'},
+    {id:268, p:4, level:"a1", added:'2025-05-13', fr:'mauvais / mauvaise',en:'bad',           g:null, noArticle:true, cat:'ep3'},
+    {id:269, p:4, level:"a1", added:'2025-05-13', fr:'cher / chère',     en:'expensive',      g:null, noArticle:true, cat:'ep3'},
+    {id:270, p:4, level:"a1", added:'2025-05-13', fr:'gratuit / gratuite',en:'free',          g:null, noArticle:true, cat:'ep3'},
+    {id:271, p:4, level:"a1", added:'2025-05-13', fr:'rapide',           en:'fast / quick',   g:null, noArticle:true, cat:'ep3'},
+    {id:272, p:4, level:"a1", added:'2025-05-13', fr:'lent / lente',     en:'slow',           g:null, noArticle:true, cat:'ep3'},
+    {id:273, p:4, level:"a1", added:'2025-05-13', fr:'ouvert / ouverte', en:'open',           g:null, noArticle:true, cat:'ep3'},
+    {id:274, p:4, level:"a1", added:'2025-05-13', fr:'fermé / fermée',   en:'closed',         g:null, noArticle:true, cat:'ep3'},
+    {id:275, p:4, level:"a1", added:'2025-05-13', fr:'nouveau / nouvelle',en:'new',           g:null, noArticle:true, cat:'ep3'},
+    {id:276, p:4, level:"a1", added:'2025-05-13', fr:'vieux / vieille',  en:'old',            g:null, noArticle:true, cat:'ep3'},
+    {id:277, p:4, level:"a1", added:'2025-05-13', fr:'propre',           en:'clean',          g:null, noArticle:true, cat:'ep3'},
+    {id:278, p:4, level:"a1", added:'2025-05-13', fr:'sale',             en:'dirty',          g:null, noArticle:true, cat:'ep3'},
     // Body parts
-    {id:279, p:4, added:'2025-05-13', fr:'la tête',      en:'the head',       g:'f', cat:'descriptors'},
-    {id:280, p:4, added:'2025-05-13', fr:'le bras',      en:'the arm',        g:'m', cat:'descriptors'},
-    {id:281, p:4, added:'2025-05-13', fr:'la jambe',     en:'the leg',        g:'f', cat:'descriptors'},
-    {id:282, p:4, added:'2025-05-13', fr:'la main',      en:'the hand',       g:'f', cat:'descriptors'},
-    {id:283, p:4, added:'2025-05-13', fr:'le pied',      en:'the foot',       g:'m', cat:'descriptors'},
-    {id:284, p:4, added:'2025-05-13', fr:'le dos',       en:'the back',       g:'m', cat:'descriptors'},
-    {id:285, p:4, added:'2025-05-13', fr:'le ventre',    en:'the stomach',    g:'m', cat:'descriptors'},
-    {id:286, p:4, added:'2025-05-13', fr:'la gorge',     en:'the throat',     g:'f', cat:'descriptors'},
-    {id:287, p:4, added:'2025-05-13', fr:"l'œil",       en:'the eye',        g:'m', cat:'descriptors'},
-    {id:288, p:4, added:'2025-05-13', fr:"l'oreille",   en:'the ear',        g:'f', cat:'descriptors'},
-    {id:289, p:4, added:'2025-05-13', fr:'le nez',       en:'the nose',       g:'m', cat:'descriptors'},
-    {id:290, p:4, added:'2025-05-13', fr:'la dent',      en:'the tooth',      g:'f', cat:'descriptors'},
-    {id:291, p:4, added:'2025-05-13', fr:"l'épaule",    en:'the shoulder',   g:'f', cat:'descriptors'},
-    {id:292, p:4, added:'2025-05-13', fr:'le genou',     en:'the knee',       g:'m', cat:'descriptors'},
+    {id:279, p:4, level:"a1", added:'2025-05-13', fr:'la tête',      en:'the head',       g:'f', cat:'ep13'},
+    {id:280, p:4, level:"a1", added:'2025-05-13', fr:'le bras',      en:'the arm',        g:'m', cat:'ep13'},
+    {id:281, p:4, level:"a1", added:'2025-05-13', fr:'la jambe',     en:'the leg',        g:'f', cat:'ep13'},
+    {id:282, p:4, level:"a1", added:'2025-05-13', fr:'la main',      en:'the hand',       g:'f', cat:'ep13'},
+    {id:283, p:4, level:"a1", added:'2025-05-13', fr:'le pied',      en:'the foot',       g:'m', cat:'ep13'},
+    {id:284, p:4, level:"a1", added:'2025-05-13', fr:'le dos',       en:'the back',       g:'m', cat:'ep13'},
+    {id:285, p:4, level:"a1", added:'2025-05-13', fr:'le ventre',    en:'the stomach',    g:'m', cat:'ep13'},
+    {id:286, p:4, level:"a1", added:'2025-05-13', fr:'la gorge',     en:'the throat',     g:'f', cat:'ep13'},
+    {id:287, p:4, level:"a1", added:'2025-05-13', fr:"l'œil",       en:'the eye',        g:'m', cat:'ep13'},
+    {id:288, p:4, level:"a1", added:'2025-05-13', fr:"l'oreille",   en:'the ear',        g:'f', cat:'ep13'},
+    {id:289, p:4, level:"a1", added:'2025-05-13', fr:'le nez',       en:'the nose',       g:'m', cat:'ep13'},
+    {id:290, p:4, level:"a1", added:'2025-05-13', fr:'la dent',      en:'the tooth',      g:'f', cat:'ep13'},
+    {id:291, p:4, level:"a1", added:'2025-05-13', fr:"l'épaule",    en:'the shoulder',   g:'f', cat:'ep13'},
+    {id:292, p:4, level:"a1", added:'2025-05-13', fr:'le genou',     en:'the knee',       g:'m', cat:'ep13'},
     // Time expressions
-    {id:293, p:2, added:'2025-05-13', fr:"aujourd'hui",  en:'today',          g:null, noArticle:true, cat:'descriptors'},
-    {id:294, p:2, added:'2025-05-13', fr:'demain',       en:'tomorrow',       g:null, noArticle:true, cat:'descriptors'},
-    {id:295, p:2, added:'2025-05-13', fr:'hier',         en:'yesterday',      g:null, noArticle:true, cat:'descriptors'},
-    {id:296, p:2, added:'2025-05-13', fr:'maintenant',   en:'now',            g:null, noArticle:true, cat:'descriptors'},
-    {id:297, p:2, added:'2025-05-13', fr:'bientôt',      en:'soon',           g:null, noArticle:true, cat:'descriptors'},
-    {id:298, p:2, added:'2025-05-13', fr:'tard',         en:'late',           g:null, noArticle:true, cat:'descriptors'},
-    {id:299, p:2, added:'2025-05-13', fr:'tôt',          en:'early',          g:null, noArticle:true, cat:'descriptors'},
-    {id:300, p:2, added:'2025-05-13', fr:'toujours',     en:'always',         g:null, noArticle:true, cat:'descriptors'},
-    {id:301, p:2, added:'2025-05-13', fr:'jamais',       en:'never',          g:null, noArticle:true, cat:'descriptors'},
-    {id:302, p:2, added:'2025-05-13', fr:'souvent',      en:'often',          g:null, noArticle:true, cat:'descriptors'},
-    {id:303, p:2, added:'2025-05-13', fr:'parfois',      en:'sometimes',      g:null, noArticle:true, cat:'descriptors'},
-    {id:304, p:2, added:'2025-05-13', fr:'déjà',         en:'already',        g:null, noArticle:true, cat:'descriptors'},
+    {id:293, p:2, level:"a1", added:'2025-05-13', fr:"aujourd'hui",  en:'today',          g:null, noArticle:true, cat:'ep3'},
+    {id:294, p:2, level:"a1", added:'2025-05-13', fr:'demain',       en:'tomorrow',       g:null, noArticle:true, cat:'ep3'},
+    {id:295, p:2, level:"a1", added:'2025-05-13', fr:'hier',         en:'yesterday',      g:null, noArticle:true, cat:'ep3'},
+    {id:296, p:2, level:"a1", added:'2025-05-13', fr:'maintenant',   en:'now',            g:null, noArticle:true, cat:'ep3'},
+    {id:297, p:2, level:"a1", added:'2025-05-13', fr:'bientôt',      en:'soon',           g:null, noArticle:true, cat:'ep3'},
+    {id:298, p:2, level:"a1", added:'2025-05-13', fr:'tard',         en:'late',           g:null, noArticle:true, cat:'ep3'},
+    {id:299, p:2, level:"a1", added:'2025-05-13', fr:'tôt',          en:'early',          g:null, noArticle:true, cat:'ep3'},
+    {id:300, p:2, level:"a1", added:'2025-05-13', fr:'toujours',     en:'always',         g:null, noArticle:true, cat:'ep3'},
+    {id:301, p:2, level:"a1", added:'2025-05-13', fr:'jamais',       en:'never',          g:null, noArticle:true, cat:'ep3'},
+    {id:302, p:2, level:"a1", added:'2025-05-13', fr:'souvent',      en:'often',          g:null, noArticle:true, cat:'ep3'},
+    {id:303, p:2, level:"a1", added:'2025-05-13', fr:'parfois',      en:'sometimes',      g:null, noArticle:true, cat:'ep3'},
+    {id:304, p:2, level:"a1", added:'2025-05-13', fr:'déjà',         en:'already',        g:null, noArticle:true, cat:'ep3'},
   ],
 
   // ── QUESTION WORDS ────────────────────────────────────────────
   questions: [
     // Vocab cards
-    {id:305, p:1, added:'2025-05-13', fr:'qui',        en:'who',            g:null, noArticle:true, cat:'questions'},
-    {id:306, p:1, added:'2025-05-13', fr:'quoi / que', en:'what',           g:null, noArticle:true, cat:'questions'},
-    {id:307, p:1, added:'2025-05-13', fr:'où',         en:'where',          g:null, noArticle:true, cat:'questions'},
-    {id:308, p:1, added:'2025-05-13', fr:'quand',      en:'when',           g:null, noArticle:true, cat:'questions'},
-    {id:309, p:1, added:'2025-05-13', fr:'comment',    en:'how',            g:null, noArticle:true, cat:'questions'},
-    {id:310, p:1, added:'2025-05-13', fr:'pourquoi',   en:'why',            g:null, noArticle:true, cat:'questions'},
-    {id:311, p:1, added:'2025-05-13', fr:'combien',    en:'how much / how many', g:null, noArticle:true, cat:'questions'},
-    {id:312, p:1, added:'2025-05-13', fr:'lequel / laquelle', en:'which one', g:null, noArticle:true, cat:'questions'},
+    {id:305, p:1, level:"a1", added:'2025-05-13', fr:'qui',        en:'who',            g:null, noArticle:true, cat:'ep2'},
+    {id:306, p:1, level:"a1", added:'2025-05-13', fr:'quoi / que', en:'what',           g:null, noArticle:true, cat:'ep2'},
+    {id:307, p:1, level:"a1", added:'2025-05-13', fr:'où',         en:'where',          g:null, noArticle:true, cat:'ep2'},
+    {id:308, p:1, level:"a1", added:'2025-05-13', fr:'quand',      en:'when',           g:null, noArticle:true, cat:'ep2'},
+    {id:309, p:1, level:"a1", added:'2025-05-13', fr:'comment',    en:'how',            g:null, noArticle:true, cat:'ep2'},
+    {id:310, p:1, level:"a1", added:'2025-05-13', fr:'pourquoi',   en:'why',            g:null, noArticle:true, cat:'ep2'},
+    {id:311, p:1, level:"a1", added:'2025-05-13', fr:'combien',    en:'how much / how many', g:null, noArticle:true, cat:'ep2'},
+    {id:312, p:1, level:"a1", added:'2025-05-13', fr:'lequel / laquelle', en:'which one', g:null, noArticle:true, cat:'ep2'},
     // Common question phrases
-    {id:313, p:2, added:'2025-05-13', fr:"Où est… ?",                   en:"Where is…?",                    cat:'questions'},
-    {id:314, p:2, added:'2025-05-13', fr:"Où sont… ?",                  en:"Where are…?",                   cat:'questions'},
-    {id:315, p:2, added:'2025-05-13', fr:"Qu'est-ce que c'est ?",       en:"What is this?",                 cat:'questions'},
-    {id:316, p:2, added:'2025-05-13', fr:"Comment tu t'appelles ?",     en:"What's your name? (informal)",  cat:'questions'},
-    {id:317, p:2, added:'2025-05-13', fr:"Comment vous appelez-vous ?", en:"What's your name? (formal)",    cat:'questions'},
-    {id:318, p:2, added:'2025-05-13', fr:"Quel âge as-tu ?",            en:"How old are you? (informal)",   cat:'questions'},
-    {id:319, p:2, added:'2025-05-13', fr:"D'où viens-tu ?",             en:"Where are you from? (informal)",cat:'questions'},
-    {id:320, p:2, added:'2025-05-13', fr:"Qu'est-ce que tu fais ?",     en:"What are you doing?",           cat:'questions'},
-    {id:321, p:2, added:'2025-05-13', fr:"Tu parles français ?",        en:"Do you speak French?",          cat:'questions'},
-    {id:322, p:2, added:'2025-05-13', fr:"C'est quoi ton numéro ?",     en:"What's your number?",           cat:'questions'},
-    {id:323, p:2, added:'2025-05-13', fr:"C'est combien, l'entrée ?",   en:"How much is admission?",        cat:'questions'},
-    {id:324, p:2, added:'2025-05-13', fr:"Pourquoi pas ?",              en:"Why not?",                      cat:'questions'},
-    {id:325, p:2, added:'2025-05-13', fr:"Quand est-ce que ça ouvre ?", en:"When does it open?",            cat:'questions'},
-    {id:326, p:2, added:'2025-05-13', fr:"Comment on dit… en français ?",en:"How do you say… in French?",  cat:'questions'},
+    {id:313, p:2, level:"a1", added:'2025-05-13', fr:"Où est… ?",                   en:"Where is…?", cat:'ep2'},
+    {id:314, p:2, level:"a1", added:'2025-05-13', fr:"Où sont… ?",                  en:"Where are…?", cat:'ep2'},
+    {id:315, p:2, level:"a1", added:'2025-05-13', fr:"Qu'est-ce que c'est ?",       en:"What is this?", cat:'ep2'},
+    {id:316, p:2, level:"a1", added:'2025-05-13', fr:"Comment tu t'appelles ?",     en:"What's your name? (informal)", cat:'ep2'},
+    {id:317, p:2, level:"a1", added:'2025-05-13', fr:"Comment vous appelez-vous ?", en:"What's your name? (formal)", cat:'ep2'},
+    {id:318, p:2, level:"a1", added:'2025-05-13', fr:"Quel âge as-tu ?",            en:"How old are you? (informal)", cat:'ep2'},
+    {id:319, p:2, level:"a1", added:'2025-05-13', fr:"D'où viens-tu ?",             en:"Where are you from? (informal)", cat:'ep2'},
+    {id:320, p:2, level:"a1", added:'2025-05-13', fr:"Qu'est-ce que tu fais ?",     en:"What are you doing?", cat:'ep2'},
+    {id:321, p:2, level:"a1", added:'2025-05-13', fr:"Tu parles français ?",        en:"Do you speak French?", cat:'ep2'},
+    {id:322, p:2, level:"a1", added:'2025-05-13', fr:"C'est quoi ton numéro ?",     en:"What's your number?", cat:'ep2'},
+    {id:323, p:2, level:"a1", added:'2025-05-13', fr:"C'est combien, l'entrée ?",   en:"How much is admission?", cat:'ep2'},
+    {id:324, p:2, level:"a1", added:'2025-05-13', fr:"Pourquoi pas ?",              en:"Why not?", cat:'ep2'},
+    {id:325, p:2, level:"a1", added:'2025-05-13', fr:"Quand est-ce que ça ouvre ?", en:"When does it open?", cat:'ep2'},
+    {id:326, p:2, level:"a1", added:'2025-05-13', fr:"Comment on dit… en français ?",en:"How do you say… in French?", cat:'ep2'},
   ],
 
   // ── CONNECTORS & FUNCTION WORDS ───────────────────────────────
   connectors: [
-    {id:327, p:1, known:true, added:'2025-05-13', fr:'mais',         en:'but',                 g:null, noArticle:true, cat:'connectors'},
-    {id:328, p:1, known:true, added:'2025-05-13', fr:'ou',           en:'or',                  g:null, noArticle:true, cat:'connectors'},
-    {id:329, p:1, known:true, added:'2025-05-13', fr:'et',           en:'and',                 g:null, noArticle:true, cat:'connectors'},
-    {id:330, p:1, added:'2025-05-13', fr:'donc',         en:'so / therefore',      g:null, noArticle:true, cat:'connectors'},
-    {id:331, p:2, added:'2025-05-13', fr:'car / parce que', en:'because',          g:null, noArticle:true, cat:'connectors'},
-    {id:332, p:1, added:'2025-05-13', fr:'aussi',        en:'also / too',          g:null, noArticle:true, cat:'connectors'},
-    {id:333, p:1, added:'2025-05-13', fr:'avec',         en:'with',                g:null, noArticle:true, cat:'connectors'},
-    {id:334, p:2, added:'2025-05-13', fr:'sans',         en:'without',             g:null, noArticle:true, cat:'connectors'},
-    {id:335, p:1, added:'2025-05-13', fr:'pour',         en:'for / in order to',   g:null, noArticle:true, cat:'connectors'},
-    {id:336, p:2, added:'2025-05-13', fr:'pendant',      en:'during / while',      g:null, noArticle:true, cat:'connectors'},
-    {id:337, p:2, added:'2025-05-13', fr:'depuis',       en:'since / for',         g:null, noArticle:true, cat:'connectors'},
-    {id:338, p:2, added:'2025-05-13', fr:'avant',        en:'before',              g:null, noArticle:true, cat:'connectors'},
-    {id:339, p:2, added:'2025-05-13', fr:'après',        en:'after',               g:null, noArticle:true, cat:'connectors'},
-    {id:340, p:2, added:'2025-05-13', fr:'ici',          en:'here',                g:null, noArticle:true, cat:'connectors'},
-    {id:341, p:2, added:'2025-05-13', fr:'là',           en:'there',               g:null, noArticle:true, cat:'connectors'},
-    {id:342, p:3, added:'2025-05-13', fr:'quelque chose',en:'something',           g:null, noArticle:true, cat:'connectors'},
-    {id:343, p:3, added:'2025-05-13', fr:'rien',         en:'nothing',             g:null, noArticle:true, cat:'connectors'},
-    {id:344, p:3, added:'2025-05-13', fr:'tout / toute', en:'everything / all',    g:null, noArticle:true, cat:'connectors'},
-    {id:345, p:1, known:true, added:'2025-05-13', fr:'très',         en:'very',                g:null, noArticle:true, cat:'connectors'},
-    {id:346, p:1, known:true, added:'2025-05-13', fr:'beaucoup',     en:'a lot / many',        g:null, noArticle:true, cat:'connectors'},
-    {id:347, p:3, added:'2025-05-13', fr:'trop',         en:'too much / too many', g:null, noArticle:true, cat:'connectors'},
-    {id:348, p:3, added:'2025-05-13', fr:'peu',          en:'little / few',        g:null, noArticle:true, cat:'connectors'},
-    {id:349, p:3, added:'2025-05-13', fr:'encore',       en:'again / still / more',g:null, noArticle:true, cat:'connectors'},
-    {id:350, p:3, added:'2025-05-13', fr:'seulement',    en:'only',                g:null, noArticle:true, cat:'connectors'},
+    {id:327, p:1, level:"a1", known:true, added:'2025-05-13', fr:'mais',         en:'but',                 g:null, noArticle:true, cat:'ep3'},
+    {id:328, p:1, level:"a1", known:true, added:'2025-05-13', fr:'ou',           en:'or',                  g:null, noArticle:true, cat:'ep3'},
+    {id:329, p:1, level:"a1", known:true, added:'2025-05-13', fr:'et',           en:'and',                 g:null, noArticle:true, cat:'ep3'},
+    {id:330, p:1, level:"a1", added:'2025-05-13', fr:'donc',         en:'so / therefore',      g:null, noArticle:true, cat:'ep3'},
+    {id:331, p:2, level:"a1", added:'2025-05-13', fr:'car / parce que', en:'because',          g:null, noArticle:true, cat:'ep3'},
+    {id:332, p:1, level:"a1", added:'2025-05-13', fr:'aussi',        en:'also / too',          g:null, noArticle:true, cat:'ep3'},
+    {id:333, p:1, level:"a1", added:'2025-05-13', fr:'avec',         en:'with',                g:null, noArticle:true, cat:'ep3'},
+    {id:334, p:2, level:"a1", added:'2025-05-13', fr:'sans',         en:'without',             g:null, noArticle:true, cat:'ep3'},
+    {id:335, p:1, level:"a1", added:'2025-05-13', fr:'pour',         en:'for / in order to',   g:null, noArticle:true, cat:'ep3'},
+    {id:336, p:2, level:"a1", added:'2025-05-13', fr:'pendant',      en:'during / while',      g:null, noArticle:true, cat:'ep3'},
+    {id:337, p:2, level:"a1", added:'2025-05-13', fr:'depuis',       en:'since / for',         g:null, noArticle:true, cat:'ep3'},
+    {id:338, p:2, level:"a1", added:'2025-05-13', fr:'avant',        en:'before',              g:null, noArticle:true, cat:'ep3'},
+    {id:339, p:2, level:"a1", added:'2025-05-13', fr:'après',        en:'after',               g:null, noArticle:true, cat:'ep3'},
+    {id:340, p:2, level:"a1", added:'2025-05-13', fr:'ici',          en:'here',                g:null, noArticle:true, cat:'ep3'},
+    {id:341, p:2, level:"a1", added:'2025-05-13', fr:'là',           en:'there',               g:null, noArticle:true, cat:'ep3'},
+    {id:342, p:3, level:"a1", added:'2025-05-13', fr:'quelque chose',en:'something',           g:null, noArticle:true, cat:'ep3'},
+    {id:343, p:3, level:"a1", added:'2025-05-13', fr:'rien',         en:'nothing',             g:null, noArticle:true, cat:'ep3'},
+    {id:344, p:3, level:"a1", added:'2025-05-13', fr:'tout / toute', en:'everything / all',    g:null, noArticle:true, cat:'ep3'},
+    {id:345, p:1, level:"a1", known:true, added:'2025-05-13', fr:'très',         en:'very',                g:null, noArticle:true, cat:'ep3'},
+    {id:346, p:1, level:"a1", known:true, added:'2025-05-13', fr:'beaucoup',     en:'a lot / many',        g:null, noArticle:true, cat:'ep3'},
+    {id:347, p:3, level:"a1", added:'2025-05-13', fr:'trop',         en:'too much / too many', g:null, noArticle:true, cat:'ep3'},
+    {id:348, p:3, level:"a1", added:'2025-05-13', fr:'peu',          en:'little / few',        g:null, noArticle:true, cat:'ep3'},
+    {id:349, p:3, level:"a1", added:'2025-05-13', fr:'encore',       en:'again / still / more',g:null, noArticle:true, cat:'ep3'},
+    {id:350, p:3, level:"a1", added:'2025-05-13', fr:'seulement',    en:'only',                g:null, noArticle:true, cat:'ep3'},
   ],
 
   // ── NEW VERB INFINITIVES ──────────────────────────────────────
   // (these are added to existing verbs array conceptually but as new entries)
   verbs2: [
-    {id:351, p:1, added:'2025-05-13', fr:'faire',      en:'to do / to make',  cat:'irregular'},
-    {id:352, p:1, added:'2025-05-13', fr:'dire',       en:'to say / to tell', cat:'irregular'},
-    {id:353, p:4, added:'2025-05-13', fr:'voir',       en:'to see',           cat:'irregular'},
-    {id:354, p:4, added:'2025-05-13', fr:'savoir',     en:'to know (a fact)', cat:'irregular'},
-    {id:355, p:1, added:'2025-05-13', fr:'venir',      en:'to come',          cat:'irregular'},
-    {id:356, p:1, added:'2025-05-13', fr:'prendre',    en:'to take',          cat:'irregular'},
-    {id:357, p:4, added:'2025-05-13', fr:'partir',     en:'to leave',         cat:'irregular'},
-    {id:358, p:3, added:'2025-05-13', fr:'mettre',     en:'to put / to place',cat:'irregular'},
-    {id:359, p:2, added:'2025-05-13', fr:'chercher',   en:'to look for',      cat:'regular'},
-    {id:360, p:2, added:'2025-05-13', fr:'aimer',      en:'to like / to love',cat:'regular'},
-    {id:361, p:2, added:'2025-05-13', fr:'parler',     en:'to speak / to talk',cat:'regular'},
-    {id:362, p:2, added:'2025-05-13', fr:'habiter',    en:'to live (somewhere)',cat:'regular'},
-    {id:363, p:2, added:'2025-05-13', fr:'travailler', en:'to work',          cat:'regular'},
-    {id:364, p:3, added:'2025-05-13', fr:'acheter',    en:'to buy',           cat:'regular'},
-    {id:365, p:3, added:'2025-05-13', fr:'connaître',  en:'to know (a person/place)',cat:'irregular'},
+    {id:351, p:1, level:"a1", added:'2025-05-13', fr:'faire',      en:'to do / to make', cat:'ep1'},
+    {id:352, p:1, level:"a1", added:'2025-05-13', fr:'dire',       en:'to say / to tell', cat:'ep3'},
+    {id:353, p:4, level:"a1", added:'2025-05-13', fr:'voir',       en:'to see', cat:'ep3'},
+    {id:354, p:4, level:"a1", added:'2025-05-13', fr:'savoir',     en:'to know (a fact)', cat:'ep3'},
+    {id:355, p:1, level:"a1", added:'2025-05-13', fr:'venir',      en:'to come', cat:'ep6'},
+    {id:356, p:1, level:"a1", added:'2025-05-13', fr:'prendre',    en:'to take', cat:'ep6'},
+    {id:357, p:4, level:"a1", added:'2025-05-13', fr:'partir',     en:'to leave', cat:'ep7'},
+    {id:358, p:3, level:"a1", added:'2025-05-13', fr:'mettre',     en:'to put / to place', cat:'ep7'},
+    {id:359, p:2, level:"a1", added:'2025-05-13', fr:'chercher',   en:'to look for', cat:'ep1'},
+    {id:360, p:2, level:"a1", added:'2025-05-13', fr:'aimer',      en:'to like / to love', cat:'ep15'},
+    {id:361, p:2, level:"a1", added:'2025-05-13', fr:'parler',     en:'to speak / to talk', cat:'ep1'},
+    {id:362, p:2, level:"a1", added:'2025-05-13', fr:'habiter',    en:'to live (somewhere)', cat:'ep1'},
+    {id:363, p:2, level:"a1", added:'2025-05-13', fr:'travailler', en:'to work', cat:'ep1'},
+    {id:364, p:3, level:"a1", added:'2025-05-13', fr:'acheter',    en:'to buy', cat:'ep15'},
+    {id:365, p:3, level:"a1", added:'2025-05-13', fr:'connaître',  en:'to know (a person/place)', cat:'ep5'},
   ],
 
   // ── FAMILY VOCAB ─────────────────────────────────────────────
   family: [
-    {id:366, p:3, added:'2025-06-07', fr:'la sœur',        en:'the sister',          g:'f', cat:'family'},
-    {id:367, p:3, added:'2025-06-07', fr:'le frère',       en:'the brother',         g:'m', cat:'family'},
-    {id:368, p:3, added:'2025-06-07', fr:'la mère',        en:'the mother',          g:'f', cat:'family'},
-    {id:369, p:3, added:'2025-06-07', fr:'le père',        en:'the father',          g:'m', cat:'family'},
-    {id:370, p:3, added:'2025-06-07', fr:"l'enfant",       en:'the child',           g:'m', cat:'family', vowelStart:true},
-    {id:371, p:3, added:'2025-06-07', fr:'le mari',        en:'the husband',         g:'m', cat:'family'},
-    {id:372, p:3, added:'2025-06-07', fr:'la femme',       en:'the wife / woman',    g:'f', cat:'family'},
-    {id:373, p:3, added:'2025-06-07', fr:'le/la conjoint(e)', en:'the partner / spouse', g:'m', cat:'family', noArticle:true},
-    {id:374, p:3, added:'2025-06-07', fr:'les parents',    en:'the parents',         g:'pm', cat:'family', pluralOnly:true},
-    {id:375, p:3, added:'2025-06-07', fr:'les enfants',    en:'the children',        g:'pm', cat:'family', pluralOnly:true},
-    {id:376, p:4, added:'2025-06-07', fr:'la grand-mère',  en:'the grandmother',     g:'f', cat:'family'},
-    {id:377, p:4, added:'2025-06-07', fr:'le grand-père',  en:'the grandfather',     g:'m', cat:'family'},
-    {id:378, p:4, added:'2025-06-07', fr:'la fille',       en:'the daughter / girl', g:'f', cat:'family'},
-    {id:379, p:4, added:'2025-06-07', fr:'le fils',        en:'the son',             g:'m', cat:'family'},
-    {id:380, p:5, added:'2025-06-07', fr:'la tante',       en:'the aunt',            g:'f', cat:'family'},
-    {id:381, p:5, added:'2025-06-07', fr:"l'oncle",        en:'the uncle',           g:'m', cat:'family', vowelStart:true},
+    {id:366, p:3, level:"a1", added:'2025-06-07', fr:'la sœur',        en:'the sister',          g:'f', cat:'ep5'},
+    {id:367, p:3, level:"a1", added:'2025-06-07', fr:'le frère',       en:'the brother',         g:'m', cat:'ep5'},
+    {id:368, p:3, level:"a1", added:'2025-06-07', fr:'la mère',        en:'the mother',          g:'f', cat:'ep5'},
+    {id:369, p:3, level:"a1", added:'2025-06-07', fr:'le père',        en:'the father',          g:'m', cat:'ep5'},
+    {id:370, p:3, level:"a1", added:'2025-06-07', fr:"l'enfant",       en:'the child',           g:'m', cat:'ep5', vowelStart:true},
+    {id:371, p:3, level:"a1", added:'2025-06-07', fr:'le mari',        en:'the husband',         g:'m', cat:'ep5'},
+    {id:372, p:3, level:"a1", added:'2025-06-07', fr:'la femme',       en:'the wife / woman',    g:'f', cat:'ep5'},
+    {id:373, p:3, level:"a1", added:'2025-06-07', fr:'le/la conjoint(e)', en:'the partner / spouse', g:'m', cat:'ep5', noArticle:true},
+    {id:374, p:3, level:"a1", added:'2025-06-07', fr:'les parents',    en:'the parents',         g:'pm', cat:'ep5', pluralOnly:true},
+    {id:375, p:3, level:"a1", added:'2025-06-07', fr:'les enfants',    en:'the children',        g:'pm', cat:'ep5', pluralOnly:true},
+    {id:376, p:4, level:"a1", added:'2025-06-07', fr:'la grand-mère',  en:'the grandmother',     g:'f', cat:'ep5'},
+    {id:377, p:4, level:"a1", added:'2025-06-07', fr:'le grand-père',  en:'the grandfather',     g:'m', cat:'ep5'},
+    {id:378, p:4, level:"a1", added:'2025-06-07', fr:'la fille',       en:'the daughter / girl', g:'f', cat:'ep5'},
+    {id:379, p:4, level:"a1", added:'2025-06-07', fr:'le fils',        en:'the son',             g:'m', cat:'ep5'},
+    {id:380, p:5, level:"a1", added:'2025-06-07', fr:'la tante',       en:'the aunt',            g:'f', cat:'ep5'},
+    {id:381, p:5, level:"a1", added:'2025-06-07', fr:"l'oncle",        en:'the uncle',           g:'m', cat:'ep5', vowelStart:true},
   ],
 
   // ── RELATIONSHIP STATUS ───────────────────────────────────────
   relationship: [
-    {id:382, p:4, added:'2025-06-07', fr:'célibataire',    en:'single',              g:null, noArticle:true, cat:'relationship'},
-    {id:383, p:4, added:'2025-06-07', fr:'marié(e)',       en:'married',             g:null, noArticle:true, cat:'relationship'},
-    {id:384, p:4, added:'2025-06-07', fr:'divorcé(e)',     en:'divorced',            g:null, noArticle:true, cat:'relationship'},
-    {id:385, p:5, added:'2025-06-07', fr:'séparé(e)',      en:'separated',           g:null, noArticle:true, cat:'relationship'},
-    {id:386, p:4, added:'2025-06-07', fr:'en couple',      en:'in a relationship',   g:null, noArticle:true, cat:'relationship'},
-    {id:387, p:5, added:'2025-06-07', fr:'veuf / veuve',   en:'widowed',             g:null, noArticle:true, cat:'relationship'},
+    {id:382, p:4, level:"a1", added:'2025-06-07', fr:'célibataire',    en:'single',              g:null, noArticle:true, cat:'ep5'},
+    {id:383, p:4, level:"a1", added:'2025-06-07', fr:'marié(e)',       en:'married',             g:null, noArticle:true, cat:'ep5'},
+    {id:384, p:4, level:"a1", added:'2025-06-07', fr:'divorcé(e)',     en:'divorced',            g:null, noArticle:true, cat:'ep5'},
+    {id:385, p:5, level:"a1", added:'2025-06-07', fr:'séparé(e)',      en:'separated',           g:null, noArticle:true, cat:'ep5'},
+    {id:386, p:4, level:"a1", added:'2025-06-07', fr:'en couple',      en:'in a relationship',   g:null, noArticle:true, cat:'ep5'},
+    {id:387, p:5, level:"a1", added:'2025-06-07', fr:'veuf / veuve',   en:'widowed',             g:null, noArticle:true, cat:'ep5'},
   ],
 
   // ── QUEBEC COLLOQUIAL ─────────────────────────────────────────
   quebec: [
-    {id:388, p:2, added:'2025-06-07', fr:'le dépanneur',   en:'the corner store (Quebec)',       g:'m', cat:'quebec'},
-    {id:389, p:2, added:'2025-06-07', fr:'le char',        en:'the car (Quebec informal)',        g:'m', cat:'quebec'},
-    {id:390, p:2, added:'2025-06-07', fr:'la blonde',      en:'the girlfriend (Quebec)',          g:'f', cat:'quebec'},
-    {id:391, p:2, added:'2025-06-07', fr:'le chum',        en:'the boyfriend (Quebec)',           g:'m', cat:'quebec'},
-    {id:392, p:2, added:'2025-06-07', fr:'magasiner',      en:'to go shopping (Quebec)',          g:null, noArticle:true, cat:'quebec'},
-    {id:393, p:2, added:'2025-06-07', fr:'être tanné(e)',  en:'to be fed up / tired of (Quebec)',g:null, noArticle:true, cat:'quebec'},
-    {id:394, p:2, added:'2025-06-07', fr:'le souper',      en:'dinner / supper (Quebec)',         g:'m', cat:'quebec'},
-    {id:395, p:2, added:'2025-06-07', fr:'le dîner',       en:'lunch (Quebec)',                   g:'m', cat:'quebec'},
-    {id:396, p:2, added:'2025-06-07', fr:'le déjeuner',    en:'breakfast (Quebec)',               g:'m', cat:'quebec'},
-    {id:397, p:3, added:'2025-06-07', fr:'la tuque',       en:'the winter hat (Quebec)',          g:'f', cat:'quebec'},
-    {id:398, p:3, added:'2025-06-07', fr:'pogner',         en:'to grab / to catch (Quebec)',      g:null, noArticle:true, cat:'quebec'},
-    {id:399, p:3, added:'2025-06-07', fr:'le breuvage',    en:'the beverage (Quebec)',            g:'m', cat:'quebec'},
+    {id:388, p:2, level:"a1", added:'2025-06-07', fr:'le dépanneur',   en:'the corner store (Quebec)',       g:'m', cat:'ep1'},
+    {id:389, p:2, level:"a1", added:'2025-06-07', fr:'le char',        en:'the car (Quebec informal)',        g:'m', cat:'ep1'},
+    {id:390, p:2, level:"a1", added:'2025-06-07', fr:'la blonde',      en:'the girlfriend (Quebec)',          g:'f', cat:'ep1'},
+    {id:391, p:2, level:"a1", added:'2025-06-07', fr:'le chum',        en:'the boyfriend (Quebec)',           g:'m', cat:'ep1'},
+    {id:392, p:2, level:"a1", added:'2025-06-07', fr:'magasiner',      en:'to go shopping (Quebec)',          g:null, noArticle:true, cat:'ep15'},
+    {id:393, p:2, level:"a1", added:'2025-06-07', fr:'être tanné(e)',  en:'to be fed up / tired of (Quebec)',g:null, noArticle:true, cat:'ep15'},
+    {id:394, p:2, level:"a1", added:'2025-06-07', fr:'le souper',      en:'dinner / supper (Quebec)',         g:'m', cat:'ep15'},
+    {id:395, p:2, level:"a1", added:'2025-06-07', fr:'le dîner',       en:'lunch (Quebec)',                   g:'m', cat:'ep15'},
+    {id:396, p:2, level:"a1", added:'2025-06-07', fr:'le déjeuner',    en:'breakfast (Quebec)',               g:'m', cat:'ep15'},
+    {id:397, p:3, level:"a1", added:'2025-06-07', fr:'la tuque',       en:'the winter hat (Quebec)',          g:'f', cat:'ep14'},
+    {id:398, p:3, level:"a1", added:'2025-06-07', fr:'pogner',         en:'to grab / to catch (Quebec)',      g:null, noArticle:true, cat:'ep1'},
+    {id:399, p:3, level:"a1", added:'2025-06-07', fr:'le breuvage',    en:'the beverage (Quebec)',            g:'m', cat:'ep15'},
   ],
 };
 
@@ -872,6 +878,7 @@ const DB = {
 // ═══════════════════════════════════════════════════════════════
 //
 // NEXT AVAILABLE ID: 440
+// NEXT A2 ID BLOCK: 500+
 //
 // ID RULES:
 //   • Never change or reuse an existing id — ever
@@ -1911,6 +1918,35 @@ function showSyncIndicator(ok) {
   }
 }
 
+
+// ── TWO-SPEED MASTERY ──
+// A1 cards master faster (75% learned = prob ~0.25)
+// A2 cards need 90% learned (prob ~0.10)
+const A1_MASTERY_LEARNED = 75;
+const A2_MASTERY_LEARNED = 90;
+const A1_CORRECT_DECAY = 0.35;  // faster than default 0.45
+const A2_CORRECT_DECAY = 0.45;
+
+// Build a lookup of probKey → level from all pools
+let _cardLevelMap = {};
+function buildCardLevelMap() {
+  const allCards = [...VOCAB_POOL,...PHRASE_POOL,...JOB_POOL,...VERB_POOL,...PERM_POOL,
+    ...TRAVEL_POOL,...DESCRIPTOR_POOL,...QUESTION_POOL,...CONNECTOR_POOL,
+    ...(FAMILY_POOL||[]),...(RELATIONSHIP_POOL||[]),...(QUEBEC_POOL||[])];
+  allCards.forEach(c => {
+    if (c.probKey) _cardLevelMap[c.probKey] = c.level || 'a1';
+  });
+}
+function getCardLevel(probKey) {
+  return _cardLevelMap[probKey] || 'a1';
+}
+function getMasteryThreshold(probKey) {
+  return getCardLevel(probKey) === 'a2' ? A2_MASTERY_LEARNED : A1_MASTERY_LEARNED;
+}
+function getCorrectDecay(probKey) {
+  return getCardLevel(probKey) === 'a2' ? A2_CORRECT_DECAY : A1_CORRECT_DECAY;
+}
+
 // ── LEARNED % (logarithmic scale) ──
 // prob 0.5 → 40% learned, 0.1 → 80% learned
 function probToLearned(prob) {
@@ -2049,58 +2085,58 @@ function buildPool() {
     if (seen.has(key)) return;
     seen.add(key);
     const forms = getArticleForms(v);
-    forms.forEach(f => VOCAB_POOL.push({...f, probKey: key, cat: v.cat || 'vocab'}));
+    forms.forEach(f => VOCAB_POOL.push({...f, probKey: key, cat: v.cat || 'ep3', tier:v.p||3, level:v.level||'a1'}));
   });
 
   PHRASE_POOL = DB.phrases
     .filter(p => !p.disabled)
-    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat, tier:p.p||2}));
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat||'ep1', tier:p.p||2, level:p.level||'a1'}));
 
   JOB_POOL = DB.jobs
     .filter(j => !j.disabled)
-    .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:'jobs', tier:j.p||3}));
+    .map(j => ({fr:j.fr, en:j.en, g:j.g, probKey:'id:'+j.id, cat:j.cat||'ep1', tier:j.p||3, level:j.level||'a1'}));
 
   VERB_POOL = [...(DB.verbs||[]), ...(DB.verbs2||[])]
     .filter(v => !v.disabled)
-    .map(v => ({fr:v.fr, en:v.en, g:null, probKey:'id:'+v.id, cat:v.cat, tier:v.p||3}));
+    .map(v => ({fr:v.fr, en:v.en, g:null, probKey:'id:'+v.id, cat:v.cat, tier:v.p||3, level:v.level||'a1'}));
 
   PERM_POOL = (DB.permission||[])
     .filter(p => !p.disabled)
-    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:'irregular', tier:1}));
+    .map(p => ({fr:p.fr, en:p.en, g:null, probKey:'id:'+p.id, cat:p.cat||'ep7', tier:1, level:p.level||'a1'}));
 
   TRAVEL_POOL = [...(DB.travel||[]), ...(DB.travel_phrases||[])]
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr||('un '+c.base), en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:'travel'}));
+    .map(c => ({fr:c.fr||('un '+c.base), en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:c.cat||'ep14', tier:c.p||2, level:c.level||'a1'}));
 
   DESCRIPTOR_POOL = (DB.descriptors||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr||c.base, en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:'descriptors', tier:c.p||4}));
+    .map(c => ({fr:c.fr||c.base, en:c.en||c.enBase, g:c.g||null, probKey:'id:'+c.id, cat:c.cat||'ep3', tier:c.p||4, level:c.level||'a1'}));
 
   QUESTION_POOL = (DB.questions||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'questions', tier:c.p||1}));
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:c.cat||'ep2', tier:c.p||1, level:c.level||'a1'}));
 
   CONNECTOR_POOL = (DB.connectors||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'connectors', tier:c.p||3}));
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:c.cat||'ep3', tier:c.p||3, level:c.level||'a1'}));
 
   FAMILY_POOL = (DB.family||[])
     .filter(c => !c.disabled)
     .map(c => {
       const forms = getArticleForms(c);
-      return forms.map(f => ({...f, probKey:'id:'+c.id, cat:'family', tier:c.p||3}));
+      return forms.map(f => ({...f, probKey:'id:'+c.id, cat:c.cat||'ep5', tier:c.p||3, level:c.level||'a1'}));
     }).flat();
 
   RELATIONSHIP_POOL = (DB.relationship||[])
     .filter(c => !c.disabled)
-    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'relationship', tier:c.p||4}));
+    .map(c => ({fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:c.cat||'ep5', tier:c.p||4, level:c.level||'a1'}));
 
   QUEBEC_POOL = (DB.quebec||[])
     .filter(c => !c.disabled)
     .map(c => {
-      if (c.noArticle) return [{fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:'quebec', tier:c.p||2}];
+      if (c.noArticle) return [{fr:c.fr, en:c.en, g:null, probKey:'id:'+c.id, cat:c.cat||'ep1', tier:c.p||2, level:c.level||'a1'}];
       const forms = getArticleForms(c);
-      return forms.map(f => ({...f, probKey:'id:'+c.id, cat:'quebec', tier:c.p||2}));
+      return forms.map(f => ({...f, probKey:'id:'+c.id, cat:c.cat||'ep1', tier:c.p||2, level:c.level||'a1'}));
     }).flat();
 
   buildAddedDateLookup();
@@ -2185,6 +2221,7 @@ function initProbs(hardReset) {
   });
 
   ADAPTIVE_KEYS.forEach(k => { adaptiveLive[k] = ADAPTIVE_GENS[k](); });
+  buildCardLevelMap();
   setTimeout(checkAndClearStaleFlags, 200);
 }
 
@@ -2230,10 +2267,7 @@ function weightedPick(enabledCats) {
   if (forceAdaptive) {
     // Pick from enabled adaptive categories only
     const eligibleKeys = ADAPTIVE_KEYS.filter(ak => {
-      const c = adaptiveLive[ak]?.cat;
-      if (c==='irregular') return enabledCats.irregular;
-      if (c==='regular')   return enabledCats.regular;
-      return enabledCats.adaptive;
+      return enabledCats.adaptive !== false;
     });
     const verbCats = new Set(['irregular','regular']);
     const weightedKeys = [];
@@ -2254,7 +2288,7 @@ function weightedPick(enabledCats) {
 
   function addStaticCards(cards) {
     cards.forEach(c => {
-      if (!enabledCats[c.cat]) return;
+      if (!enabledCats[c.cat] && c.cat !== 'adaptive') return;
       if (mastered[c.probKey] && cardsSinceMastered < MASTERED_RESURFACE) return;
       if (recentCooldown.includes(c.probKey)) return;
       const lang = langForCard(c.probKey);
@@ -2273,20 +2307,13 @@ function weightedPick(enabledCats) {
     });
   }
 
-  if (enabledCats.travel)       addStaticCards(TRAVEL_POOL);
-  if (enabledCats.family)       addStaticCards(FAMILY_POOL);
-  if (enabledCats.relationship)  addStaticCards(RELATIONSHIP_POOL);
-  if (enabledCats.quebec)        addStaticCards(QUEBEC_POOL);
-  if (enabledCats.descriptors)  addStaticCards(DESCRIPTOR_POOL);
-  if (enabledCats.questions)    addStaticCards(QUESTION_POOL);
-  if (enabledCats.connectors)   addStaticCards(CONNECTOR_POOL);
-  if (enabledCats.irregular || enabledCats.regular) {
-    addStaticCards(VERB_POOL.filter(c => enabledCats[c.cat]));
-    addStaticCards(PERM_POOL);
-  }
-  if (enabledCats.jobs)         addStaticCards(JOB_POOL);
-  if (enabledCats.vocab || enabledCats.nav || enabledCats.weather) addStaticCards(VOCAB_POOL);
-  if (enabledCats.greet || enabledCats.weather || enabledCats.nav) addStaticCards(PHRASE_POOL);
+    // Combine all static pools and filter by enabled chapter category
+  const _allStatic = [
+    ...VOCAB_POOL,...PHRASE_POOL,...JOB_POOL,...VERB_POOL,...PERM_POOL,
+    ...TRAVEL_POOL,...DESCRIPTOR_POOL,...QUESTION_POOL,...CONNECTOR_POOL,
+    ...(FAMILY_POOL||[]),...(RELATIONSHIP_POOL||[]),...(QUEBEC_POOL||[])
+  ];
+  addStaticCards(_allStatic.filter(c => enabledCats[c.cat]));
 
   if (!recentMode && (enabledCats.adaptive || enabledCats.irregular || enabledCats.regular)) {
     ADAPTIVE_KEYS.forEach(ak => {
@@ -2419,7 +2446,7 @@ let _selMode='free', _selTimer=0, _selRecent=false, _catOpen=false, _settingsOpe
 let _browseFilter={mastered:false, flagged:false};
 let _browseOpenCats={}; // category open state
 let _browseSwipeState={}; // track active swipe per row
-let enabledCats={travel:true,descriptors:true,questions:true,connectors:true,family:true,relationship:true,quebec:true,irregular:true,regular:true,jobs:true,adaptive:true,weather:true,greet:true,nav:true,vocab:true};
+let enabledCats={ep1:true,ep2:true,ep3:true,ep5:true,ep6:true,ep7:true,ep13:true,ep14:true,ep15:true,adaptive:true};
 
 function render(){
   if(screen==='home') renderHome();
@@ -2464,13 +2491,44 @@ function renderTierProgress() {
   </div>`;
 }
 
+const CAT_BOOK = {
+  ep1:'a1',ep2:'a1',ep3:'a1',ep5:'a1',ep6:'a1',ep7:'a1',
+  ep13:'a1',ep14:'a1',ep15:'a1',
+  adaptive:'core',
+};
+
 function renderHome(){
   const hs=loadHS();
-  const CAT_LABELS={travel:'Travel',descriptors:'Descriptors',questions:'Questions',connectors:'Connectors',family:'Family',relationship:'Relationships',quebec:'Québec',irregular:'Irregular Verbs',regular:'Regular Verbs',jobs:'Jobs',adaptive:'Adaptive',weather:'Weather',greet:'Greetings',nav:'Navigation',vocab:'Vocabulary'};
-  const cats=Object.entries(CAT_LABELS).map(([k,l])=>`
-    <div class="cat-toggle ${enabledCats[k]?'on':''}" onclick="toggleCat('${k}')">
-      <span class="cat-name">${l}</span><span class="cat-dot"></span>
-    </div>`).join('');
+  const CAT_LABELS={
+  ep1:'Ep 1 · C\'est moi',
+  ep2:'Ep 2 · Mes infos',
+  ep3:'Ep 3 · La rentrée',
+  ep5:'Ep 5 · Un air de famille',
+  ep6:'Ep 6 · Demander',
+  ep7:'Ep 7 · Je peux…?',
+  ep13:'Ep 13 · Petit bobo',
+  ep14:'Ep 14 · Beau et chaud',
+  ep15:'Ep 15 · On casse la croûte',
+  adaptive:'Adaptive Sentences',
+};
+  function renderCatGroup(entries) {
+    return entries.map(([k,l])=>`
+      <div class="cat-toggle ${enabledCats[k]?'on':''}" onclick="toggleCat('${k}')">
+        <span class="cat-dot"></span><span class="cat-name">${l}</span>
+      </div>`).join('');
+  }
+  const catsByBook = Object.entries(CAT_LABELS).reduce((a,[k,l])=>{
+    const b=CAT_BOOK[k]||'core';
+    if(!a[b])a[b]=[];
+    a[b].push([k,l]);
+    return a;
+  },{});
+
+  const cats = [
+    catsByBook.a1?.length?`<div class="cat-book-group"><div class="cat-book-header">Par ici A1</div><div class="cat-grid-inner">${renderCatGroup(catsByBook.a1)}</div></div>`:'',
+    catsByBook.a2?.length?`<div class="cat-book-group"><div class="cat-book-header">Par ici A2</div><div class="cat-grid-inner">${renderCatGroup(catsByBook.a2)}</div></div>`:'',
+    catsByBook.core?.length?`<div class="cat-book-group"><div class="cat-book-header">Général</div><div class="cat-grid-inner">${renderCatGroup(catsByBook.core)}</div></div>`:'',
+  ].join('');
 
   document.getElementById('app').innerHTML=`
     <div class="home">
@@ -2597,7 +2655,7 @@ function bgCls(g){
   if(g==='f')return'bg-f';
   return'';
 }
-function catLbl(c){return{vocab:'vocab',nav:'nav',greet:'greet',weather:'météo',adaptive:'adaptive',jobs:'jobs',irregular:'irrég.',regular:'régulier',travel:'voyage',descriptors:'descr.',questions:'question',connectors:'connecteur',verbs2:'verbe',family:'famille',relationship:'relation',quebec:'québec'}[c]||c;}
+function catLbl(c){return{ep1:'C\'est moi',ep2:'Mes infos',ep3:'La rentrée',ep5:'Famille',ep6:'Demander',ep7:'Je peux',ep13:'Petit bobo',ep14:'Météo',ep15:'Cuisine',adaptive:'adaptive'}[c]||c;}
 function fmtT(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
 
 function timerRingHTML(){
@@ -3016,21 +3074,21 @@ function renderBrowse(query='') {
   const flaggedFrs = new Set(flags.map(f=>f.fr));
 
   const allPools = [
-    {label:'Travel',        cat:'travel',      cards:TRAVEL_POOL},
-    {label:'Descriptors',   cat:'descriptors', cards:DESCRIPTOR_POOL},
-    {label:'Questions',     cat:'questions',   cards:QUESTION_POOL},
-    {label:'Connectors',    cat:'connectors',  cards:CONNECTOR_POOL},
-    {label:'Family',        cat:'family',      cards:FAMILY_POOL},
-    {label:'Relationships', cat:'relationship',cards:RELATIONSHIP_POOL},
-    {label:'Québec',        cat:'quebec',      cards:QUEBEC_POOL},
-    {label:'Irregular Verbs',cat:'irregular',  cards:VERB_POOL.filter(c=>c.cat==='irregular')},
-    {label:'Regular Verbs', cat:'regular',     cards:VERB_POOL.filter(c=>c.cat==='regular')},
-    {label:'Permission',    cat:'irregular',   cards:PERM_POOL},
-    {label:'Jobs',          cat:'jobs',        cards:JOB_POOL},
-    {label:'Weather',       cat:'weather',     cards:PHRASE_POOL.filter(c=>c.cat==='weather')},
-    {label:'Greetings',     cat:'greet',       cards:PHRASE_POOL.filter(c=>c.cat==='greet')},
-    {label:'Navigation',    cat:'nav',         cards:[...VOCAB_POOL.filter(c=>c.cat==='nav'),...PHRASE_POOL.filter(c=>c.cat==='nav')]},
-    {label:'Vocabulary',    cat:'vocab',       cards:VOCAB_POOL.filter(c=>c.cat==='vocab')},
+    {label:'Ep 14 · Météo', cat:'ep14',        cards:TRAVEL_POOL},
+    {label:'Ep 3 · Classroom', cat:'ep3',      cards:DESCRIPTOR_POOL},
+    {label:'Ep 2 · Infos', cat:'ep2',         cards:QUESTION_POOL},
+    {label:'Ep 3 · La rentrée', cat:'ep3', cards:CONNECTOR_POOL},
+    {label:'Ep 5 · Famille', cat:'ep5',        cards:FAMILY_POOL},
+    {label:'Ep 5 · Relations', cat:'ep5',      cards:RELATIONSHIP_POOL},
+    {label:'Québec',        cat:'ep1',         cards:QUEBEC_POOL},
+    {label:'Verbes irrég.', cat:'ep7',         cards:VERB_POOL.filter(c=>c.cat==='ep7')},
+    {label:'Verbes rég.',   cat:'ep1',         cards:VERB_POOL.filter(c=>c.level==='a1'&&c.cat!=='ep7')},
+    {label:'Je peux…',      cat:'ep7',         cards:PERM_POOL},
+    {label:'Métiers',       cat:'ep1',         cards:JOB_POOL},
+    {label:'Météo phrases', cat:'ep14',        cards:PHRASE_POOL.filter(c=>c.cat==='ep14')},
+    {label:'Salutations',   cat:'ep1',         cards:PHRASE_POOL.filter(c=>c.cat==='ep1')},
+    {label:'Navigation',    cat:'ep6',         cards:[...VOCAB_POOL.filter(c=>c.cat==='ep6'),...PHRASE_POOL.filter(c=>c.cat==='ep6')]},
+    {label:'Vocabulaire A1', cat:'ep3',        cards:VOCAB_POOL.filter(c=>c.level==='a1')},
   ];
 
   const sections = allPools.map(({label, cat, cards}) => {
@@ -3472,5 +3530,17 @@ loadFromSupabase().then(loaded => {
 });
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
+</body>
+</html>E html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Français"/>
+  <meta name="theme-color" content="#0f0f0f"/>
+  <link rel="manifest" href="manifest.json"/>
+  <title>Français</title>
 </body>
 </html>
