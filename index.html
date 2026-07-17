@@ -2356,7 +2356,8 @@ function resolveCard(pick_) {
   // Static: find all forms for this probKey, pick one randomly
   const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL, ...QUESTION_POOL, ...CONNECTOR_POOL, ...FAMILY_POOL, ...RELATIONSHIP_POOL, ...QUEBEC_POOL];
   const forms = allPools.filter(c => c.probKey === pick_.probKey);
-  return forms.length ? pick(forms) : forms[0];
+  if (!forms.length) { console.warn('No card found for probKey:', pick_.probKey); return null; }
+  return pick(forms);
 }
 
 // ═══════════════════════════════════════════════════
@@ -2629,6 +2630,7 @@ function doPickNext(){
   flipped=false;
   currentPick=weightedPick(enabledCats);
   currentCard=resolveCard(currentPick);
+  if(!currentCard){doPickNext();return;}
   // Track seen
   seenKeys.add(currentPick.probKey);
   recentCooldown.push(currentPick.probKey);
@@ -3252,6 +3254,19 @@ function unflagAt(idx) {
   renderFlagged();
 }
 
+
+
+// ── FLAG HANDLER ──
+function handleFlag(e) {
+  e.stopPropagation();
+  if (!currentCard) return;
+  const nowFlagged = toggleFlag(currentCard.fr, currentCard.en, currentCard.cat || '');
+  ['flagBtn','flagBtnBack'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.toggle('flagged', nowFlagged);
+  });
+  showToast(nowFlagged ? '⚑ Flagged for review' : 'Flag removed');
+}
 
 // ── BROWSE LONG-PRESS MASTER/UNMASTER ──
 let _browseLpTimer = null;
