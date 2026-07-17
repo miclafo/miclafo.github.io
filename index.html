@@ -85,14 +85,6 @@
 
     /* ── CATEGORY DROPDOWN ── */
     .cat-disclosure{width:100%;margin-bottom:16px}
-    .cat-disclosure-btn{width:100%;background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--shape-lg);padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--mid);transition:background .2s}
-    .cat-disclosure-btn:active{background:var(--surface2)}
-    .cat-disclosure-btn.open{border-color:var(--accent);color:var(--text);border-radius:var(--shape-lg) var(--shape-lg) 0 0}
-    .cat-disclosure-chevron{font-size:12px;transition:transform .2s}
-    .cat-disclosure-btn.open .cat-disclosure-chevron{transform:rotate(180deg)}
-    .cat-disclosure-body{display:none;background:var(--surface);border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--shape-lg) var(--shape-lg);padding:10px}
-    .cat-disclosure-body.open{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .cat-active-summary{font-size:12px;color:var(--accent);font-weight:500}
     /* ── CATEGORY DROPDOWN ── */
     .cat-disclosure{width:100%;margin-bottom:16px}
     .cat-disc-btn{width:100%;background:var(--surface);border:1px solid var(--border-sub);border-radius:var(--shape-lg);padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--mid);transition:background .2s}
@@ -234,8 +226,6 @@
     .hint-label svg{width:13px;height:13px}
 
     /* ── SCORE ── */
-    .score-screen{flex:1;display:flex;flex-direction:column;overflow-y:auto}
-    .score-inner{padding:calc(env(safe-area-inset-top,0px)+24px) 20px calc(env(safe-area-inset-bottom,0px)+24px);display:flex;flex-direction:column;flex:1}
     .score-title{font-size:36px;color:var(--accent);margin-bottom:4px}
     .score-sub{font-size:13px;color:var(--mid);margin-bottom:20px}
     .score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-bottom:16px}
@@ -271,7 +261,6 @@
     .browse-search{flex:1;background:var(--surface2);border:1px solid var(--border-subtle);border-radius:var(--shape-full);padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);margin:0 10px;outline:none}
     .browse-search::placeholder{color:var(--dim)}
     .browse-list{flex:1;overflow-y:auto;padding:8px 20px calc(env(safe-area-inset-bottom,0px)+20px)}
-    .browse-cat-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:14px 0 6px;padding-left:4px}
     .browse-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:var(--shape-sm);border-bottom:1px solid var(--border-subtle);gap:12px;cursor:pointer;transition:background .15s}
     .browse-row:last-child{border-bottom:none}
     .browse-fr{font-family:'Fraunces',serif;font-weight:300;font-size:15px;color:var(--text);flex:1}
@@ -1138,13 +1127,6 @@ const PERM_STRUCTS = [
   {fr:v=>`C'est permis de ${v} ?`, en:v=>`Is it allowed to ${v}?`,   formal:false},
 ];
 
-// Helper: conjugation sentence builder
-function verbSentence(pr, conjForm, obj, key, cat) {
-  const frPr = cap(pr);
-  const enPr = PR_EN[pr];
-  const enVerb = AVOIR_EN[pr]; // am/is/are — reused for aux
-  return {key, fr:`${frPr} ${conjForm} ${obj.fr}`, en:`${enPr} ${conjForm==='va'&&pr==='on'?'goes':''||enPr==='I'?'':enPr==='You'?'':''} ${obj.en}`.trim(), g:null, cat, subtype:key};
-}
 
 // ── IRREGULAR VERB GENERATORS ─────────────────────────────────
 const ALLER_KEY  = 'adaptive|aller';
@@ -1938,9 +1920,6 @@ function buildCardLevelMap() {
 function getCardLevel(probKey) {
   return _cardLevelMap[probKey] || 'a1';
 }
-function getMasteryThreshold(probKey) {
-  return getCardLevel(probKey) === 'a2' ? A2_MASTERY_LEARNED : A1_MASTERY_LEARNED;
-}
 function getCorrectDecay(probKey) {
   return getCardLevel(probKey) === 'a2' ? A2_CORRECT_DECAY : A1_CORRECT_DECAY;
 }
@@ -1953,10 +1932,6 @@ function probToLearned(prob) {
   const p = Math.max(0.001, Math.min(0.999, prob));
   const learned = -24.84 * Math.log(p) + 22.8;
   return Math.round(Math.max(0, Math.min(100, learned)));
-}
-function learnedToProb(learnedPct) {
-  // Inverse: p = e^((learned - 22.8) / -24.84)
-  return Math.exp((learnedPct - 22.8) / -24.84);
 }
 
 // ═══════════════════════════════════════════════════
@@ -2441,7 +2416,7 @@ let retryFlipped=false;
 let currentPick=null, currentCard=null, flipped=false;
 let touchStartX=0, touchStartY=0, lastMark=0;
 let hsResult=null;
-let _selMode='free', _selTimer=0, _selRecent=false, _catOpen=false, _settingsOpen=false;
+let _selMode='free', _selTimer=0, _selRecent=false, _catOpen=false;
 let _browseFilter={mastered:false, flagged:false};
 let _browseOpenCats={}; // category open state
 let _browseSwipeState={}; // track active swipe per row
@@ -2579,23 +2554,13 @@ function renderHome(){
       ${loadFlags().length>0?`<button onclick="renderFlagged()" style="margin-top:6px;background:none;border:none;color:var(--orange);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.04em">⚑ ${loadFlags().length} flagged →</button>`:''}
       ${audioMuted?'<div style="margin-top:6px;font-size:11px;color:var(--red)">🔇 Audio muted</div>':''}
 
-      <div class="settings-disc" style="margin-top:12px">
-        <button class="settings-disc-btn" onclick="toggleSettings()">
-          <span>Settings & Backup</span><span>${_settingsOpen?'▴':'▾'}</span>
-        </button>
-        <div class="settings-body ${_settingsOpen?'open':''}">
-          <div class="settings-row">
-            <button onclick="triggerImport()" style="background:none;border:1px solid var(--border-sub);border-radius:var(--shape-full);color:var(--mid);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;padding:6px 14px">↑ Restore from backup</button>
-          </div>
-        </div>
-      </div>
+      <button onclick="triggerImport()" style="margin-top:12px;background:none;border:none;color:var(--dim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.04em">↑ Restore from backup</button>
       </div>
     </div>`;
 }
 
 function selMode(m){_selMode=m;if(m==='free')_selTimer=0;_selRecent=false;renderHome();}
 function toggleCatOpen(){_catOpen=!_catOpen;renderHome();}
-function toggleSettings(){_settingsOpen=!_settingsOpen;renderHome();}
 
 function selTimer(t){_selTimer=t;renderHome();}
 function toggleRecent(){_selRecent=!_selRecent;if(_selRecent){_selMode='free';_selTimer=0;}renderHome();}
@@ -2698,8 +2663,8 @@ function renderGame(){
       <div class="topbar-left">
         <button class="icon-btn" onclick="confirmHome()">↩ Menu</button>
         <button class="icon-btn reset-btn-lp" id="resetLpBtn"
-          onmousedown="startResetHold()" onmouseup="cancelResetHold()" onmouseleave="cancelResetHold()"
-          ontouchstart="startResetHold(event)" ontouchend="cancelResetHold()" ontouchcancel="cancelResetHold()"
+          onmousedown="startRH()" onmouseup="cancelRH()" onmouseleave="cancelRH()"
+          ontouchstart="startRH(event)" ontouchend="cancelRH()" ontouchcancel="cancelRH()"
           title="Hold to reset">↺</button>
         <button class="icon-btn vol ${audioMuted?'muted':''}" id="muteBtn" onclick="toggleMute()">${audioMuted?'🔇':'🔊'}</button>
       </div>
@@ -3271,14 +3236,6 @@ function handleFlag(e) {
 // ── BROWSE LONG-PRESS MASTER/UNMASTER ──
 let _browseLpTimer = null;
 let _browseLpKey = null;
-function browseTouchStart(e, probKey) {
-  _browseLpKey = probKey;
-  _browseLpTimer = setTimeout(() => { browseLongPress(null, probKey); }, 600);
-}
-function browseTouchEnd(e) {
-  clearTimeout(_browseLpTimer);
-  _browseLpTimer = null;
-}
 function browseLongPress(e, probKey) {
   if(e) e.preventDefault();
   clearTimeout(_browseLpTimer);
@@ -3302,6 +3259,17 @@ function browseLongPress(e, probKey) {
 
 
 
+
+let _rhTimer=null;
+function startRH(e){
+  if(e)e.preventDefault();
+  document.getElementById('resetLpBtn')?.classList.add('holding');
+  _rhTimer=setTimeout(()=>{cancelRH();confirmReset();},800);
+}
+function cancelRH(){
+  clearTimeout(_rhTimer);_rhTimer=null;
+  document.getElementById('resetLpBtn')?.classList.remove('holding');
+}
 
 // ═══════════════════════════════════════════════════
 // MODALS / UTILS
@@ -3374,30 +3342,9 @@ function toggleFlag(fr, en, cat) {
 // ═══════════════════════════════════════════════════
 const BACKUP_FILENAME = 'francais-progress.json';
 
-function buildBackupPayload() {
-  return JSON.stringify({
-    version: 2,
-    saved: new Date().toISOString(),
-    probs:   probs,
-    mastered: mastered,
-    flags:   loadFlags(),
-  });
-}
 
-function triggerDownload(jsonStr) {
-  // Disabled — Supabase handles persistence
-  return false;
-}
 
-function autoSaveProgress() {
-  // Replaced by Supabase sync
-  doSbSync();
-}
 
-function manualExport() {
-  doSbSync();
-  showToast('Syncing to cloud…');
-}
 
 function importProgress(file) {
   if (!file) return;
@@ -3450,13 +3397,6 @@ function speakerIcon(){
   </svg>`;
 }
 
-function speakerMutedIcon(){
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-    <line x1="23" y1="9" x2="17" y2="15"/>
-    <line x1="17" y1="9" x2="23" y2="15"/>
-  </svg>`;
-}
 
 
 // ── AUTO-CLEAR FLAGS IF CARD CONTENT CHANGED ──
