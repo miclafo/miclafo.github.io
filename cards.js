@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 //
 // NEXT AVAILABLE ID: 455
+// Note: ids 421,422,423,236 are disabled (duplicates)
 // NEXT A2 ID BLOCK: 500+
 //
 // ID RULES — read before editing:
@@ -366,7 +367,7 @@ const DB = {
     {id:233, p:3, level:"a1", added:'2025-05-13', fr:'une rue',           en:'a street',                g:'f', cat:'ep6'},
     {id:234, p:3, level:"a1", added:'2025-05-13', fr:'un quartier',       en:'a neighbourhood',         g:'m', cat:'ep6'},
     {id:235, p:3, level:"a1", added:'2025-05-13', fr:'une ville',         en:'a city',                  g:'f', cat:'ep6'},
-    {id:236, p:3, level:"a1", added:'2025-05-13', fr:'un aéroport',       en:'an airport',              g:'m', cat:'ep6'},
+    {id:236, p:3, level:"a1", disabled:true, added:'2025-05-13', fr:'un aéroport',       en:'an airport',              g:'m', cat:'ep6'},
     {id:237, p:3, level:"a1", added:'2025-05-13', fr:'une bibliothèque',  en:'a library',               g:'f', cat:'ep6'},
     {id:238, p:3, level:"a1", added:'2025-05-13', fr:'un supermarché',    en:'a supermarket',           g:'m', cat:'ep6'},
   ],
@@ -567,7 +568,7 @@ const DB = {
     {id:393, p:2, level:"a1", added:'2025-06-07', fr:'être tanné(e)',  en:'to be fed up / tired of (Quebec)',g:null, noArticle:true, cat:'ep15'},
     {id:394, p:2, level:"a1", added:'2025-06-07', fr:'le souper',      en:'dinner / supper (Quebec)',         g:'m', cat:'ep15'},
     {id:395, p:2, level:"a1", added:'2025-06-07', fr:'le dîner',       en:'lunch (Quebec)',                   g:'m', cat:'ep15'},
-    {id:396, p:2, level:"a1", added:'2025-06-07', fr:'le déjeuner',    en:'breakfast (Quebec)',               g:'m', cat:'ep15'},
+    {id:396, p:2, level:"a1", added:'2025-06-07', fr:'le déjeuner',    en:'breakfast — not lunch (Quebec)',    g:'m', cat:'ep15'},
     {id:397, p:3, level:"a1", added:'2025-06-07', fr:'la tuque',       en:'the winter hat (Quebec)',          g:'f', cat:'ep14'},
     {id:398, p:3, level:"a1", added:'2025-06-07', fr:'pogner',         en:'to grab / to catch (Quebec)',      g:null, noArticle:true, cat:'ep1'},
     {id:399, p:3, level:"a1", added:'2025-06-07', fr:'le breuvage',    en:'the beverage (Quebec)',            g:'m', cat:'ep15'},
@@ -575,11 +576,11 @@ const DB = {
   // ── EPISODE 9 · AU QUOTIDIEN ─────────────────────────────
   ep9: [
     // Drinks (not already in deck)
-    {id:400, p:2, level:"a1", added:'2025-07-18', fr:'le vin',           en:'wine',              g:'m', cat:'ep9'},
-    {id:401, p:2, level:"a1", added:'2025-07-18', fr:'une collation',    en:'a snack',            g:'f', cat:'ep9'},
+    {id:400, p:2, level:"a1", added:'2025-07-18', base:'vin', enBase:'wine', g:'m', cat:'ep9'},
+    {id:401, p:2, level:"a1", added:'2025-07-18', base:'e collation', enBase:'a snack', g:'f', cat:'ep9'},
     // Time of day (matin/soir/nuit already exist as descriptors, add missing)
     {id:402, p:2, level:"a1", added:'2025-07-18', fr:"l'avant-midi",    en:'the late morning',   g:'m', cat:'ep9', vowelStart:true},
-    {id:403, p:2, level:"a1", added:'2025-07-18', fr:'le midi',          en:'noon / lunchtime',   g:'m', cat:'ep9'},
+    {id:403, p:2, level:"a1", added:'2025-07-18', base:'midi', enBase:'noon / lunchtime', g:'m', cat:'ep9'},
     // Action verbs not in deck
     {id:404, p:2, level:"a1", added:'2025-07-18', fr:'cuisiner',         en:'to cook',            g:null, noArticle:true, cat:'ep9'},
     {id:405, p:2, level:"a1", added:'2025-07-18', fr:'étudier',          en:'to study',           g:null, noArticle:true, cat:'ep9'},
@@ -599,9 +600,9 @@ const DB = {
     {id:419, p:3, level:"a1", added:'2025-07-18', fr:'jouer du piano',   en:'to play piano',      g:null, noArticle:true, cat:'ep9'},
     {id:420, p:2, level:"a1", added:'2025-07-18', fr:'faire du vélo',    en:'to go cycling',      g:null, noArticle:true, cat:'ep9'},
     // Time expressions
-    {id:421, p:2, level:"a1", added:'2025-07-18', fr:'avant',            en:'before',             g:null, noArticle:true, cat:'ep9'},
-    {id:422, p:2, level:"a1", added:'2025-07-18', fr:'pendant',          en:'during / while',     g:null, noArticle:true, cat:'ep9'},
-    {id:423, p:2, level:"a1", added:'2025-07-18', fr:'après',            en:'after',              g:null, noArticle:true, cat:'ep9'},
+    {id:421, p:2, level:"a1", disabled:true, added:'2025-07-18', fr:'avant',            en:'before',             g:null, noArticle:true, cat:'ep9'},
+    {id:422, p:2, level:"a1", disabled:true, added:'2025-07-18', fr:'pendant',          en:'during / while',     g:null, noArticle:true, cat:'ep9'},
+    {id:423, p:2, level:"a1", disabled:true, added:'2025-07-18', fr:'après',            en:'after',              g:null, noArticle:true, cat:'ep9'},
     {id:424, p:2, level:"a1", added:'2025-07-18', fr:'vers',             en:'around / towards',   g:null, noArticle:true, cat:'ep9'},
     {id:425, p:2, level:"a1", added:'2025-07-18', fr:'environ',          en:'approximately',      g:null, noArticle:true, cat:'ep9'},
     // Demonstratives
@@ -611,24 +612,24 @@ const DB = {
   // ── EPISODE 10 · DÉCOUVRIR UN NOUVEAU QUARTIER ───────────
   ep10: [
     // Neighbourhood businesses not already in deck
-    {id:427, p:2, level:"a1", added:'2025-07-18', fr:'une boulangerie',      en:'a bakery',              g:'f', cat:'ep10'},
-    {id:428, p:2, level:"a1", added:'2025-07-18', fr:'un salon de coiffure', en:'a hair salon',          g:'m', cat:'ep10'},
-    {id:429, p:3, level:"a1", added:'2025-07-18', fr:'un fleuriste',         en:'a florist',             g:'m', cat:'ep10'},
-    {id:430, p:3, level:"a1", added:'2025-07-18', fr:'une fruiterie',        en:'a fruit store',         g:'f', cat:'ep10'},
-    {id:431, p:3, level:"a1", added:'2025-07-18', fr:'une fromagerie',       en:'a cheese shop',         g:'f', cat:'ep10'},
-    {id:432, p:3, level:"a1", added:'2025-07-18', fr:'une librairie',        en:'a bookstore',           g:'f', cat:'ep10'},
-    {id:433, p:3, level:"a1", added:'2025-07-18', fr:'une boucherie',        en:'a butcher shop',        g:'f', cat:'ep10'},
-    {id:434, p:3, level:"a1", added:'2025-07-18', fr:'une poissonnerie',     en:'a fish market',         g:'f', cat:'ep10'},
-    {id:435, p:3, level:"a1", added:'2025-07-18', fr:'une station-service',  en:'a gas station',         g:'f', cat:'ep10'},
-    {id:436, p:3, level:"a1", added:'2025-07-18', fr:'un gym',              en:'a gym',                  g:'m', cat:'ep10'},
+    {id:427, p:2, level:"a1", added:'2025-07-18', base:'e boulangerie', enBase:'a bakery', g:'f', cat:'ep10'},
+    {id:428, p:2, level:"a1", added:'2025-07-18', base:'salon de coiffure', enBase:'a hair salon', g:'m', cat:'ep10'},
+    {id:429, p:3, level:"a1", added:'2025-07-18', base:'fleuriste', enBase:'a florist', g:'m', cat:'ep10'},
+    {id:430, p:3, level:"a1", added:'2025-07-18', base:'e fruiterie', enBase:'a fruit store', g:'f', cat:'ep10'},
+    {id:431, p:3, level:"a1", added:'2025-07-18', base:'e fromagerie', enBase:'a cheese shop', g:'f', cat:'ep10'},
+    {id:432, p:3, level:"a1", added:'2025-07-18', base:'e librairie', enBase:'a bookstore', g:'f', cat:'ep10'},
+    {id:433, p:3, level:"a1", added:'2025-07-18', base:'e boucherie', enBase:'a butcher shop', g:'f', cat:'ep10'},
+    {id:434, p:3, level:"a1", added:'2025-07-18', base:'e poissonnerie', enBase:'a fish market', g:'f', cat:'ep10'},
+    {id:435, p:3, level:"a1", added:'2025-07-18', base:'e station-service', enBase:'a gas station', g:'f', cat:'ep10'},
+    {id:436, p:3, level:"a1", added:'2025-07-18', base:'gym', enBase:'a gym', g:'m', cat:'ep10'},
     // Street vocab
-    {id:437, p:2, level:"a1", added:'2025-07-18', fr:'un trottoir',          en:'a sidewalk',            g:'m', cat:'ep10'},
-    {id:438, p:2, level:"a1", added:'2025-07-18', fr:'une intersection',     en:'an intersection',       g:'f', cat:'ep10'},
-    {id:439, p:2, level:"a1", added:'2025-07-18', fr:'un coin de rue',       en:'a street corner',       g:'m', cat:'ep10'},
-    {id:440, p:2, level:"a1", added:'2025-07-18', fr:'un pont',              en:'a bridge',              g:'m', cat:'ep10'},
-    {id:441, p:2, level:"a1", added:'2025-07-18', fr:'une lumière',          en:'a traffic light',       g:'f', cat:'ep10'},
-    {id:442, p:3, level:"a1", added:'2025-07-18', fr:'une rue parallèle',    en:'a parallel street',     g:'f', cat:'ep10'},
-    {id:443, p:3, level:"a1", added:'2025-07-18', fr:'une rue perpendiculaire', en:'a perpendicular street', g:'f', cat:'ep10'},
+    {id:437, p:2, level:"a1", added:'2025-07-18', base:'trottoir', enBase:'a sidewalk', g:'m', cat:'ep10'},
+    {id:438, p:2, level:"a1", added:'2025-07-18', base:'e intersection', enBase:'an intersection', g:'f', cat:'ep10'},
+    {id:439, p:2, level:"a1", added:'2025-07-18', base:'coin de rue', enBase:'a street corner', g:'m', cat:'ep10'},
+    {id:440, p:2, level:"a1", added:'2025-07-18', base:'pont', enBase:'a bridge', g:'m', cat:'ep10'},
+    {id:441, p:2, level:"a1", added:'2025-07-18', base:'e lumière', enBase:'a traffic light', g:'f', cat:'ep10'},
+    {id:442, p:3, level:"a1", added:'2025-07-18', base:'e rue parallèle', enBase:'a parallel street', g:'f', cat:'ep10'},
+    {id:443, p:3, level:"a1", added:'2025-07-18', base:'e rue perpendiculaire', enBase:'a perpendicular street', g:'f', cat:'ep10'},
     // Direction verbs not already in deck
     {id:444, p:2, level:"a1", added:'2025-07-18', fr:'traverser',            en:'to cross',              g:null, noArticle:true, cat:'ep10'},
   ],
@@ -640,13 +641,13 @@ const DB = {
     {id:446, p:3, level:"a1", added:'2025-07-18', fr:'les loisirs',          en:'hobbies / leisure',     g:'pm', cat:'ep11', pluralOnly:true},
     // Payment
     {id:447, p:2, level:"a1", added:'2025-07-18', fr:'comptant',             en:'cash',                  g:null, noArticle:true, cat:'ep11'},
-    {id:448, p:2, level:"a1", added:'2025-07-18', fr:'une carte de crédit',  en:'a credit card',         g:'f', cat:'ep11'},
-    {id:449, p:2, level:"a1", added:'2025-07-18', fr:'une carte de débit',   en:'a debit card',          g:'f', cat:'ep11'},
-    {id:450, p:3, level:"a1", added:'2025-07-18', fr:'un chèque',            en:'a cheque',              g:'m', cat:'ep11'},
+    {id:448, p:2, level:"a1", added:'2025-07-18', base:'e carte de crédit', enBase:'a credit card', g:'f', cat:'ep11'},
+    {id:449, p:2, level:"a1", added:'2025-07-18', base:'e carte de débit', enBase:'a debit card', g:'f', cat:'ep11'},
+    {id:450, p:3, level:"a1", added:'2025-07-18', base:'chèque', enBase:'a cheque', g:'m', cat:'ep11'},
     // Frequency expressions
     {id:451, p:2, level:"a1", added:'2025-07-18', fr:'une fois',             en:'once',                  g:null, noArticle:true, cat:'ep11'},
     {id:452, p:2, level:"a1", added:'2025-07-18', fr:'quelques fois',        en:'sometimes / a few times', g:null, noArticle:true, cat:'ep11'},
-    {id:453, p:2, level:"a1", added:'2025-07-18', fr:'la dernière fois',     en:'the last time',         g:'f', cat:'ep11'},
+    {id:453, p:2, level:"a1", added:'2025-07-18', base:'dernière fois', enBase:'the last time', g:'f', cat:'ep11'},
     {id:454, p:3, level:"a1", added:'2025-07-18', fr:'durer',                en:'to last',               g:null, noArticle:true, cat:'ep11'},
   ],
 
@@ -657,6 +658,7 @@ const DB = {
 // ═══════════════════════════════════════════════════════════════
 //
 // NEXT AVAILABLE ID: 455
+// Note: ids 421,422,423,236 are disabled (duplicates)
 // NEXT A2 ID BLOCK: 500+
 //
 // ID RULES:
