@@ -2,7 +2,7 @@
 // CARDS DATABASE
 // ═══════════════════════════════════════════════════════════════
 //
-// NEXT AVAILABLE ID: 440
+// NEXT AVAILABLE ID: 455
 // NEXT A2 ID BLOCK: 500+
 //
 // ID RULES — read before editing:
@@ -572,13 +572,91 @@ const DB = {
     {id:398, p:3, level:"a1", added:'2025-06-07', fr:'pogner',         en:'to grab / to catch (Quebec)',      g:null, noArticle:true, cat:'ep1'},
     {id:399, p:3, level:"a1", added:'2025-06-07', fr:'le breuvage',    en:'the beverage (Quebec)',            g:'m', cat:'ep15'},
   ],
+  // ── EPISODE 9 · AU QUOTIDIEN ─────────────────────────────
+  ep9: [
+    // Drinks (not already in deck)
+    {id:400, p:2, level:"a1", added:'2025-07-18', fr:'le vin',           en:'wine',              g:'m', cat:'ep9'},
+    {id:401, p:2, level:"a1", added:'2025-07-18', fr:'une collation',    en:'a snack',            g:'f', cat:'ep9'},
+    // Time of day (matin/soir/nuit already exist as descriptors, add missing)
+    {id:402, p:2, level:"a1", added:'2025-07-18', fr:"l'avant-midi",    en:'the late morning',   g:'m', cat:'ep9', vowelStart:true},
+    {id:403, p:2, level:"a1", added:'2025-07-18', fr:'le midi',          en:'noon / lunchtime',   g:'m', cat:'ep9'},
+    // Action verbs not in deck
+    {id:404, p:2, level:"a1", added:'2025-07-18', fr:'cuisiner',         en:'to cook',            g:null, noArticle:true, cat:'ep9'},
+    {id:405, p:2, level:"a1", added:'2025-07-18', fr:'étudier',          en:'to study',           g:null, noArticle:true, cat:'ep9'},
+    {id:406, p:2, level:"a1", added:'2025-07-18', fr:'danser',           en:'to dance',           g:null, noArticle:true, cat:'ep9'},
+    {id:407, p:3, level:"a1", added:'2025-07-18', fr:'tricoter',         en:'to knit',            g:null, noArticle:true, cat:'ep9'},
+    {id:408, p:2, level:"a1", added:'2025-07-18', fr:'nager',            en:'to swim',            g:null, noArticle:true, cat:'ep9'},
+    {id:409, p:2, level:"a1", added:'2025-07-18', fr:'courir',           en:'to run',             g:null, noArticle:true, cat:'ep9'},
+    {id:410, p:2, level:"a1", added:'2025-07-18', fr:'regarder',         en:'to watch / to look', g:null, noArticle:true, cat:'ep9'},
+    {id:411, p:2, level:"a1", added:'2025-07-18', fr:'relaxer',          en:'to relax',           g:null, noArticle:true, cat:'ep9'},
+    {id:412, p:2, level:"a1", added:'2025-07-18', fr:'marcher',          en:'to walk',            g:null, noArticle:true, cat:'ep9'},
+    {id:413, p:2, level:"a1", added:'2025-07-18', fr:'faire le ménage',  en:'to do housework',    g:null, noArticle:true, cat:'ep9'},
+    {id:414, p:2, level:"a1", added:'2025-07-18', fr:'faire le lavage',  en:'to do laundry',      g:null, noArticle:true, cat:'ep9'},
+    {id:415, p:2, level:"a1", added:'2025-07-18', fr:"faire l'épicerie", en:'to do groceries',    g:null, noArticle:true, cat:'ep9'},
+    {id:416, p:2, level:"a1", added:'2025-07-18', fr:"faire de l'exercice", en:'to exercise',     g:null, noArticle:true, cat:'ep9'},
+    {id:417, p:2, level:"a1", added:'2025-07-18', fr:'faire une promenade', en:'to go for a walk', g:null, noArticle:true, cat:'ep9'},
+    {id:418, p:3, level:"a1", added:'2025-07-18', fr:'jouer aux cartes', en:'to play cards',      g:null, noArticle:true, cat:'ep9'},
+    {id:419, p:3, level:"a1", added:'2025-07-18', fr:'jouer du piano',   en:'to play piano',      g:null, noArticle:true, cat:'ep9'},
+    {id:420, p:2, level:"a1", added:'2025-07-18', fr:'faire du vélo',    en:'to go cycling',      g:null, noArticle:true, cat:'ep9'},
+    // Time expressions
+    {id:421, p:2, level:"a1", added:'2025-07-18', fr:'avant',            en:'before',             g:null, noArticle:true, cat:'ep9'},
+    {id:422, p:2, level:"a1", added:'2025-07-18', fr:'pendant',          en:'during / while',     g:null, noArticle:true, cat:'ep9'},
+    {id:423, p:2, level:"a1", added:'2025-07-18', fr:'après',            en:'after',              g:null, noArticle:true, cat:'ep9'},
+    {id:424, p:2, level:"a1", added:'2025-07-18', fr:'vers',             en:'around / towards',   g:null, noArticle:true, cat:'ep9'},
+    {id:425, p:2, level:"a1", added:'2025-07-18', fr:'environ',          en:'approximately',      g:null, noArticle:true, cat:'ep9'},
+    // Demonstratives
+    {id:426, p:2, level:"a1", added:'2025-07-18', fr:'ce / cet / cette', en:'this / that',        g:null, noArticle:true, cat:'ep9'},
+  ],
+
+  // ── EPISODE 10 · DÉCOUVRIR UN NOUVEAU QUARTIER ───────────
+  ep10: [
+    // Neighbourhood businesses not already in deck
+    {id:427, p:2, level:"a1", added:'2025-07-18', fr:'une boulangerie',      en:'a bakery',              g:'f', cat:'ep10'},
+    {id:428, p:2, level:"a1", added:'2025-07-18', fr:'un salon de coiffure', en:'a hair salon',          g:'m', cat:'ep10'},
+    {id:429, p:3, level:"a1", added:'2025-07-18', fr:'un fleuriste',         en:'a florist',             g:'m', cat:'ep10'},
+    {id:430, p:3, level:"a1", added:'2025-07-18', fr:'une fruiterie',        en:'a fruit store',         g:'f', cat:'ep10'},
+    {id:431, p:3, level:"a1", added:'2025-07-18', fr:'une fromagerie',       en:'a cheese shop',         g:'f', cat:'ep10'},
+    {id:432, p:3, level:"a1", added:'2025-07-18', fr:'une librairie',        en:'a bookstore',           g:'f', cat:'ep10'},
+    {id:433, p:3, level:"a1", added:'2025-07-18', fr:'une boucherie',        en:'a butcher shop',        g:'f', cat:'ep10'},
+    {id:434, p:3, level:"a1", added:'2025-07-18', fr:'une poissonnerie',     en:'a fish market',         g:'f', cat:'ep10'},
+    {id:435, p:3, level:"a1", added:'2025-07-18', fr:'une station-service',  en:'a gas station',         g:'f', cat:'ep10'},
+    {id:436, p:3, level:"a1", added:'2025-07-18', fr:'un gym',              en:'a gym',                  g:'m', cat:'ep10'},
+    // Street vocab
+    {id:437, p:2, level:"a1", added:'2025-07-18', fr:'un trottoir',          en:'a sidewalk',            g:'m', cat:'ep10'},
+    {id:438, p:2, level:"a1", added:'2025-07-18', fr:'une intersection',     en:'an intersection',       g:'f', cat:'ep10'},
+    {id:439, p:2, level:"a1", added:'2025-07-18', fr:'un coin de rue',       en:'a street corner',       g:'m', cat:'ep10'},
+    {id:440, p:2, level:"a1", added:'2025-07-18', fr:'un pont',              en:'a bridge',              g:'m', cat:'ep10'},
+    {id:441, p:2, level:"a1", added:'2025-07-18', fr:'une lumière',          en:'a traffic light',       g:'f', cat:'ep10'},
+    {id:442, p:3, level:"a1", added:'2025-07-18', fr:'une rue parallèle',    en:'a parallel street',     g:'f', cat:'ep10'},
+    {id:443, p:3, level:"a1", added:'2025-07-18', fr:'une rue perpendiculaire', en:'a perpendicular street', g:'f', cat:'ep10'},
+    // Direction verbs not already in deck
+    {id:444, p:2, level:"a1", added:'2025-07-18', fr:'traverser',            en:'to cross',              g:null, noArticle:true, cat:'ep10'},
+  ],
+
+  // ── EPISODE 11 · PASSER LE TEMPS ─────────────────────────
+  ep11: [
+    // Hobbies not already covered
+    {id:445, p:3, level:"a1", added:'2025-07-18', fr:'fabriquer',            en:'to make / to build',    g:null, noArticle:true, cat:'ep11'},
+    {id:446, p:3, level:"a1", added:'2025-07-18', fr:'les loisirs',          en:'hobbies / leisure',     g:'pm', cat:'ep11', pluralOnly:true},
+    // Payment
+    {id:447, p:2, level:"a1", added:'2025-07-18', fr:'comptant',             en:'cash',                  g:null, noArticle:true, cat:'ep11'},
+    {id:448, p:2, level:"a1", added:'2025-07-18', fr:'une carte de crédit',  en:'a credit card',         g:'f', cat:'ep11'},
+    {id:449, p:2, level:"a1", added:'2025-07-18', fr:'une carte de débit',   en:'a debit card',          g:'f', cat:'ep11'},
+    {id:450, p:3, level:"a1", added:'2025-07-18', fr:'un chèque',            en:'a cheque',              g:'m', cat:'ep11'},
+    // Frequency expressions
+    {id:451, p:2, level:"a1", added:'2025-07-18', fr:'une fois',             en:'once',                  g:null, noArticle:true, cat:'ep11'},
+    {id:452, p:2, level:"a1", added:'2025-07-18', fr:'quelques fois',        en:'sometimes / a few times', g:null, noArticle:true, cat:'ep11'},
+    {id:453, p:2, level:"a1", added:'2025-07-18', fr:'la dernière fois',     en:'the last time',         g:'f', cat:'ep11'},
+    {id:454, p:3, level:"a1", added:'2025-07-18', fr:'durer',                en:'to last',               g:null, noArticle:true, cat:'ep11'},
+  ],
+
 };
 
 // ═══════════════════════════════════════════════════════════════
 // FORMAT GUIDE
 // ═══════════════════════════════════════════════════════════════
 //
-// NEXT AVAILABLE ID: 440
+// NEXT AVAILABLE ID: 455
 // NEXT A2 ID BLOCK: 500+
 //
 // ID RULES:
