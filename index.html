@@ -1048,7 +1048,7 @@ const DB = {
 </script>
 <script>
 'use strict';
-const APP_VERSION = '1.2.1';
+const APP_VERSION = '1.2.3';
 // ═══════════════════════════════════════════════════
 // ARTICLE BUILDER  (reads from DB in cards.js)
 // ═══════════════════════════════════════════════════
@@ -2009,6 +2009,7 @@ async function doSbSync() {
     probs: JSON.stringify(probs),
     mastered: JSON.stringify(mastered),
     flags: JSON.stringify(loadFlags()),
+    sessions: JSON.stringify(loadSessions()),
     updated_at: new Date().toISOString(),
   };
   const result = await sbFetch('/rest/v1/progress', 'POST', payload);
@@ -2031,15 +2032,29 @@ async function loadFromSupabase() {
   }
   const row = data[0];
   try {
-    const sbProbs    = JSON.parse(row.probs    || '{}');
+    // Only restore from Supabase if it has actual prob data
+    const sbProbs = JSON.parse(row.probs || '{}');
+    if (Object.keys(sbProbs).length === 0) {
+      console.log('Supabase row exists but is empty — keeping local data');
+      return false;
+    }
     const sbMastered = JSON.parse(row.mastered || '{}');
     const sbFlags    = JSON.parse(row.flags    || '[]');
-    // Merge: Supabase wins for any key it has, local fills in the rest
-    Object.assign(probs, sbProbs);
-    Object.assign(mastered, sbMastered);
-    saveFlags(sbFlags);
-    saveProgress(); // write merged back to localStorage
-    console.log('✓ Loaded from Supabase');
+    // Take the union: keep local keys Supabase doesn't have, Supabase wins where it has data
+    const merged = {...probs, ...sbProbs};
+    Object.assign(probs, merged);
+    Object.assign(mastered, {...mastered, ...sbMastered});
+    if (sbFlags.length > 0) saveFlags(sbFlags);
+    // Restore sessions if Supabase has more than local
+    try {
+      const sbSessions = JSON.parse(row.sessions || '[]');
+      const localSessions = loadSessions();
+      if (sbSessions.length >= localSessions.length) {
+        saveSessions(sbSessions);
+      }
+    } catch(e) {}
+    saveProgress();
+    console.log('✓ Loaded from Supabase:', Object.keys(sbProbs).length, 'prob keys');
     return true;
   } catch(e) {
     console.warn('Failed to parse Supabase data:', e);
@@ -2803,9 +2818,9 @@ function buildPool() {
     ...new Set(CONNECTOR_POOL.map(c=>c.probKey)),
     ...new Set(FAMILY_POOL.map(c=>c.probKey)),
     ...new Set(RELATIONSHIP_POOL.map(c=>c.probKey)),
-    ...new Set(EP9_POOL.map(c=>c.probKey)),
-    ...new Set(EP10_POOL.map(c=>c.probKey)),
-    ...new Set(EP11_POOL.map(c=>c.probKey)),
+    ...new Set((EP9_POOL||[]).map(c=>c.probKey)),
+    ...new Set((EP10_POOL||[]).map(c=>c.probKey)),
+    ...new Set((EP11_POOL||[]).map(c=>c.probKey)),
     ...new Set(QUEBEC_POOL.map(c=>c.probKey)),
     ...new Set(VERB_POOL.map(c=>c.probKey)),
     ...new Set(PERM_POOL.map(c=>c.probKey)),
@@ -3013,7 +3028,7 @@ function resolveCard(pick_) {
     return adaptiveLive[pick_.adKey];
   }
   // Static: find all forms for this probKey, pick one randomly
-  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL, ...QUESTION_POOL, ...CONNECTOR_POOL, ...FAMILY_POOL, ...RELATIONSHIP_POOL, ...QUEBEC_POOL];
+  const allPools = [...VOCAB_POOL, ...PHRASE_POOL, ...JOB_POOL, ...VERB_POOL, ...PERM_POOL, ...TRAVEL_POOL, ...DESCRIPTOR_POOL, ...QUESTION_POOL, ...CONNECTOR_POOL, ...(FAMILY_POOL||[]), ...(RELATIONSHIP_POOL||[]), ...(QUEBEC_POOL||[]), ...(EP9_POOL||[]), ...(EP10_POOL||[]), ...(EP11_POOL||[])];
   const forms = allPools.filter(c => c.probKey === pick_.probKey);
   if (!forms.length) { console.warn('No card found for probKey:', pick_.probKey); return null; }
   return pick(forms);
@@ -3355,6 +3370,7 @@ function renderGame(){
   const isFr = currentPick.lang==='fr';
   const promptLang = isFr?'French':'English';
   const answerLang = isFr?'English':'French';
+  if(!currentCard?.fr || !currentCard?.en){doPickNext();return;}
   const promptWord = isFr ? stripGender(currentCard.fr) : currentCard.en;
   const answerWord = isFr ? currentCard.en : currentCard.fr;
   const g = currentCard.g;
@@ -4176,17 +4192,5 @@ loadFromSupabase().then(loaded => {
 });
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
-</body>
-</html>E html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Français"/>
-  <meta name="theme-color" content="#0f0f0f"/>
-  <link rel="manifest" href="manifest.json"/>
-  <title>Français</title>
 </body>
 </html>
